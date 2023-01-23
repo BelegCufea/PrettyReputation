@@ -50,6 +50,12 @@
         "NUM_BAG_SLOTS",
         "BANK_CONTAINER",
         "InterfaceOptionsFrame_OpenToCategory",
-        "REAGENTBANK_CONTAINER"
+        "REAGENTBANK_CONTAINER",
+        "YELL",
+        "NAME",
+        "message",
+        "COLOR",
+        "COLORS",
+        "DEFAULT"
     ]
 }

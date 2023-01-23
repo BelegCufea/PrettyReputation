@@ -12,6 +12,18 @@ local reputationColors = FACTION_BAR_COLORS
 
 local private = {}
 local factionsId = {}
+local COLORS = {
+    NAME = '|cffbbbbff',
+    BAR_FULL = '|cff00ff00',
+    BAR_EMPTY = '|cff666666',
+    BAR_EDGE = '|cff00ffff'
+}
+
+local AddonDB_Defaults = {
+    profile = {
+      message = "[name] ([standing]): [change] ([currentPercent]) [bar]"
+    },
+  }
 
 local function SetupFactions()
     for i=1, GetNumFactions() do
@@ -43,13 +55,17 @@ local function GetRepInfo(factionId)
         if (IsMajorFaction(factionId)) then
 			local data = GetMajorFactionData(factionId)
 			local isCapped = HasMaximumRenown(factionId)
-			local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
-			local standingText = (RENOWN_LEVEL_LABEL .. data.renownLevel)
-            return name, current, data.renownLevelThreshold, reputationColors[10], standingText      
+            if data then
+                local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
+                local standingText = (RENOWN_LEVEL_LABEL .. data.renownLevel)
+                return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue
+            else
+                return name, 0, 0, reputationColors[10], RENOWN_LEVEL_LABEL, bottomValue, topValue
+            end 
 		end
 
 		if (standingId == nil) then
-			return name, "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?")
+			return name, "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?"), "0", "0"
 		end
 
 		if (IsFactionParagon(factionId)) then
@@ -64,7 +80,7 @@ local function GetRepInfo(factionId)
 					standingText = GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" 
 				end
 			end
-			return name, mod(currentValue, threshold), threshold, color, standingText
+			return name, mod(currentValue, threshold), threshold, color, standingText, bottomValue, topValue
 		end
 
 		local friendInfo = GetFriendshipReputation(factionId)
@@ -75,15 +91,61 @@ local function GetRepInfo(factionId)
 			if (friendInfo.nextThreshold) then
 				maximun, current = friendInfo.nextThreshold - friendInfo.reactionThreshold, friendInfo.standing - friendInfo.reactionThreshold
 			end
-			return name, current, maximun, color, standingText
+			return name, current, maximun, color, standingText, bottomValue, topValue
 		end
 
         local current = barValue - bottomValue
         local maximun = topValue - bottomValue
         local color = reputationColors[standingId] or reputationColors[5]
         local standingText = GetFactionLabel(standingId)
-        return name, current, maximun, color, standingText
+        return name, current, maximun, color, standingText, bottomValue, topValue
 	end
+end
+
+local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top)
+    local printMessage = ""
+    local processMessage = Addon.db.profile.message
+
+    while string.len(processMessage) > 0 do
+        if string.sub(processMessage, 1, 1) == "[" then
+            local position = string.find(processMessage, "]")
+            local tag = string.sub(processMessage,  2, position - 1)
+            if tag == "name" then
+                printMessage = printMessage .. COLORS.NAME .. name .. "|r"
+            elseif tag == "standing" then
+                printMessage = printMessage .. standingColor .. standingText .. "|r"
+            elseif tag == "change" then
+                printMessage = printMessage .. (negative and "-" or "+") .. change
+            elseif tag == "current" then
+                printMessage = printMessage .. current
+            elseif tag == "next" then
+                printMessage = printMessage .. maximum
+            elseif tag == "bottom" then
+                printMessage = printMessage .. bottom 
+            elseif tag == "top" then
+                printMessage = printMessage .. top 
+            elseif tag == "toGo" then
+                printMessage = printMessage .. (negative and ("-" .. current) or (maximum - current))
+            elseif tag == "changePercent" then
+                printMessage = format("%s%.1f%%", printMessage, (change/maximum*100))
+            elseif tag == "currentPercent" then
+                printMessage = format("%s%.1f%%", printMessage, (current/maximum*100))  
+            elseif tag == "bar" then   
+                local bar = "||||||||||||||||||||||||||||||||||||||||"
+                local percentBar = math.floor((current/maximum*100) / 5) -- for 20 "||" to avoid split escape string
+                local percentBarText =  COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
+                printMessage = printMessage .. COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"         
+            else
+                printMessage = printMessage .. tag
+            end
+            processMessage = string.sub(processMessage, position + 1)
+        else
+            printMessage = printMessage .. string.sub(processMessage, 1, 1)
+            processMessage = string.sub(processMessage, 2)
+        end
+    end
+
+    return printMessage
 end
 
 local fsInc = FACTION_STANDING_INCREASED:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)")
@@ -111,28 +173,10 @@ function private.ReputationChanged(eventName, msg)
         SetupFactions()
         factionId = factionsId[faction]
     end
-    local name, current, maximum, color, standingText = GetRepInfo(factionId)
+    local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
     if name then
         local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
-        local percent = current * 100 / maximum
-        if (maximum == 0) then
-            percent = 100
-        end
-        local bar = "||||||||||||||||||||||||||||||||||||||||";
-        local GREY_COLOR = '|cff666666';
-        local GREEN_COLOR = '|cff00ff00';
-        local CYAN_COLOR = '|cff00ffff';
-        local percentBar = math.floor(percent / 5); -- for 20 "||" to avoid split escape string
-        local percentBarText =  GREEN_COLOR .. string.sub(bar, 0, percentBar * 2) .. GREY_COLOR .. string.sub(bar, percentBar * 2 + 1);
-        print(("|cffbbbbff%s|r (%s%s|r): %s%d (%.1f%%) " .. CYAN_COLOR .. "[%s" .. CYAN_COLOR .. "]"):format(
-            name,
-            standingColor,
-            standingText,
-            neg and "-" or "+",
-            value,
-            percent,
-            percentBarText
-        ))
+        print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top ))
     end
 end
 
@@ -141,5 +185,6 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
-	self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
+	Addon:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
+    Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
 end
