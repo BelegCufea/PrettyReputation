@@ -13,11 +13,11 @@ local reputationColors = FACTION_BAR_COLORS
 local private = {}
 local factionsId = {}
 
-local function Setup()
+local function SetupFactions()
     for i=1, GetNumFactions() do
         local name, _, _, _, _, earnedValue, _, _, _, _, _, isWatched, _, factionId = GetFactionInfo(i)
         if (name) then
-            if (factionId) then
+            if (factionId) and not factionsId[name] then
                 factionsId[name] = factionId
             end
         end
@@ -107,6 +107,10 @@ function private.ReputationChanged(eventName, msg)
     if tonumber(faction) then faction, value = value, tonumber(faction) else value = tonumber(value) end
 
     local factionId = factionsId[faction]
+    if not factionId then
+        SetupFactions()
+        factionId = factionsId[faction]
+    end
     local name, current, maximum, color, standingText = GetRepInfo(factionId)
     if name then
         local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
@@ -133,7 +137,7 @@ function private.ReputationChanged(eventName, msg)
 end
 
 function Addon:OnInitialize()
-    Setup()
+    SetupFactions()
 end
 
 function Addon:OnEnable()
