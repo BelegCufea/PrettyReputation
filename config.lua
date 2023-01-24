@@ -22,7 +22,7 @@ local TAGS = {
     {"toGo", "Reputation to gain/loss for next/previous standing"},
     {"changePercent", "Percentual change of reputation"},
     {"currentPercent", "Percent of next standing"},
-    {"bar", "Shows barlike representation of current standing"}
+    {"bar", "Shows barlike progress representation of current standing"}
 }
 
 local function tags()
@@ -48,11 +48,37 @@ local options = {
             name = "pattern",
             desc = "Construct your reputation message",
             width = "full",
-            get = function(info) return Addon.db.profile.message end,
+            get = function(info) return Addon.db.profile.Reputation.pattern end,
             set = function(info, value)
-                Addon.db.profile.message = value
+                Addon.db.profile.Reputation.pattern = value
             end,
         },
+        MessageBarCharacter = {
+            type = "input",
+            order = 12,
+            name = "bar character",
+            desc = "character to be used for 1bar in barlike progress",
+            get = function(info) return Addon.db.profile.Reputation.barChar end,
+            set = function(info, value)
+                Addon.db.profile.Reputation.barChar = value
+            end,
+        },
+        MessageBarLength = {
+            type = "range",
+            order = 13,
+            name = "bar length",
+            desc = "number of bars in barlike progress (would be nice to be clean divider of 100)",
+            min = 1,
+            max = 100,
+            softMin = 5,
+            softMax = 50,
+            step = 1,
+            bigStep = 5,
+            get = function(info) return Addon.db.profile.Reputation.barLength end,
+            set = function(info, value)
+                Addon.db.profile.Reputation.barLength = value
+            end,
+        },        
         TagsHeader = {
             type = "header",
             order = 20,

@@ -23,9 +23,13 @@ local COLORS = {
 
 local AddonDB_Defaults = {
     profile = {
-      message = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]"
-    },
-  }
+        Reputation = {
+            pattern = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]",
+            barChar = "||",
+            barLength = 20
+        }
+    }
+}
 
 local function SetupFactions()
     for i=1, GetNumFactions() do
@@ -105,53 +109,88 @@ local function GetRepInfo(factionId)
 end
 
 local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top)
-    local printMessage = ""
-    local processMessage = Addon.db.profile.message
+    local message = Addon.db.profile.Reputation.pattern
 
-    while string.len(processMessage) > 0 do
-        if string.sub(processMessage, 1, 1) == "[" then
-            local position = string.find(processMessage, "]")
-            local tag = string.sub(processMessage,  2, position - 1)
+    local message_name = COLORS.NAME .. name .. "|r"
+    local message_standing = standingText
+    local message_c_standing = standingColor .. message_standing .. "|r"
+    local message_change =  (negative and "-" or "+") .. change
+    local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. message_change .. "|r"
+    local message_current = current
+    local message_next = maximum
+    local message_bottom = bottom
+    local message_top = top
+    local message_toGo = (negative and ("-" .. current) or (maximum - current))
+    local message_changePercent = format("%.1f%%%%", (change/maximum*100))
+    local message_currentPercent = format("%.1f%%%%", (current/maximum*100))
+
+    local barChar = Addon.db.profile.Reputation.barChar
+    local barLen = Addon.db.profile.Reputation.barLength
+    local bar = string.rep(barChar, barLen)
+    local percentBar = math.floor((current/maximum*100) / (100/barLen))
+    local percentBarText =  COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
+    local message_bar = COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"  
+
+    message = string.gsub(message, "%[name%]", message_name)
+    message = string.gsub(message, "%[standing%]", message_standing)
+    message = string.gsub(message, "%[c_standing%]", message_c_standing)
+    message = string.gsub(message, "%[change%]", message_change)
+    message = string.gsub(message, "%[c_change%]", message_c_change)
+    message = string.gsub(message, "%[current%]", message_current)
+    message = string.gsub(message, "%[next%]", message_next)
+    message = string.gsub(message, "%[bottom%]", message_bottom)
+    message = string.gsub(message, "%[top%]", message_top)
+    message = string.gsub(message, "%[toGo%]", message_toGo)
+    message = string.gsub(message, "%[changePercent%]", message_changePercent)
+    message = string.gsub(message, "%[currentPercent%]", message_currentPercent)
+    message = string.gsub(message, "%[bar%]", message_bar)
+
+    --[[
+    while string.len(pattern) > 0 do
+        if string.sub(pattern, 1, 1) == "[" then
+            local position = string.find(pattern, "]")
+            local tag = string.sub(pattern,  2, position - 1)
             if tag == "name" then
-                printMessage = printMessage .. COLORS.NAME .. name .. "|r"
+                message = message .. COLORS.NAME .. name .. "|r"
             elseif tag == "standing" then
-                printMessage = printMessage .. standingText                
+                message = message .. standingText                
             elseif tag == "c_standing" then
-                printMessage = printMessage .. standingColor .. standingText .. "|r"
+                message = message .. standingColor .. standingText .. "|r"
             elseif tag == "change" then
-                printMessage = printMessage .. (negative and "-" or "+") .. change
+                message = message .. (negative and "-" or "+") .. change
             elseif tag == "c_change" then
-                printMessage = printMessage .. (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. (negative and "-" or "+") .. change .. "|r"
+                message = message .. (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. (negative and "-" or "+") .. change .. "|r"
             elseif tag == "current" then
-                printMessage = printMessage .. current
+                message = message .. current
             elseif tag == "next" then
-                printMessage = printMessage .. maximum
+                message = message .. maximum
             elseif tag == "bottom" then
-                printMessage = printMessage .. bottom 
+                message = message .. bottom 
             elseif tag == "top" then
-                printMessage = printMessage .. top 
+                message = message .. top 
             elseif tag == "toGo" then
-                printMessage = printMessage .. (negative and ("-" .. current) or (maximum - current))
+                message = message .. (negative and ("-" .. current) or (maximum - current))
             elseif tag == "changePercent" then
-                printMessage = format("%s%.1f%%", printMessage, (change/maximum*100))
+                message = format("%s%.1f%%", message, (change/maximum*100))
             elseif tag == "currentPercent" then
-                printMessage = format("%s%.1f%%", printMessage, (current/maximum*100))  
+                message = format("%s%.1f%%", message, (current/maximum*100))  
             elseif tag == "bar" then   
                 local bar = "||||||||||||||||||||||||||||||||||||||||"
                 local percentBar = math.floor((current/maximum*100) / 5) -- for 20 "||" to avoid split escape string
                 local percentBarText =  COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
-                printMessage = printMessage .. COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"         
+                message = message .. COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"         
             else
-                printMessage = printMessage .. tag
+                message = message .. tag
             end
-            processMessage = string.sub(processMessage, position + 1)
+            pattern = string.sub(pattern, position + 1)
         else
-            printMessage = printMessage .. string.sub(processMessage, 1, 1)
-            processMessage = string.sub(processMessage, 2)
+            message = message .. string.sub(pattern, 1, 1)
+            pattern = string.sub(pattern, 2)
         end
     end
+    ]]
 
-    return printMessage
+    return message
 end
 
 local fsInc = FACTION_STANDING_INCREASED:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)")

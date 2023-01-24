@@ -1,6 +1,7 @@
 # Pretty Reputation
 
 Show more information about reputation gain in your chat
+
 ![Example](https://i.imgur.com/Gw5zFjE.png)
 
 ## Features
