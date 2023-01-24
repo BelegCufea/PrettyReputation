@@ -1,7 +1,7 @@
 # Pretty Reputation
 
 Show more information about reputation gain in your chat
-![Example](https://imgbox.com/RMG6s9CQ)
+![Example](https://i.imgur.com/Gw5zFjE.png)
 
 ## Features
 
@@ -11,7 +11,7 @@ Prints configuratable message about reputation change in your chat. There are ma
 
 Locate the 'Pretty Reputation' section within the Options -> Addon section
 * In `pattern` field compose your desired message format. You can choose from several predifined tags.¨
-![Options](https://imgbox.com/6sAhhUbG)
+![Options](https://i.imgur.com/33kcDCs.png)
 
 ## Issues
 
