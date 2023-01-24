@@ -6,22 +6,23 @@ Addon.Config = Config
 local AddonTitle = GetAddOnMetadata(..., "Title")
 
 local COLORS = {
-    TAG = "|cffd4756a",
-    HEADER = "|cffeec13b"
+    TAG = "|cffd4756a"
 }
 
 local TAGS = {
     {"name", "Name of the faction"},
     {"standing", "Current reputation standing"},
+    {"c_standing", "Colored current reputation standing"},
     {"change", "Actual gain/loss of reputation"},
+    {"c_change", "Actual gain/loss of reputation (green for gain, red for loss)"},
     {"current", "Current reputation value"},
     {"next", "Reputation boundary for next level"},
     {"bottom", "Minimun reputation in current standing"},
     {"top", "Maximum reputation in current standing"},
-    {"toGo", "Reputation to gain for next standing"},
-    {"changePercent", "Change of reputation"},
+    {"toGo", "Reputation to gain/loss for next/previous standing"},
+    {"changePercent", "Percentual change of reputation"},
     {"currentPercent", "Percent of next standing"},
-    {"bar", "Shows barlike of current standing"}
+    {"bar", "Shows barlike representation of current standing"}
 }
 
 local function tags()
@@ -70,7 +71,7 @@ local options = {
         DefaultMessage = {
             type = "description",
             order = 31,
-            name = "[name] ([standing]): [change] ([currentPercent]) [bar]"
+            name = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]"
         }
 	},
 }

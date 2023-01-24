@@ -16,12 +16,14 @@ local COLORS = {
     NAME = '|cffbbbbff',
     BAR_FULL = '|cff00ff00',
     BAR_EMPTY = '|cff666666',
-    BAR_EDGE = '|cff00ffff'
+    BAR_EDGE = '|cff00ffff',
+    POSITIVE = '|cff00ff00',
+    NEGATIVE = '|cffff0000'
 }
 
 local AddonDB_Defaults = {
     profile = {
-      message = "[name] ([standing]): [change] ([currentPercent]) [bar]"
+      message = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]"
     },
   }
 
@@ -113,9 +115,13 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
             if tag == "name" then
                 printMessage = printMessage .. COLORS.NAME .. name .. "|r"
             elseif tag == "standing" then
+                printMessage = printMessage .. standingText                
+            elseif tag == "c_standing" then
                 printMessage = printMessage .. standingColor .. standingText .. "|r"
             elseif tag == "change" then
                 printMessage = printMessage .. (negative and "-" or "+") .. change
+            elseif tag == "c_change" then
+                printMessage = printMessage .. (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. (negative and "-" or "+") .. change .. "|r"
             elseif tag == "current" then
                 printMessage = printMessage .. current
             elseif tag == "next" then
