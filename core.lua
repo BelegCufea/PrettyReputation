@@ -11,7 +11,7 @@ local IsFactionParagon = C_Reputation.IsFactionParagon
 local reputationColors = FACTION_BAR_COLORS
 
 local private = {}
-local factionsId = {}
+local factions = {}
 local COLORS = {
     NAME = '|cffbbbbff',
     BAR_FULL = '|cff00ff00',
@@ -35,8 +35,8 @@ local function SetupFactions()
     for i=1, GetNumFactions() do
         local name, _, _, _, _, earnedValue, _, _, _, _, _, isWatched, _, factionId = GetFactionInfo(i)
         if (name) then
-            if (factionId) and not factionsId[name] then
-                factionsId[name] = factionId
+            if (factionId) and not factions[name] then
+                factions[name] = { Id = factionId, Session = 0}
             end
         end
     end
@@ -108,7 +108,7 @@ local function GetRepInfo(factionId)
 	end
 end
 
-local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top)
+local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top, session)
     local message = Addon.db.profile.Reputation.pattern
 
     local message_name = COLORS.NAME .. name .. "|r"
@@ -116,6 +116,8 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_c_standing = standingColor .. message_standing .. "|r"
     local message_change =  (negative and "-" or "+") .. change
     local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. message_change .. "|r"
+    local message_session = ((session > 0) and "+" or "-") .. session
+    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. message_session
     local message_current = current
     local message_next = maximum
     local message_bottom = bottom
@@ -136,6 +138,8 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     message = string.gsub(message, "%[c_standing%]", message_c_standing)
     message = string.gsub(message, "%[change%]", message_change)
     message = string.gsub(message, "%[c_change%]", message_c_change)
+    message = string.gsub(message, "%[session%]", message_session)
+    message = string.gsub(message, "%[c_session%]", message_c_session)
     message = string.gsub(message, "%[current%]", message_current)
     message = string.gsub(message, "%[next%]", message_next)
     message = string.gsub(message, "%[bottom%]", message_bottom)
@@ -144,51 +148,6 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     message = string.gsub(message, "%[changePercent%]", message_changePercent)
     message = string.gsub(message, "%[currentPercent%]", message_currentPercent)
     message = string.gsub(message, "%[bar%]", message_bar)
-
-    --[[
-    while string.len(pattern) > 0 do
-        if string.sub(pattern, 1, 1) == "[" then
-            local position = string.find(pattern, "]")
-            local tag = string.sub(pattern,  2, position - 1)
-            if tag == "name" then
-                message = message .. COLORS.NAME .. name .. "|r"
-            elseif tag == "standing" then
-                message = message .. standingText                
-            elseif tag == "c_standing" then
-                message = message .. standingColor .. standingText .. "|r"
-            elseif tag == "change" then
-                message = message .. (negative and "-" or "+") .. change
-            elseif tag == "c_change" then
-                message = message .. (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. (negative and "-" or "+") .. change .. "|r"
-            elseif tag == "current" then
-                message = message .. current
-            elseif tag == "next" then
-                message = message .. maximum
-            elseif tag == "bottom" then
-                message = message .. bottom 
-            elseif tag == "top" then
-                message = message .. top 
-            elseif tag == "toGo" then
-                message = message .. (negative and ("-" .. current) or (maximum - current))
-            elseif tag == "changePercent" then
-                message = format("%s%.1f%%", message, (change/maximum*100))
-            elseif tag == "currentPercent" then
-                message = format("%s%.1f%%", message, (current/maximum*100))  
-            elseif tag == "bar" then   
-                local bar = "||||||||||||||||||||||||||||||||||||||||"
-                local percentBar = math.floor((current/maximum*100) / 5) -- for 20 "||" to avoid split escape string
-                local percentBarText =  COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
-                message = message .. COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"         
-            else
-                message = message .. tag
-            end
-            pattern = string.sub(pattern, position + 1)
-        else
-            message = message .. string.sub(pattern, 1, 1)
-            pattern = string.sub(pattern, 2)
-        end
-    end
-    ]]
 
     return message
 end
@@ -213,15 +172,19 @@ function private.ReputationChanged(eventName, msg)
     end
     if tonumber(faction) then faction, value = value, tonumber(faction) else value = tonumber(value) end
 
-    local factionId = factionsId[faction]
-    if not factionId then
+    if not factions[factions] then
         SetupFactions()
-        factionId = factionsId[faction]
     end
-    local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
-    if name then
-        local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
-        print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top ))
+
+    if factions[faction] then
+        local factionId = factions[faction].Id
+        local session = factions[faction] and (factions[faction].Session + (value * ((neg and -1 or 1)))) or 0
+        factions[faction].Session = session
+        local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
+        if name then
+            local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
+            print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top, session ))
+        end
     end
 end
 

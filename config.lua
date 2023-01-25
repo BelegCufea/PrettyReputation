@@ -15,6 +15,8 @@ local TAGS = {
     {"c_standing", "Colored current reputation standing"},
     {"change", "Actual gain/loss of reputation"},
     {"c_change", "Actual gain/loss of reputation (green for gain, red for loss)"},
+    {"session", "Gain of reputation in current session"},
+    {"c_session", "Gain of reputation in current session (green for gain, red for loss)"},
     {"current", "Current reputation value"},
     {"next", "Reputation boundary for next level"},
     {"bottom", "Minimun reputation in current standing"},
@@ -58,6 +60,7 @@ local options = {
             order = 12,
             name = "bar character",
             desc = "character to be used for 1bar in barlike progress",
+            width = "half",
             get = function(info) return Addon.db.profile.Reputation.barChar end,
             set = function(info, value)
                 Addon.db.profile.Reputation.barChar = value
