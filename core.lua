@@ -24,7 +24,7 @@ local COLORS = {
 local AddonDB_Defaults = {
     profile = {
         Reputation = {
-            pattern = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]",
+            pattern = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
             barChar = "||",
             barLength = 20
         }
@@ -117,7 +117,7 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_change =  (negative and "-" or "+") .. change
     local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. message_change .. "|r"
     local message_session = ((session > 0) and "+" or "-") .. session
-    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. message_session
+    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. message_session .. "|r"
     local message_current = current
     local message_next = maximum
     local message_bottom = bottom

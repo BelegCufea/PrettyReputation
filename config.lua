@@ -100,7 +100,7 @@ local options = {
         DefaultMessage = {
             type = "description",
             order = 31,
-            name = "[name] ([c_standing]): [c_change] ([currentPercent]) [bar]"
+            name = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]"
         }
 	},
 }
