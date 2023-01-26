@@ -53,7 +53,7 @@ local options = {
             get = function(info) return Addon.db.profile.Reputation.pattern end,
             set = function(info, value)
                 Addon.db.profile.Reputation.pattern = value
-            end,
+            end
         },
         MessageBarCharacter = {
             type = "input",
@@ -64,7 +64,7 @@ local options = {
             get = function(info) return Addon.db.profile.Reputation.barChar end,
             set = function(info, value)
                 Addon.db.profile.Reputation.barChar = value
-            end,
+            end
         },
         MessageBarLength = {
             type = "range",
@@ -80,7 +80,18 @@ local options = {
             get = function(info) return Addon.db.profile.Reputation.barLength end,
             set = function(info, value)
                 Addon.db.profile.Reputation.barLength = value
-            end,
+            end
+        },
+        MessageParagonCount = {
+            type = "toggle",
+            order = 14,
+            name = "show paragon count",
+            desc = "show paragon count in standing text",
+            width = "full",
+            get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
+            set = function(info, value)
+                Addon.db.profile.Reputation.showParagonCount = value
+            end            
         },        
         TagsHeader = {
             type = "header",

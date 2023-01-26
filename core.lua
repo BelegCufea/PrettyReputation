@@ -26,7 +26,8 @@ local AddonDB_Defaults = {
         Reputation = {
             pattern = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
             barChar = "||",
-            barLength = 20
+            barLength = 20,
+            showParagonCount = true
         }
     }
 }
@@ -55,6 +56,7 @@ end
 
 local function GetRepInfo(factionId)
     local name, standingId, bottomValue, topValue, barValue
+    local showParagonCount = Addon.db.profile.Reputation.showParagonCount
     if (factionId and factionId ~= 0) then
         name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(factionId)
 
@@ -64,7 +66,19 @@ local function GetRepInfo(factionId)
             if data then
                 local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 local standingText = (RENOWN_LEVEL_LABEL .. data.renownLevel)
-                return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue
+                if not isCapped then 
+                    return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue          
+                end
+    
+                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
+                local paragonLevel = (currentValue - (currentValue % threshold))/threshold
+                if showParagonCount then
+                    standingText = standingText .. " (" .. paragonLevel+1 .. ")"
+                end
+                if hasRewardPending then
+                    standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a" 
+                end
+                return name, mod(currentValue, threshold), threshold, reputationColors[10], standingText, bottomValue, topValue
             else
                 return name, 0, 0, reputationColors[10], RENOWN_LEVEL_LABEL, bottomValue, topValue
             end 
@@ -78,7 +92,12 @@ local function GetRepInfo(factionId)
 			local color = reputationColors[9]
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
-			local standingText = GetFactionLabel("paragon") .. " " .. paragonLevel+1
+			local standingText = ""
+			if showParagonCount then
+				standingText = GetFactionLabel("paragon") .. " " .. paragonLevel+1
+			else 
+				standingText = GetFactionLabel("paragon") 
+			end
 			if hasRewardPending then
 				if standingText then 
 					standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a" 
