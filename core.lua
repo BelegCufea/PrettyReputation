@@ -134,9 +134,9 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_standing = standingText
     local message_c_standing = standingColor .. message_standing .. "|r"
     local message_change =  (negative and "-" or "+") .. change
-    local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. change .. "|r"
+    local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. message_change .. "|r"
     local message_session = ((session > 0) and "+" or "-") .. session
-    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. session .. "|r"
+    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. message_session .. "|r"
     local message_current = current
     local message_next = maximum
     local message_bottom = bottom
