@@ -8,18 +8,8 @@ local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local IsFactionParagon = C_Reputation.IsFactionParagon
 
-local reputationColors = FACTION_BAR_COLORS
-
 local private = {}
 local factions = {}
-local COLORS = {
-    NAME = '|cffbbbbff',
-    BAR_FULL = '|cff00ff00',
-    BAR_EMPTY = '|cff666666',
-    BAR_EDGE = '|cff00ffff',
-    POSITIVE = '|cff00ff00',
-    NEGATIVE = '|cffff0000'
-}
 
 local AddonDB_Defaults = {
     profile = {
@@ -28,7 +18,8 @@ local AddonDB_Defaults = {
             barChar = "||",
             barLength = 20,
             showParagonCount = true
-        }
+        },
+        Colors = Addon.CONST.REP_COLORS.asciiColors
     }
 }
 
@@ -57,6 +48,7 @@ end
 local function GetRepInfo(factionId)
     local name, standingId, bottomValue, topValue, barValue
     local showParagonCount = Addon.db.profile.Reputation.showParagonCount
+    local reputationColors = Addon.db.profile.Colors
     if (factionId and factionId ~= 0) then
         name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(factionId)
 
@@ -130,13 +122,13 @@ end
 local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top, session)
     local message = Addon.db.profile.Reputation.pattern
 
-    local message_name = COLORS.NAME .. name .. "|r"
+    local message_name = Addon.CONST.MESSAGE_COLORS.NAME .. name .. "|r"
     local message_standing = standingText
     local message_c_standing = standingColor .. message_standing .. "|r"
     local message_change =  (negative and "-" or "+") .. change
-    local message_c_change = (negative and COLORS.NEGATIVE or COLORS.POSITIVE) .. message_change .. "|r"
+    local message_c_change = (negative and Addon.CONST.MESSAGE_COLORS.NEGATIVE or Addon.CONST.MESSAGE_COLORS.POSITIVE) .. message_change .. "|r"
     local message_session = ((session > 0) and "+" or "-") .. session
-    local message_c_session = ((session > 0) and COLORS.POSITIVE or COLORS.NEGATIVE) .. message_session .. "|r"
+    local message_c_session = ((session > 0) and Addon.CONST.MESSAGE_COLORS.POSITIVE or Addon.CONST.MESSAGE_COLORS.NEGATIVE) .. message_session .. "|r"
     local message_current = current
     local message_next = maximum
     local message_bottom = bottom
@@ -149,8 +141,8 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local barLen = Addon.db.profile.Reputation.barLength
     local bar = string.rep(barChar, barLen)
     local percentBar = math.floor((current/maximum*100) / (100/barLen))
-    local percentBarText =  COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
-    local message_bar = COLORS.BAR_EDGE .. "[|r" .. percentBarText .. COLORS.BAR_EDGE .. "]|r"  
+    local percentBarText =  Addon.CONST.MESSAGE_COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. Addon.CONST.MESSAGE_COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
+    local message_bar = Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"  
 
     message = string.gsub(message, "%[name%]", message_name)
     message = string.gsub(message, "%[standing%]", message_standing)

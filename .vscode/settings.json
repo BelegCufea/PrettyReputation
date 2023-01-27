@@ -57,6 +57,14 @@
         "COLOR",
         "COLORS",
         "DEFAULT",
-        "Add"
+        "Add",
+        "FACTION_STANDING_LABEL1",
+        "FACTION_STANDING_LABEL2",
+        "FACTION_STANDING_LABEL3",
+        "FACTION_STANDING_LABEL4",
+        "FACTION_STANDING_LABEL5",
+        "FACTION_STANDING_LABEL6",
+        "FACTION_STANDING_LABEL7",
+        "FACTION_STANDING_LABEL8"
     ]
 }
