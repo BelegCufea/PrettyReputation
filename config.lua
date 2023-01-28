@@ -35,15 +35,10 @@ local options = {
 	name = AddonTitle,
 	type = "group",
 	args = {
-        MessageHeader = {
-            type = "header",
-            order = 10,
-            name = "Message"
-        },
         Pattern = {
             type = "group",
             order = 11,
-            name = "Pattern",
+            name = "Message",
             inline = true,
             args = {
                 MessageBody = {
@@ -112,14 +107,9 @@ local options = {
                 Addon.db.profile.Reputation.showParagonCount = value
             end            
         },        
-        ReputationColorsHeader = {
-            type = "header",
-            order = 30,
-            name = "Reputation standing colors"
-        },
         ReputationColors = {
             type = "group",
-            order = 31,
+            order = 21,
             name = "Reputation standning colors",
             inline = true,
             args = {
@@ -257,7 +247,7 @@ local options = {
         },
         DefaultReputationColors = {
             type = "group",
-            order = 32,
+            order = 22,
             name = "Default values for colors",
             inline = true,
             args = {
@@ -269,20 +259,26 @@ local options = {
                 },
                 AsciiSet = {
                     type = "execute",
-                    order = 1,
-                    name = "Predefined",
+                    order = 2,
+                    name = "Ara",
                     func = function() Addon.db.profile.Colors = Addon.CONST.REP_COLORS.asciiColors end
+                },
+                WoWProSet = {
+                    type = "execute",
+                    order = 3,
+                    name = "WoW Pro",
+                    func = function() Addon.db.profile.Colors = Addon.CONST.REP_COLORS.wowproColors end
                 }
             }
         },
         TagsHeader = {
             type = "header",
-            order = 20,
+            order = 30,
             name = "Available tags"
         },
         AvailableTags = {
             type = "description",
-            order = 21,
+            order = 31,
             name = tags()
         },        
 	},

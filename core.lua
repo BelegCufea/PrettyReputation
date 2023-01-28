@@ -19,7 +19,7 @@ local AddonDB_Defaults = {
             barLength = 20,
             showParagonCount = true
         },
-        Colors = Addon.CONST.REP_COLORS.asciiColors
+        Colors = Addon.CONST.REP_COLORS.wowproColors
     }
 }
 
