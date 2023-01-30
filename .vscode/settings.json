@@ -65,6 +65,16 @@
         "FACTION_STANDING_LABEL5",
         "FACTION_STANDING_LABEL6",
         "FACTION_STANDING_LABEL7",
-        "FACTION_STANDING_LABEL8"
+        "FACTION_STANDING_LABEL8",
+        "FCFDock_ForceReanchoring",
+        "GENERAL_CHAT_DOCK",
+        "LE_LFG_CATEGORY_LFR",
+        "LE_LFG_CATEGORY_LFD",
+        "GetCursorPosition",
+        "HONOR_TODAY",
+        "HONOR_YESTERDAY",
+        "ARENA_THIS_WEEK",
+        "HONOR_LASTWEEK",
+        "BONUS_ROLL_REWARD_MONEY"
     ]
 }

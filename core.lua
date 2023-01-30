@@ -13,13 +13,16 @@ local factions = {}
 
 local AddonDB_Defaults = {
     profile = {
+        Enabled = true,
         Reputation = {
             pattern = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
             barChar = "||",
             barLength = 20,
             showParagonCount = true
         },
-        Colors = Addon.CONST.REP_COLORS.wowproColors
+        Colors = Addon.CONST.REP_COLORS.wowproColors,
+        ColorsPreset = "wowpro",
+        minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
     }
 }
 
@@ -123,11 +126,12 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message = Addon.db.profile.Reputation.pattern
 
     local message_name = Addon.CONST.MESSAGE_COLORS.NAME .. name .. "|r"
+    local message_c_name = standingColor .. name .. "|r"
     local message_standing = standingText
     local message_c_standing = standingColor .. message_standing .. "|r"
     local message_change =  (negative and "-" or "+") .. change
     local message_c_change = (negative and Addon.CONST.MESSAGE_COLORS.NEGATIVE or Addon.CONST.MESSAGE_COLORS.POSITIVE) .. message_change .. "|r"
-    local message_session = ((session > 0) and "+" or "-") .. session
+    local message_session = ((session > 0) and "+" or "") .. session
     local message_c_session = ((session > 0) and Addon.CONST.MESSAGE_COLORS.POSITIVE or Addon.CONST.MESSAGE_COLORS.NEGATIVE) .. message_session .. "|r"
     local message_current = current
     local message_next = maximum
@@ -145,6 +149,7 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_bar = Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"  
 
     message = string.gsub(message, "%[name%]", message_name)
+    message = string.gsub(message, "%[c_name%]", message_c_name)
     message = string.gsub(message, "%[standing%]", message_standing)
     message = string.gsub(message, "%[c_standing%]", message_c_standing)
     message = string.gsub(message, "%[change%]", message_change)
@@ -191,10 +196,12 @@ function private.ReputationChanged(eventName, msg)
         local factionId = factions[faction].Id
         local session = factions[faction] and (factions[faction].Session + (value * ((neg and -1 or 1)))) or 0
         factions[faction].Session = session
-        local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
-        if name then
-            local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
-            print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top, session ))
+        if Addon.db.profile.Enabled then 
+            local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
+            if name then
+                local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
+                print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top, session ))
+            end
         end
     end
 end
@@ -206,4 +213,5 @@ end
 function Addon:OnEnable()
 	Addon:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
+    Addon:InitializeDataBroker();
 end

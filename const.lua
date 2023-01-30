@@ -3,6 +3,11 @@ local Addon = select(2, ...)
 local CONST = {}
 Addon.CONST = CONST
 
+CONST.METADATA = {
+    NAME = GetAddOnMetadata(..., "Title"),
+    VERSION = GetAddOnMetadata(..., "Version")
+}
+
 CONST.PATTERN = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]"
 
 CONST.CONFIG_COLORS = {
@@ -14,8 +19,8 @@ CONST.MESSAGE_COLORS = {
     BAR_FULL = '|cff00ff00',
     BAR_EMPTY = '|cff666666',
     BAR_EDGE = '|cff00ffff',
-    POSITIVE = '|cff00ff00',
-    NEGATIVE = '|cffff0000'
+    POSITIVE = '|cff3ce13f',
+    NEGATIVE = '|cffff4700'
 }
 
 CONST.REP_COLORS = {
@@ -43,6 +48,30 @@ CONST.REP_COLORS = {
         [8]   = { r=  46/255, g= 230/255, b= 230/255 }, -- exalted
         [9]   = { r= 204/255, g= 102/255, b= 204/255 }, -- paragon
         [10]  = { r=  65/255, g= 105/255, b= 225/255 }, -- renown
+    },
+    tiptacColors = {
+        [1]   = { r= 1,   g= 0,   b= 0   }, -- hated
+        [2]   = { r= 1,   g= 0,   b= 0   }, -- hostile
+        [3]   = { r= 1,   g= .5,  b= 0   }, -- unfriendly
+        [4]   = { r= 1,   g= 1,   b= 0   }, -- neutral
+        [5]   = { r= 0,   g= .76, b= 0   }, -- friendly
+        [6]   = { r= 0,   g= .76, b= .36 }, -- honored
+        [7]   = { r= 0,   g= .76, b= .56 }, -- revered
+        [8]   = { r= 0,   g= .76, b= .76 }, -- exalted
+        [9]   = { r= 0,   g= .76, b= .76 }, -- paragon
+        [10]  = { r= 0,   g= .76, b= .76 }, -- renown        
+    },
+    elvuiColors = {
+        [1]   = { r= 255/255, g=   0/255, b=   0/255 }, -- hated
+        [2]   = { r= 255/255, g=  99/255, b=  71/255 }, -- hostile
+        [3]   = { r= 255/255, g= 165/255, b=   0/255 }, -- unfriendly
+        [4]   = { r= 255/255, g= 255/255, b=   0/255 }, -- neutral
+        [5]   = { r=   0/255, g= 128/255, b=   0/255 }, -- friendly
+        [6]   = { r= 100/255, g= 149/255, b= 237/255 }, -- honored
+        [7]   = { r= 138/255, g=  43/255, b= 226/255 }, -- revered
+        [8]   = { r= 128/255, g=   0/255, b= 128/255 }, -- exalted
+        [9]   = { r= 255/255, g= 105/255, b= 179/255 }, -- paragon
+        [10]  = { r=   0/255, g= 189/255, b= 242/255 }, -- renown         
     },
 }
 
