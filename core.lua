@@ -28,12 +28,19 @@ local AddonDB_Defaults = {
 }
 
 local function SetupFactions()
-    for i=1, GetNumFactions() do
-        local name, _, _, _, _, earnedValue, _, _, _, _, _, isWatched, _, factionId = GetFactionInfo(i)
+--    for i=1, GetNumFactions() do
+    for i=1, 500 do
+        local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
+        local nextName = GetFactionInfo(i + 1)
+        if name == nextName and nextName ~= "Guild" then break end -- bugfix
         if (name) then
             if (factionId) and not factions[name] then
                 factions[name] = { Id = factionId, Session = 0}
+            elseif (factionId) and not factions[name].Id then
+                factions[name].Id = factionId
             end
+        else
+            break
         end
     end
 end
@@ -201,8 +208,10 @@ function private.ReputationChanged(eventName, msg)
     end
     if tonumber(faction) then faction, value = value, tonumber(faction) else value = tonumber(value) end
 
-    if not factions[factions] then
+    if factions[faction] == nil then
+        factions[faction] = {Id = nil, Session = 0}
         SetupFactions()
+        Addon:Print("New Faction " .. faction .. ((factions[faction].Id and " found") or " not found"))
     end
 
     if factions[faction] then

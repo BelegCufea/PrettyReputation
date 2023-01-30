@@ -13,12 +13,13 @@ local settings = {
     text = ldbLabelText,
     icon = "Interface\\AddOns\\PrettyReputation\\textures\\icon",
     OnTooltipShow = function(tooltip)
-        tooltip:AddDoubleLine(ADDON_NAME, ldbLabelText, 1, 1, 1)
-        tooltip:AddLine(" ")
-        private.AddSessionGains(tooltip)
-        tooltip:AddLine(" ")
-		tooltip:AddLine("|cFFFFFFCCRight-Click|r to open the options window")
-		tooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle message visibility")
+        if (tooltip and tooltip.AddLine) then
+            tooltip:AddDoubleLine(Addon.CONST.METADATA.NAME .. " (v" .. Addon.CONST.METADATA.VERSION .. ")", ldbLabelText, 1, 1, 1)
+            tooltip:AddLine(" ")
+            private.AddSessionGains(tooltip)
+            tooltip:AddLine("|cFFFFFFCCRight-Click|r to open the options window")
+            tooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle message visibility")
+        end
     end,
     OnClick = function(self, button, down)
         if button == "LeftButton" then
@@ -42,12 +43,21 @@ function private.SetLabelText()
 end
 
 function private.AddSessionGains(tooltip)
-    tooltip:AddLine("Session gains/losses:",1,1,1)
+    local lines = {}
+    local count = 0
     for k,v in pairs(factions) do
         if v["Session"] and v["Session"] ~= 0 then
-            local session = ((v["Session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. v["Session"] .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. v["Session"] .. "|r")
-            tooltip:AddDoubleLine(k, session)
+            count = count + 1
+            local session = ((v["Session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v["Session"]) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v["Session"]) .. "|r")
+            lines[k] = session
         end
+    end
+    if count > 0 then
+        tooltip:AddLine("Session gains/losses:",1,1,1)
+        for k,v in pairs(lines) do
+            tooltip:AddDoubleLine(k, v)
+        end
+        tooltip:AddLine(" ")
     end
 end
 
