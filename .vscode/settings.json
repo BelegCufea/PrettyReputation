@@ -75,6 +75,7 @@
         "HONOR_YESTERDAY",
         "ARENA_THIS_WEEK",
         "HONOR_LASTWEEK",
-        "BONUS_ROLL_REWARD_MONEY"
+        "BONUS_ROLL_REWARD_MONEY",
+        "ADD"
     ]
 }

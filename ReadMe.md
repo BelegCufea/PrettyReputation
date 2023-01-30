@@ -7,6 +7,7 @@ Show more information about reputation gain in your chat
 ## Features
 
 Prints configuratable message about reputation change in your chat. There are many options how to set up your message.
+Track session reputation gains or losses on minimap/databroker.
 
 ## Configuration
 

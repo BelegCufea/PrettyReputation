@@ -10,6 +10,7 @@ local IsFactionParagon = C_Reputation.IsFactionParagon
 
 local private = {}
 local factions = {}
+Addon.Factions = factions
 
 local AddonDB_Defaults = {
     profile = {
@@ -62,7 +63,7 @@ local function GetRepInfo(factionId)
                 local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 local standingText = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 if not isCapped then 
-                    return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue          
+                    return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue, "", data.renownLevel          
                 end
     
                 local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
@@ -71,16 +72,16 @@ local function GetRepInfo(factionId)
                     standingText = standingText .. " (" .. paragonLevel+1 .. ")"
                 end
                 if hasRewardPending then
-                    standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a" 
+                    standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a"
                 end
-                return name, mod(currentValue, threshold), threshold, reputationColors[10], standingText, bottomValue, topValue
+                return name, mod(currentValue, threshold), threshold, reputationColors[10], standingText, bottomValue, topValue, paragonLevel, data.renownLevel
             else
-                return name, 0, 0, reputationColors[10], RENOWN_LEVEL_LABEL, bottomValue, topValue
+                return name, 0, 0, reputationColors[10], RENOWN_LEVEL_LABEL, bottomValue, topValue, "", ""
             end 
 		end
 
 		if (standingId == nil) then
-			return name, "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?"), "0", "0"
+			return name, "0", "0", "|cFFFF0000", "??? - " .. (factionId .. "?"), "0", "0", "", ""
 		end
 
 		if (IsFactionParagon(factionId)) then
@@ -100,7 +101,7 @@ local function GetRepInfo(factionId)
 					standingText = GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" 
 				end
 			end
-			return name, mod(currentValue, threshold), threshold, color, standingText, bottomValue, topValue
+			return name, mod(currentValue, threshold), threshold, color, standingText, bottomValue, topValue, "", ""
 		end
 
 		local friendInfo = GetFriendshipReputation(factionId)
@@ -111,19 +112,20 @@ local function GetRepInfo(factionId)
 			if (friendInfo.nextThreshold) then
 				maximun, current = friendInfo.nextThreshold - friendInfo.reactionThreshold, friendInfo.standing - friendInfo.reactionThreshold
 			end
-			return name, current, maximun, color, standingText, bottomValue, topValue
+			return name, current, maximun, color, standingText, bottomValue, topValue, "", ""
 		end
 
         local current = barValue - bottomValue
         local maximun = topValue - bottomValue
         local color = reputationColors[standingId] or reputationColors[5]
         local standingText = GetFactionLabel(standingId)
-        return name, current, maximun, color, standingText, bottomValue, topValue
+        return name, current, maximun, color, standingText, bottomValue, topValue, "", ""
 	end
 end
 
-local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top, session)
+local function ConstructMessage(name, standingText, standingColor, negative, change, current, maximum, bottom, top, session, paragon, renown)
     local message = Addon.db.profile.Reputation.pattern
+    local reputationColors = Addon.db.profile.Colors
 
     local message_name = Addon.CONST.MESSAGE_COLORS.NAME .. name .. "|r"
     local message_c_name = standingColor .. name .. "|r"
@@ -140,6 +142,13 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_toGo = (negative and ("-" .. current) or (maximum - current))
     local message_changePercent = format("%.1f%%%%", (change/maximum*100))
     local message_currentPercent = format("%.1f%%%%", (current/maximum*100))
+    local message_paragonLevel = paragon
+    local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
+    local message_c_paragonLevel = paragonColor .. message_paragonLevel .. "|r"
+    local message_renownLevel = renown
+    local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
+    local message_c_renownLevel = renownColor .. message_renownLevel .. "|r"
+    
 
     local barChar = Addon.db.profile.Reputation.barChar
     local barLen = Addon.db.profile.Reputation.barLength
@@ -163,6 +172,10 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     message = string.gsub(message, "%[toGo%]", message_toGo)
     message = string.gsub(message, "%[changePercent%]", message_changePercent)
     message = string.gsub(message, "%[currentPercent%]", message_currentPercent)
+    message = string.gsub(message, "%[paragonLevel%]", message_paragonLevel)
+    message = string.gsub(message, "%[c_paragonLevel%]", message_c_paragonLevel)
+    message = string.gsub(message, "%[renownLevel%]", message_paragonLevel)
+    message = string.gsub(message, "%[c_renownLevel%]", message_c_renownLevel)
     message = string.gsub(message, "%[bar%]", message_bar)
 
     return message
@@ -197,10 +210,10 @@ function private.ReputationChanged(eventName, msg)
         local session = factions[faction] and (factions[faction].Session + (value * ((neg and -1 or 1)))) or 0
         factions[faction].Session = session
         if Addon.db.profile.Enabled then 
-            local name, current, maximum, color, standingText, bottom, top = GetRepInfo(factionId)
+            local name, current, maximum, color, standingText, bottom, top, paragon, renown = GetRepInfo(factionId)
             if name then
                 local standingColor = ("|cff%.2x%.2x%.2x"):format(color.r*255, color.g*255, color.b*255)
-                print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top, session ))
+                print(ConstructMessage(name, standingText, standingColor, neg, value, current, maximum, bottom, top, session, paragon, renown ))
             end
         end
     end

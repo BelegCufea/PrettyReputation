@@ -19,6 +19,10 @@ local TAGS = {
     {"toGo", "Reputation to gain/loss for next/previous standing"},
     {"changePercent", "Percentual change of reputation"},
     {"currentPercent", "Percent of next standing"},
+    {"paragonLevel", "Paragon level"},
+    {"c_paragonLevel", "Colored paragon level"},
+    {"renownLevel", "Renown level"},
+    {"c_renownLevel", "Colored renown level"},
     {"bar", "Shows barlike progress representation of current standing"}
 }
 

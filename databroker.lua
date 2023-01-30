@@ -1,6 +1,8 @@
-local ADDON_NAME, Addon = ...
+local Addon = select(2, ...)
+local ADDON_NAME = ...
 
 local LibDataBroker = LibStub("LibDataBroker-1.1")
+local factions = Addon.Factions
 
 local ldbLabelText = ""
 local private = {}
@@ -12,7 +14,9 @@ local settings = {
     icon = "Interface\\AddOns\\PrettyReputation\\textures\\icon",
     OnTooltipShow = function(tooltip)
         tooltip:AddDoubleLine(ADDON_NAME, ldbLabelText, 1, 1, 1)
-        tooltip:AddLine("")
+        tooltip:AddLine(" ")
+        private.AddSessionGains(tooltip)
+        tooltip:AddLine(" ")
 		tooltip:AddLine("|cFFFFFFCCRight-Click|r to open the options window")
 		tooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle message visibility")
     end,
@@ -35,6 +39,16 @@ function private.SetLabelText()
         ldbLabelText = Addon.CONST.MESSAGE_COLORS.NEGATIVE .. "Disabled" .. "|r"
     end
     Addon.BrokerModule.text = ldbLabelText
+end
+
+function private.AddSessionGains(tooltip)
+    tooltip:AddLine("Session gains/losses:",1,1,1)
+    for k,v in pairs(factions) do
+        if v["Session"] and v["Session"] ~= 0 then
+            local session = ((v["Session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. v["Session"] .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. v["Session"] .. "|r")
+            tooltip:AddDoubleLine(k, session)
+        end
+    end
 end
 
 function Addon:InitializeDataBroker()
