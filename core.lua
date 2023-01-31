@@ -58,6 +58,7 @@ end
 
 local function GetRepInfo(factionId)
     local name, standingId, bottomValue, topValue, barValue
+    local paragon = ""
     local showParagonCount = Addon.db.profile.Reputation.showParagonCount
     local reputationColors = Addon.db.profile.Colors
     if (factionId and factionId ~= 0) then
@@ -70,18 +71,21 @@ local function GetRepInfo(factionId)
                 local current = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 local standingText = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 if not isCapped then 
-                    return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue, "", data.renownLevel          
+                    return name, current, data.renownLevelThreshold, reputationColors[10], standingText, bottomValue, topValue, "", data.renownLevel        
                 end
     
                 local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount then
+                    paragon =  paragon .. paragonLevel+1
                     standingText = standingText .. " (" .. paragonLevel+1 .. ")"
                 end
                 if hasRewardPending then
-                    standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a"
+                    local reward = "|A:ParagonReputation_Bag:0:0|a"
+                    paragon = paragon .. (paragon ~= "" and " ") or "" .. reward
+                    standingText = standingText .. " " .. reward
                 end
-                return name, mod(currentValue, threshold), threshold, reputationColors[10], standingText, bottomValue, topValue, paragonLevel, data.renownLevel
+                return name, mod(currentValue, threshold), threshold, reputationColors[10], standingText, bottomValue, topValue, paragon, data.renownLevel
             else
                 return name, 0, 0, reputationColors[10], RENOWN_LEVEL_LABEL, bottomValue, topValue, "", ""
             end 
@@ -97,18 +101,21 @@ local function GetRepInfo(factionId)
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			local standingText = ""
 			if showParagonCount then
+                paragon =  paragon .. paragonLevel+1
 				standingText = GetFactionLabel("paragon") .. " " .. paragonLevel+1
 			else 
 				standingText = GetFactionLabel("paragon") 
 			end
 			if hasRewardPending then
-				if standingText then 
-					standingText = standingText .. " |A:ParagonReputation_Bag:0:0|a" 
+                local reward = "|A:ParagonReputation_Bag:0:0|a"
+                paragon = paragon .. (paragon ~= "" and " ") or "" .. reward
+                if standingText then 
+					standingText = standingText .. " " .. reward
 				else
-					standingText = GetFactionLabel("paragon") .. " |A:ParagonReputation_Bag:0:0|a" 
+					standingText = GetFactionLabel("paragon") .. " " .. reward
 				end
 			end
-			return name, mod(currentValue, threshold), threshold, color, standingText, bottomValue, topValue, "", ""
+			return name, mod(currentValue, threshold), threshold, color, standingText, bottomValue, topValue, paragon, ""
 		end
 
 		local friendInfo = GetFriendshipReputation(factionId)
@@ -147,7 +154,7 @@ local function ConstructMessage(name, standingText, standingColor, negative, cha
     local message_bottom = bottom
     local message_top = top
     local message_toGo = (negative and ("-" .. current) or (maximum - current))
-    local message_changePercent = format("%.1f%%%%", (change/maximum*100))
+    local message_changePercent = format("%.2f%%%%", (change/maximum*100))
     local message_currentPercent = format("%.1f%%%%", (current/maximum*100))
     local message_paragonLevel = paragon
     local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)

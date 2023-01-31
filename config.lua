@@ -19,8 +19,8 @@ local TAGS = {
     {"toGo", "Reputation to gain/loss for next/previous standing"},
     {"changePercent", "Percentual change of reputation"},
     {"currentPercent", "Percent of next standing"},
-    {"paragonLevel", "Paragon level"},
-    {"c_paragonLevel", "Colored paragon level"},
+    {"paragonLevel", "Paragon level (with reward icon if available)"},
+    {"c_paragonLevel", "Colored paragon level (with reward icon if available)"},
     {"renownLevel", "Renown level"},
     {"c_renownLevel", "Colored renown level"},
     {"bar", "Shows barlike progress representation of current standing"}
@@ -164,8 +164,7 @@ local options = {
                 MessageParagonCount = {
                     type = "toggle",
                     order = 12,
-                    name = "show paragon count",
-                    desc = "show paragon count in standing text",
+                    name = "show paragon count in standing text",
                     width = "full",
                     get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
                     set = function(info, value)
