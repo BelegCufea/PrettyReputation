@@ -14,11 +14,17 @@ local settings = {
     icon = "Interface\\AddOns\\PrettyReputation\\textures\\icon",
     OnTooltipShow = function(tooltip)
         if (tooltip and tooltip.AddLine) then
+            tooltip:ClearLines()
+
             tooltip:AddDoubleLine(Addon.CONST.METADATA.NAME .. " (v" .. Addon.CONST.METADATA.VERSION .. ")", ldbLabelText, 1, 1, 1)
             tooltip:AddLine(" ")
+
             private.AddSessionGains(tooltip)
+
             tooltip:AddLine("|cFFFFFFCCRight-Click|r to open the options window")
             tooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle message visibility")
+
+            tooltip:Show()
         end
     end,
     OnClick = function(self, button, down)

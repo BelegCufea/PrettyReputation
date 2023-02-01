@@ -3,32 +3,9 @@ local Addon = select(2, ...)
 local Config = Addon:NewModule("Config")
 Addon.Config = Config
 
-local TAGS = {
-    {"name", "Name of the faction"},
-    {"c_name", "Name of the faction colored by standing"},
-    {"standing", "Current reputation standing"},
-    {"c_standing", "Colored current reputation standing"},
-    {"change", "Actual gain/loss of reputation"},
-    {"c_change", "Actual gain/loss of reputation (green for gain, red for loss)"},
-    {"session", "Gain of reputation in current session"},
-    {"c_session", "Gain of reputation in current session (green for gain, red for loss)"},
-    {"current", "Current reputation value"},
-    {"next", "Reputation boundary for next level"},
-    {"bottom", "Minimum reputation in current standing"},
-    {"top", "Maximum reputation in current standing"},
-    {"toGo", "Reputation to gain/loss for next/previous standing"},
-    {"changePercent", "Percentual change of reputation"},
-    {"currentPercent", "Percent of next standing"},
-    {"paragonLevel", "Paragon level (with reward icon if available)"},
-    {"c_paragonLevel", "Colored paragon level (with reward icon if available)"},
-    {"renownLevel", "Renown level"},
-    {"c_renownLevel", "Colored renown level"},
-    {"bar", "Shows barlike progress representation of current standing"}
-}
-
 local function tags()
     local result = ""
-    for i,v in pairs(TAGS) do
+    for _,v in pairs(Addon.CONST.TAGS) do
        result = result .. Addon.CONST.CONFIG_COLORS.TAG .. "[" .. v[1] .. "]|r - " .. v[2] .. "\n"
     end
     return result
@@ -95,6 +72,16 @@ local options = {
                   end
             end 
         },
+        Debug = {
+            type = "toggle",
+            order = 3,
+            name = "Debug",
+            desc = "Print debug messages in chat",
+            get = function(info) return Addon.db.profile.Debug end,
+            set = function(info, value)
+                Addon.db.profile.Debug = value
+            end 
+        },        
         Message = {
             type = "group",
             order = 10,
