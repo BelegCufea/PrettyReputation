@@ -341,6 +341,7 @@ local options = {
 }
 
 function Config:OnEnable()
+    options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(Addon.db)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)
 end
