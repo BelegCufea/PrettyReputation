@@ -82,7 +82,7 @@ local function GetRepInfo(factionId)
                 end
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
-                    paragon = paragon .. (paragon ~= "" and " ") or "" .. reward
+                    paragon = paragon .. reward
                     if not showParagonCount then
                         standingText = standingText .. " " .. reward
                     end                    
@@ -107,7 +107,7 @@ local function GetRepInfo(factionId)
             end
 			if hasRewardPending then
                 local reward = "|A:ParagonReputation_Bag:0:0|a"
-                paragon = paragon .. (paragon ~= "" and " ") or "" .. reward
+                paragon = paragon .. reward
                 if not showParagonCount then
                     standingText = standingText .. " " .. reward
                 end

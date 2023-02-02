@@ -5,6 +5,8 @@
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled
+## X-Embeds: Ace3, LibDataBroker-1.1, CallbackHandler-1.0
+## X-Curse-Project-ID: 821079
 
 Libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
