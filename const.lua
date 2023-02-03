@@ -10,30 +10,6 @@ CONST.METADATA = {
 
 CONST.PATTERN = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]"
 
-CONST.TAGS = {
-    {"name", "Name of the faction"},
-    {"c_name", "Name of the faction colored by standing"},
-    {"standing", "Current reputation standing"},
-    {"c_standing", "Colored current reputation standing"},
-    {"change", "Actual gain/loss of reputation"},
-    {"c_change", "Actual gain/loss of reputation (green for gain, red for loss)"},
-    {"session", "Gain of reputation in current session"},
-    {"c_session", "Gain of reputation in current session (green for gain, red for loss)"},
-    {"current", "Current reputation value"},
-    {"next", "Reputation boundary for next level"},
-    {"bottom", "Minimum reputation in current standing"},
-    {"top", "Maximum reputation in current standing"},
-    {"toGo", "Reputation to gain/loss for next/previous standing"},
-    {"changePercent", "Percentual change of reputation"},
-    {"sessionPercent", "Percentual change of reputation during active session"},
-    {"currentPercent", "Percent of next standing"},
-    {"paragonLevel", "Paragon level (with reward icon if available)"},
-    {"c_paragonLevel", "Colored paragon level (with reward icon if available)"},
-    {"renownLevel", "Renown level"},
-    {"c_renownLevel", "Colored renown level"},
-    {"bar", "Shows barlike progress representation of current standing"}
-}
-
 CONST.CONFIG_COLORS = {
     TAG = "|cffd4756a"
 }

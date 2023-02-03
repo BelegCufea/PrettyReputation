@@ -1,7 +1,7 @@
 ## Interface: 100005
 ## Title: Pretty Reputation
 ## Notes: Shows more info about your reputation gain
-## Version: 1.0.5
+## Version: 1.1.0-beta1
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled
@@ -21,6 +21,7 @@ libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 const.lua
+tags.lua
 core.lua
 config.lua
 databroker.lua

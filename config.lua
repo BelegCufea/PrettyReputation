@@ -5,8 +5,8 @@ Addon.Config = Config
 
 local function tags()
     local result = ""
-    for _,v in pairs(Addon.CONST.TAGS) do
-       result = result .. Addon.CONST.CONFIG_COLORS.TAG .. "[" .. v[1] .. "]|r - " .. v[2] .. "\n"
+    for k,v in pairs(Addon.TAGS.Definition) do
+       result = result .. Addon.CONST.CONFIG_COLORS.TAG .. "[" .. k .. "]|r - " .. v.tag .. "\n"
     end
     return result
 end
@@ -166,7 +166,7 @@ local options = {
                 AvailableTags = {
                     type = "description",
                     order = 31,
-                    name = tags()
+                    name = function() return tags() end
                 },        
             },   
         },
@@ -178,7 +178,7 @@ local options = {
                 ReputationColors = {
                     type = "group",
                     order = 21,
-                    name = "Reputation standning colors",
+                    name = "Reputation standing colors",
                     inline = true,
                     args = {
                         Hated = {
