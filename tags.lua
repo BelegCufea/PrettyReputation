@@ -1,17 +1,46 @@
 local Addon = select(2, ...)
 Addon.TAGS = LibStub:NewLibrary("PrettyReputationTags", 1)
 
+Addon.TAGS.Options = {
+    Reputation = {
+        barChar = function() return Addon.db.profile.Reputation.barChar end,
+        barLength = function() return Addon.db.profile.Reputation.barLength end,
+        showParagonCount = function() return Addon.db.profile.Reputation.showParagonCount end,
+    },
+    Colors = function()
+        return Addon.db.profile.Colors
+    end,
+    StandingColors = function()
+        local standingColors = {}
+        for k,v in pairs(Addon.db.profile.Colors) do
+            standingColors[k] = ("|cff%.2x%.2x%.2x"):format(v.r*255, v.g*255, v.b*255)
+        end
+        return standingColors
+    end,
+}
+
+Addon.TAGS.Const = {
+    Colors = {
+        name = Addon.CONST.MESSAGE_COLORS.NAME,
+        bar_full = Addon.CONST.MESSAGE_COLORS.BAR_FULL,
+        bar_empty = Addon.CONST.MESSAGE_COLORS.BAR_EMPTY,
+        bar_edge = Addon.CONST.MESSAGE_COLORS.BAR_EDGE,
+        positive = Addon.CONST.MESSAGE_COLORS.POSITIVE,
+        negative = Addon.CONST.MESSAGE_COLORS.NEGATIVE,
+    }
+}
+
 Addon.TAGS.Definition = {
     ["name"] = {
-        tag = "Name of the faction",
+        desc = "Name of the faction",
         value = function(info) return Addon.CONST.MESSAGE_COLORS.NAME .. info.name .. "|r" end
     },
     ["c_name"] = {
-        tag = "Name of the faction colored by standing",
+        desc = "Name of the faction colored by standing",
         value = function(info) return info.standingColor .. info.name .. "|r" end
     },
     ["standing"] = {
-        tag = "Current reputation standing",
+        desc = "Current reputation standing",
         value = function(info)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 return info.standingText .. " (" .. info.paragon .. ")"
@@ -21,7 +50,7 @@ Addon.TAGS.Definition = {
         end
     },
     ["c_standing"] = {
-        tag = "Colored current reputation standing",
+        desc = "Colored current reputation standing",
         value = function(info)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 local reputationColors = Addon.db.profile.Colors
@@ -33,59 +62,59 @@ Addon.TAGS.Definition = {
         end
     },
     ["change"] = {
-        tag = "Actual gain/loss of reputation",
+        desc = "Actual gain/loss of reputation",
         value = function(info) return (info.negative and "-" or "+") .. info.change end
     },
     ["c_change"] = {
-        tag = "Actual gain/loss of reputation (green for gain, red for loss)",
+        desc = "Actual gain/loss of reputation (green for gain, red for loss)",
         value = function(info) return (info.negative and Addon.CONST.MESSAGE_COLORS.NEGATIVE or Addon.CONST.MESSAGE_COLORS.POSITIVE) .. (info.negative and "-" or "+") .. info.change .. "|r" end
     },
     ["session"] = {
-        tag = "Gain of reputation in current session",
+        desc = "Gain of reputation in current session",
         value = function(info) return ((info.session > 0) and "+" or "") .. info.session end
     },
     ["c_session"] = {
-        tag = "Gain of reputation in current session (green for gain, red for loss)",
+        desc = "Gain of reputation in current session (green for gain, red for loss)",
         value = function(info) return ((info.session > 0) and Addon.CONST.MESSAGE_COLORS.POSITIVE or Addon.CONST.MESSAGE_COLORS.NEGATIVE) .. ((info.session > 0) and "+" or "") .. info.session .. "|r" end
     },
     ["current"] = {
-        tag = "Current reputation value",
+        desc = "Current reputation value",
         value = function(info) return info.current end
     },
     ["next"] = {
-        tag = "Reputation boundary for next level",
+        desc = "Reputation boundary for next level",
         value = function(info) return info.maximum end
     },
     ["bottom"] = {
-        tag = "Minimum reputation in current standing",
+        desc = "Minimum reputation in current standing",
         value = function(info) return info.bottom end
     },
     ["top"] = {
-        tag = "Maximum reputation in current standing",
+        desc = "Maximum reputation in current standing",
         value = function(info) return info.top end
     },
     ["toGo"] = {
-        tag = "Reputation to gain/loss for next/previous standing",
+        desc = "Reputation to gain/loss for next/previous standing",
         value = function(info) return (info.negative and ("-" .. info.current) or (info.maximum - info.current)) end
     },
     ["changePercent"] = {
-        tag = "Percentual change of reputation",
+        desc = "Percentual change of reputation",
         value = function(info) return format("%.2f%%%%", (info.maximum == 0 and 0) or (info.change / info.maximum * 100)) end
     },
     ["sessionPercent"] = {
-        tag = "Percentual change of reputation during active session",
+        desc = "Percentual change of reputation during active session",
         value = function(info) return format("%.1f%%%%", (info.maximum == 0 and 0) or (info.session / info.maximum * 100)) end
     },
     ["currentPercent"] = {
-        tag = "Percent of next standing",
+        desc = "Percent of next standing",
         value = function(info) return format("%.1f%%%%", (info.maximum == 0 and 0) or (info.current / info.maximum * 100)) end
     },
     ["paragonLevel"] = {
-        tag = "Paragon level (with reward icon if available)",
+        desc = "Paragon level (with reward icon if available)",
         value = function(info) return info.paragon end
     },
     ["c_paragonLevel"] = {
-        tag = "Colored paragon level (with reward icon if available)",
+        desc = "Colored paragon level (with reward icon if available)",
         value = function(info)
             local reputationColors = Addon.db.profile.Colors
             local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)            
@@ -93,11 +122,11 @@ Addon.TAGS.Definition = {
         end
     },
     ["renownLevel"] = {
-        tag = "Renown level",
+        desc = "Renown level",
         value = function(info) return info.renown end
     },
     ["c_renownLevel"] = {
-        tag = "Colored renown level",
+        desc = "Colored renown level",
         value = function(info)
             local reputationColors = Addon.db.profile.Colors
             local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
@@ -105,7 +134,7 @@ Addon.TAGS.Definition = {
         end
     },
     ["bar"] = {
-        tag = "Shows barlike progress representation of current standing",
+        desc = "Shows barlike progress representation of current standing",
         value = function(info)
             if info.maximum == 0 then return "" end
             local barChar = Addon.db.profile.Reputation.barChar

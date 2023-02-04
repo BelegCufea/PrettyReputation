@@ -5,8 +5,14 @@ Addon.Config = Config
 
 local function tags()
     local result = ""
-    for k,v in pairs(Addon.TAGS.Definition) do
-       result = result .. Addon.CONST.CONFIG_COLORS.TAG .. "[" .. k .. "]|r - " .. v.tag .. "\n"
+    local tkeys = {}
+    -- populate the table that holds the keys
+    for k in pairs(Addon.TAGS.Definition) do table.insert(tkeys, k) end
+    -- sort the keys
+    table.sort(tkeys)
+    -- use the keys to retrieve the values in the sorted order
+    for _, k in ipairs(tkeys) do
+        result = result .. Addon.CONST.CONFIG_COLORS.TAG .. "[" .. k .. "]|r - " .. Addon.TAGS.Definition[k].desc .. "\n"
     end
     return result
 end

@@ -65,6 +65,8 @@ local function GetRepInfo(factionId)
 
     if (factionId and factionId ~= 0) then
         name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(factionId)
+        info["factionId"] = factionId
+        info["standingId"] = standingId
         info["name"] = name
         info["bottom"] = bottomValue
         info["top"] = topValue
