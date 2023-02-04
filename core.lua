@@ -82,10 +82,10 @@ local function GetRepInfo(factionId)
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
-                if not isCapped then 
-                    return info      
+                if not isCapped then
+                    return info
                 end
-    
+
                 local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount then
@@ -96,7 +96,7 @@ local function GetRepInfo(factionId)
                     info["paragon"] = info["paragon"] .. reward
                     if not showParagonCount then
                         info["standingText"] = info["standingText"] .. " " .. reward
-                    end                    
+                    end
                 end
                 info["current"] = mod(currentValue, threshold)
                 info["maximum"] = threshold
@@ -106,7 +106,7 @@ local function GetRepInfo(factionId)
                 info["maximum"] = 0
                 info["standingText"] = RENOWN_LEVEL_LABEL
                 return info
-            end 
+            end
 		end
 
 		if (standingId == nil) then
@@ -216,7 +216,7 @@ function private.ReputationChanged(eventName, msg)
         local factionId = factions[faction].Id
         local session = factions[faction] and (factions[faction].Session + (value * ((neg and -1 or 1)))) or 0
         factions[faction].Session = session
-        if Addon.db.profile.Enabled then 
+        if Addon.db.profile.Enabled then
             local info = GetRepInfo(factionId)
             info["negative"] = neg
             info["change"] = value
@@ -235,7 +235,38 @@ function private.ReputationChanged(eventName, msg)
     end
 end
 
+function private.chatCmdShowConfig(input)
+    local cmd = Addon:GetArgs(input)
+    if not cmd or cmd == "" or cmd == "help" or cmd == "?" then
+        local argStr  = "   |cff00ff00/pr %s|r - %s"
+        local arg2Str = "   |cff00ff00/pr %s|r or |cff00ff00%s|r - %s"
+        Addon:Print("Available Chat Command Arguments")
+        print(format(argStr, "config", "Opens configuration window."))
+        print(format(argStr, "toggle", "Toggles showing reputation message in chat."))
+        print(format(argStr, "enable", "Enables showing reputation message in chat."))
+        print(format(argStr, "disable", "Disables showing reputation message in chat."))
+        print(format(arg2Str, "help", "?", "Print this again."))
+        print(format(argStr, "version", "ver", "Print Addon Version"))
+    elseif cmd == "config" then
+        -- happens twice because there is a bug in the blizz implementation and the first call doesn't work. subsequent calls do.
+        InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
+        InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
+    elseif cmd == "version" or cmd == "ver" then
+        Addon:Print(("You are running version |cff1784d1%s|r."):format(Addon.CONST.METADATA.VERSION))
+    elseif cmd == "toggle" then
+        Addon.db.profile.Enabled = not Addon.db.profile.Enabled
+        Addon:UpdateDataBrokerText()
+    elseif cmd == "enable" then
+        Addon.db.profile.Enabled = true
+        Addon:UpdateDataBrokerText()
+    elseif cmd == "disable" then
+        Addon.db.profile.Enabled = false
+        Addon:UpdateDataBrokerText()
+    end
+end
+
 function Addon:OnInitialize()
+    Addon:RegisterChatCommand("pr", private.chatCmdShowConfig)
     SetupFactions()
 end
 

@@ -39,7 +39,7 @@ local function standingColorsSet(value)
         for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
         return res
     end
-      
+
     local REP_COLORS = copy(Addon.CONST.REP_COLORS)
     if value == "blizzard" then Addon.db.profile.Colors = REP_COLORS.blizzardColors end
     if value == "ascii" then Addon.db.profile.Colors = REP_COLORS.asciiColors end
@@ -62,21 +62,22 @@ local options = {
             get = function(info) return Addon.db.profile.Enabled end,
             set = function(info, value)
                 Addon.db.profile.Enabled = value
-            end 
+                Addon:UpdateDataBrokerText()
+            end
         },
         MiniMap = {
             type = "toggle",
             order = 2,
             name = "Show minmap icon",
             get = function(info) return not Addon.db.profile.minimapIcon.hide end,
-            set = function(info, value)                
+            set = function(info, value)
                 Addon.db.profile.minimapIcon.hide = not value
                 if Addon.db.profile.minimapIcon.hide == true then
                     Addon.icon:Hide(Addon.CONST.METADATA.NAME)
                   else
                     Addon.icon:Show(Addon.CONST.METADATA.NAME)
                   end
-            end 
+            end
         },
         Debug = {
             type = "toggle",
@@ -86,8 +87,8 @@ local options = {
             get = function(info) return Addon.db.profile.Debug end,
             set = function(info, value)
                 Addon.db.profile.Debug = value
-            end 
-        },        
+            end
+        },
         Message = {
             type = "group",
             order = 10,
@@ -101,7 +102,7 @@ local options = {
                     args = {
                         MessageBody = {
                             type = "input",
-                            order = 1, 
+                            order = 1,
                             name = "pattern",
                             desc = "Construct your reputation message",
                             width = "full",
@@ -117,7 +118,7 @@ local options = {
                             desc = Addon.CONST.PATTERN,
                             func = function() Addon.db.profile.Reputation.pattern = Addon.CONST.PATTERN end
                         },
-                    }          
+                    }
                 },
                 Bar = {
                     type = "group",
@@ -151,8 +152,8 @@ local options = {
                             set = function(info, value)
                                 Addon.db.profile.Reputation.barLength = value
                             end
-                        },      
-                    }                      
+                        },
+                    }
                 },
                 MessageParagonCount = {
                     type = "toggle",
@@ -162,8 +163,8 @@ local options = {
                     get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
                     set = function(info, value)
                         Addon.db.profile.Reputation.showParagonCount = value
-                    end            
-                }, 
+                    end
+                },
                 TagsHeader = {
                     type = "header",
                     order = 30,
@@ -173,8 +174,8 @@ local options = {
                     type = "description",
                     order = 31,
                     name = function() return tags() end
-                },        
-            },   
+                },
+            },
         },
         Colors = {
             type = "group",
@@ -342,12 +343,65 @@ local options = {
                     end,
                 },
             }
-        },    
+        },
+        About = {
+            type = "group",
+            order = 30,
+            name = "About",
+              args = {
+                generalText1 = {
+                  type = "description",
+                  order = 10,
+                  fontSize = "medium",
+                  name = "Pretty reputation is addon that displays reputation gains or losses in chat.\nMessage is completely configurable by user by using predefined and user added TAGS.\n",
+                  width = "full"
+                },
+                blank1 = { type = "description", order = 20, fontSize = "small",name = "",width = "full", },
+                cmdHeader = {
+                    order = 30,
+                    type = "header",
+                    name = "Chat commands"
+                },
+                generalText2 = {
+                  type = "description",
+                  order = 40,
+                  fontSize = "medium",
+                  name = "You can use /pr in chat to get list of commands."
+                },
+                blank2 = { type = "description", order = 50, fontSize = "small",name = "",width = "full", },
+                helpHeader = {
+                    order = 60,
+                    type = "header",
+                    name = "Feedback"
+                },
+                generalText3 = {
+                  type = "description",
+                  order = 70,
+                  fontSize = "medium",
+                  name = "Need help?  Have a feature request?  Open an issue on the code repository for Pretty Reputation."
+                },
+                blank3 = { type = "description", order = 80, fontSize = "medium", name = "", width = "full", },
+                generalText4 = {
+                    type = "description",
+                    order = 90,
+                    fontSize = "medium",
+                    name = "Issue Tracker:",
+                    width = "half",
+                },
+                generalText5 = {
+                    type = "description",
+                    order = 100,
+                    fontSize = "medium",
+                    name = "github.com/BelegCufea/PrettyReputation",
+                    width = "double",
+                },
+              }
+          }
 	},
 }
 
 function Config:OnEnable()
-    options.args.profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(Addon.db)
+    options.args.Profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(Addon.db)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)
 end

@@ -44,7 +44,7 @@ Addon.TAGS.Definition = {
         value = function(info)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 return info.standingText .. " (" .. info.paragon .. ")"
-            else 
+            else
                 return info.standingText
             end
         end
@@ -54,9 +54,9 @@ Addon.TAGS.Definition = {
         value = function(info)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 local reputationColors = Addon.db.profile.Colors
-                local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)  
+                local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
                 return info.standingColor .. info.standingText .. "|r" .. paragonColor .. " (" .. info.paragon .. ")|r"
-            else                
+            else
                 return info.standingColor .. info.standingText .. "|r"
             end
         end
@@ -117,7 +117,7 @@ Addon.TAGS.Definition = {
         desc = "Colored paragon level (with reward icon if available)",
         value = function(info)
             local reputationColors = Addon.db.profile.Colors
-            local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)            
+            local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
             return paragonColor .. info.paragon .. "|r"
         end
     },
@@ -142,7 +142,7 @@ Addon.TAGS.Definition = {
             local bar = string.rep(barChar, barLen)
             local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barLen))
             local percentBarText =  Addon.CONST.MESSAGE_COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. Addon.CONST.MESSAGE_COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
-            return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"  
+            return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"
         end
     },
 }

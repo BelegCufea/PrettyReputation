@@ -39,6 +39,10 @@ local settings = {
     end,
 };
 
+function Addon:UpdateDataBrokerText()
+	private.SetLabelText()
+end
+
 function private.SetLabelText()
     if Addon.db.profile.Enabled then
         ldbLabelText = Addon.CONST.MESSAGE_COLORS.POSITIVE .. "Enabled" .. "|r"
