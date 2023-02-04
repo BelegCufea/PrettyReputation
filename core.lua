@@ -170,14 +170,22 @@ local function ConstructMessage(info)
     -- Debug
     if info.debug then
         message = ""
-        for k,v in pairs(Addon.TAGS.Definition) do
-            message = message .. Addon.CONST.CONFIG_COLORS.TAG .. k .. "|r: [" .. v.value(info) .. "], "
+        local tkeys = {}
+        -- populate the table that holds the keys
+        for k in pairs(Addon.TAGS.Definition) do table.insert(tkeys, k) end
+        -- sort the keys
+        table.sort(tkeys)
+        -- use the keys to retrieve the values in the sorted order
+        for _, k in ipairs(tkeys) do
+            message = message .. Addon.CONST.CONFIG_COLORS.TAG .. k .. "|r: [" .. Addon.TAGS.Definition[k].value(info) .. "], "
         end
         return message
     end
 
     for k,v in pairs(Addon.TAGS.Definition) do
-        message = string.gsub(message, "%[" .. k .. "%]", v.value(info))
+        if string.find(message, "%[" .. k .. "%]") then
+            message = string.gsub(message, "%[" .. k .. "%]", v.value(info))
+        end
     end
 
     return message
