@@ -56,9 +56,9 @@ function private.AddSessionGains(tooltip)
     local lines = {}
     local count = 0
     for k,v in pairs(factions) do
-        if v["Session"] and v["Session"] ~= 0 then
+        if v["session"] and v["session"] ~= 0 then
             count = count + 1
-            local session = ((v["Session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v["Session"]) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v["Session"]) .. "|r")
+            local session = ((v["session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v["session"]) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v["session"]) .. "|r")
             lines[k] = session
         end
     end

@@ -1,5 +1,5 @@
 local ADDON_NAME = ...;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0");
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0");
 
 local GetFactionInfoByID = GetFactionInfoByID
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
@@ -29,19 +29,28 @@ local AddonDB_Defaults = {
 }
 
 local function SetupFactions()
---    for i=1, GetNumFactions() do
+    ExpandAllFactionHeaders()
     for i=1, 500 do
-        local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
+        local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
         if name == nextName and nextName ~= "Guild" then break end -- bugfix
         if (name) then
             if (factionId) and not factions[name] then
-                factions[name] = { Id = factionId, Session = 0}
-            elseif (factionId) and not factions[name].Id then
-                factions[name].Id = factionId
+                factions[name] = { id = factionId, session = 0}
+            elseif (factionId) and not factions[name].id then
+                factions[name].id = factionId
             end
         else
             break
+        end
+    end
+    -- Add watched faction if not already there
+    local name, _, _, _, _, factionId = GetWatchedFactionInfo()
+    if factionId and name then
+        if (factionId) and not factions[name] then
+            factions[name] = { Id = factionId, session = 0}
+        elseif (factionId) and not factions[name].id then
+            factions[name].id = factionId
         end
     end
 end
@@ -57,15 +66,13 @@ local function GetFactionLabel(standingId)
 	return GetText("FACTION_STANDING_LABEL" .. standingId, SEX)
 end
 
-local function GetRepInfo(factionId)
+local function GetRepInfo(info)
     local reputationColors = Addon.db.profile.Colors
     local showParagonCount = Addon.db.profile.Reputation.showParagonCount
     local name, standingId, bottomValue, topValue, barValue
-    local info = {} -- name, current, maximum, color, standingText, bottom, top, paragon, renown
 
-    if (factionId and factionId ~= 0) then
-        name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(factionId)
-        info["factionId"] = factionId
+    if (info.factionId and info.factionId ~= 0) then
+        name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(info.factionId)
         info["standingId"] = standingId
         info["name"] = name
         info["bottom"] = bottomValue
@@ -73,10 +80,10 @@ local function GetRepInfo(factionId)
         info["paragon"] = ""
         info["renown"] = ""
 
-        if (IsMajorFaction(factionId)) then
+        if (IsMajorFaction(info.factionId)) then
             info["color"] = reputationColors[10]
-			local data = GetMajorFactionData(factionId)
-			local isCapped = HasMaximumRenown(factionId)
+			local data = GetMajorFactionData(info.factionId)
+			local isCapped = HasMaximumRenown(info.factionId)
             if data then
                 info["current"] = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 info["maximum"] = data.renownLevelThreshold
@@ -86,7 +93,7 @@ local function GetRepInfo(factionId)
                     return info
                 end
 
-                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
+                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount then
                     info["paragon"] =  info["paragon"] .. paragonLevel+1
@@ -113,15 +120,15 @@ local function GetRepInfo(factionId)
             info["current"] = 0
             info["maximum"] = 0
             info["color"] = {r = 1, b = 0, g = 0}
-            info["standingText"] = "??? - " .. (factionId .. "?")
+            info["standingText"] = "??? - " .. (info.factionId .. "?")
             info["bottom"] = 0
             info["top"] = 0
 			return info
 		end
 
-		if (IsFactionParagon(factionId)) then
+		if (IsFactionParagon(info.factionId)) then
 			info["color"] = reputationColors[9]
-			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionId);
+			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = GetFactionLabel("paragon")
 			if showParagonCount then
@@ -139,7 +146,7 @@ local function GetRepInfo(factionId)
 			return info
 		end
 
-		local friendInfo = GetFriendshipReputation(factionId)
+		local friendInfo = GetFriendshipReputation(info.factionId)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
@@ -160,8 +167,25 @@ local function GetRepInfo(factionId)
 	end
 end
 
+local function GetFactionInfo(info)
+    if factions[info.faction] then
+        local factionId = factions[info.faction].id
+        info["factionId"] = factionId
+        local session = factions[info.faction] and (factions[info.faction].session + (info.change * ((info.negative and -1 or 1)))) or 0
+        factions[info.faction].session = session
+        info["session"] = session
+        if Addon.db.profile.Enabled then
+            local info = GetRepInfo(info)
+            if info.color then
+                info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
+            end
+        end
+    end
+    return info
+end
+
 local function ConstructMessage(info)
-    if not info.name then
+    if info == nil or info.name == nil then
         return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. ", session: " .. info.session .. "]"
     end
 
@@ -191,6 +215,19 @@ local function ConstructMessage(info)
     return message
 end
 
+local function PrintReputation(info)
+    if info.name then
+        print(ConstructMessage(info))
+    else
+        Addon:Print(ConstructMessage(info))
+    end
+
+    if Addon.db.profile.Debug then
+        info["debug"] = true
+        Addon:Print(ConstructMessage(info))
+    end
+end
+
 local fsInc = FACTION_STANDING_INCREASED:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)")
 local fsInc2 = FACTION_STANDING_INCREASED_ACH_BONUS:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)"):gsub(" %(%+.*%)" ,"")
 local fsInc3 = FACTION_STANDING_INCREASED_GENERIC:gsub("%%s", "(.*)"):gsub(" %(%+.*%)" ,"")
@@ -211,35 +248,25 @@ function private.ReputationChanged(eventName, msg)
     end
     if tonumber(faction) then faction, value = value, tonumber(faction) else value = tonumber(value) end
 
-    if factions[faction] == nil then
-        factions[faction] = {Id = nil, Session = 0}
-        SetupFactions()
-        -- Debug
-        if Addon.db.profile.Debug then
-            Addon:Print("New Faction " .. faction .. ((factions[faction].Id and " found") or " not found"))
-        end
-    end
+    local info = {}
 
-    if factions[faction] then
-        local factionId = factions[faction].Id
-        local session = factions[faction] and (factions[faction].Session + (value * ((neg and -1 or 1)))) or 0
-        factions[faction].Session = session
-        if Addon.db.profile.Enabled then
-            local info = GetRepInfo(factionId)
-            info["negative"] = neg
-            info["change"] = value
-            info["session"] = session
-            info["faction"] = faction
-            if info.color then
-                info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
-            end
-            print(ConstructMessage(info))
+    info["faction"] = faction
+    info["negative"] = neg
+    info["change"] = value
+
+    if factions[info.faction] == nil then
+        Addon:ScheduleTimer(function()
+            SetupFactions()
+            GetFactionInfo(info)
+            PrintReputation(info)
             -- Debug
             if Addon.db.profile.Debug then
-                info["debug"] = true
-                Addon:Print(ConstructMessage(info))
+                Addon:Print("New Faction " .. info.faction .. ((factions[info.faction].id and " found") or " not found"))
             end
-        end
+        end, 1)
+    else
+        GetFactionInfo(info)
+        PrintReputation(info)
     end
 end
 
@@ -275,11 +302,11 @@ end
 
 function Addon:OnInitialize()
     Addon:RegisterChatCommand("pr", private.chatCmdShowConfig)
-    SetupFactions()
 end
 
 function Addon:OnEnable()
-	Addon:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
+    SetupFactions()
+    Addon:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
-    Addon:InitializeDataBroker();
+    Addon:InitializeDataBroker()
 end
