@@ -59,6 +59,7 @@ local options = {
             order = 1,
             name = "Enabled",
             desc = "Print prettified reputation message into chat",
+            width = "half",
             get = function(info) return Addon.db.profile.Enabled end,
             set = function(info, value)
                 Addon.db.profile.Enabled = value
@@ -79,11 +80,23 @@ local options = {
                   end
             end
         },
-        Debug = {
+        Track = {
             type = "toggle",
             order = 3,
+            name = "Auto track",
+            desc = "Set faction with latest reputation change as watched (except for guild)",
+            width = "half",
+            get = function(info) return Addon.db.profile.Track end,
+            set = function(info, value)
+                Addon.db.profile.Track = value
+            end
+        },
+        Debug = {
+            type = "toggle",
+            order = 4,
             name = "Debug",
             desc = "Print debug messages in chat",
+            width = "half",
             get = function(info) return Addon.db.profile.Debug end,
             set = function(info, value)
                 Addon.db.profile.Debug = value

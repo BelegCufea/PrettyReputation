@@ -24,6 +24,7 @@ local AddonDB_Defaults = {
         Colors = Addon.CONST.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
         minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
+        Track = false,
         Debug = false,
     }
 }
@@ -53,6 +54,7 @@ local function RestoreRepHeaders(collapsed)
 		end
 	end
 end
+
 local function SetupFactions()
     local collapsedHeaders = SaveRepHeaders() -- please make all factions visible
     for i=1, 500 do -- to be sure thogh it may be safe to use GetNumFactions()
@@ -79,6 +81,18 @@ local function SetupFactions()
         end
     end
     RestoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+end
+
+local function TrackFaction(faction)
+    if faction ==  GUILD or faction == GetWatchedFactionInfo() then return end
+    local collapsedHeaders = SaveRepHeaders()
+    for i = 1, GetNumFactions() do
+        if faction == GetFactionInfo(i) then
+            SetWatchedFactionIndex(i)
+            break
+        end
+    end
+    RestoreRepHeaders(collapsedHeaders)
 end
 
 local SEX = UnitSex("player")
@@ -251,6 +265,10 @@ local function PrintReputation(info)
     if Addon.db.profile.Debug then
         info["debug"] = true
         Addon:Print(ConstructMessage(info))
+    end
+
+    if Addon.db.profile.Track and info and info.faction then
+        TrackFaction(info.faction)
     end
 end
 
