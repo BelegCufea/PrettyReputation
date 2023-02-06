@@ -28,10 +28,35 @@ local AddonDB_Defaults = {
     }
 }
 
+local function SaveRepHeaders()
+    local collapsed = {}
+	for i = GetNumFactions(), 1, -1 do
+		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
+		if (factionId == nil) then factionId = name	end
+
+		if isHeader and isCollapsed then
+            ExpandFactionHeader(i)
+            collapsed[factionId] = true
+		end
+	end
+    ExpandAllFactionHeaders() -- to be sure
+    return collapsed
+end
+
+local function RestoreRepHeaders(collapsed)
+	for i = GetNumFactions(), 1, -1 do
+		local name, _, _, _, _, _, _, _, isHeader, _, _, _, _, factionId = GetFactionInfo(i)
+		if (factionId == nil) then factionId = name	end
+
+		if isHeader and collapsed[factionId] then
+            CollapseFactionHeader(i)
+		end
+	end
+end
 local function SetupFactions()
-    ExpandAllFactionHeaders()
-    for i=1, 500 do
-        local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
+    local collapsedHeaders = SaveRepHeaders() -- please make all factions visible
+    for i=1, 500 do -- to be sure thogh it may be safe to use GetNumFactions()
+        local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
         if name == nextName and nextName ~= "Guild" then break end -- bugfix
         if (name) then
@@ -44,7 +69,7 @@ local function SetupFactions()
             break
         end
     end
-    -- Add watched faction if not already there
+    -- Add watched faction if not already there (just in case)
     local name, _, _, _, _, factionId = GetWatchedFactionInfo()
     if factionId and name then
         if (factionId) and not factions[name] then
@@ -53,6 +78,7 @@ local function SetupFactions()
             factions[name].id = factionId
         end
     end
+    RestoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
 end
 
 local SEX = UnitSex("player")
