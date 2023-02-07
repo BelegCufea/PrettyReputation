@@ -8,6 +8,7 @@ Show more information about reputation gain in your chat
 
 * Prints configurable message about reputation change in your chat. There are many options how to set up your message.
 * Track session reputation gains or losses on minimap icon/databroker.
+* Set faction with latest reputation change as watched.
 * Add your own tags or modify available ones. ([Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
 
 ## Configuration

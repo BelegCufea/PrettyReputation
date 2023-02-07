@@ -31,16 +31,22 @@ local AddonDB_Defaults = {
 
 local function SaveRepHeaders()
     local collapsed = {}
-	for i = GetNumFactions(), 1, -1 do
+	for i = 1, 500 do -- so we will hit every collapsed header
 		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
-		if (factionId == nil) then factionId = name	end
+        local nextName = GetFactionInfo(i + 1)
+        if name == nextName and nextName ~= "Guild" then break end -- bugfix
+        if (name) then
+            if (factionId == nil) then factionId = name	end
 
-		if isHeader and isCollapsed then
-            ExpandFactionHeader(i)
-            collapsed[factionId] = true
-		end
+            if isHeader and isCollapsed then
+                ExpandFactionHeader(i)
+                collapsed[factionId] = true
+            end
+        else
+            break
+        end
 	end
-    ExpandAllFactionHeaders() -- to be sure
+    ExpandAllFactionHeaders() -- to be sure every header is expanded
     return collapsed
 end
 
@@ -56,8 +62,8 @@ local function RestoreRepHeaders(collapsed)
 end
 
 local function SetupFactions()
-    local collapsedHeaders = SaveRepHeaders() -- please make all factions visible
-    for i=1, 500 do -- to be sure thogh it may be safe to use GetNumFactions()
+    local collapsedHeaders = SaveRepHeaders() -- pretty please make all factions visible
+    for i=1, 500 do -- to be sure thogh it should be safe to use GetNumFactions()
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
         if name == nextName and nextName ~= "Guild" then break end -- bugfix
