@@ -30,8 +30,15 @@ local AddonDB_Defaults = {
 }
 
 local function SaveRepHeaders()
+    local parse = true -- make it an option?
     local collapsed = {}
-	for i = 1, 500 do -- so we will hit every collapsed header
+    if not parse then
+        ExpandAllFactionHeaders()
+        return collapsed
+    end
+
+    local i = 1
+    while true do
 		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
         if name == nextName and nextName ~= "Guild" then break end -- bugfix
@@ -45,12 +52,16 @@ local function SaveRepHeaders()
         else
             break
         end
-	end
+        i = i + 1
+    end
     ExpandAllFactionHeaders() -- to be sure every header is expanded
     return collapsed
 end
 
 local function RestoreRepHeaders(collapsed)
+    if next(collapsed) == nil then
+        return
+    end
 	for i = GetNumFactions(), 1, -1 do
 		local name, _, _, _, _, _, _, _, isHeader, _, _, _, _, factionId = GetFactionInfo(i)
 		if (factionId == nil) then factionId = name	end
@@ -63,7 +74,7 @@ end
 
 local function SetupFactions()
     local collapsedHeaders = SaveRepHeaders() -- pretty please make all factions visible
-    for i=1, 500 do -- to be sure thogh it should be safe to use GetNumFactions()
+    for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
         if name == nextName and nextName ~= "Guild" then break end -- bugfix
@@ -278,46 +289,39 @@ local function PrintReputation(info)
     end
 end
 
-local fsInc = FACTION_STANDING_INCREASED:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)")
-local fsInc2 = FACTION_STANDING_INCREASED_ACH_BONUS:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)"):gsub(" %(%+.*%)" ,"")
-local fsInc3 = FACTION_STANDING_INCREASED_GENERIC:gsub("%%s", "(.*)"):gsub(" %(%+.*%)" ,"")
-local fsDec = FACTION_STANDING_DECREASED:gsub("%%d", "([0-9]+)"):gsub("%%s", "(.*)")
-function private.ReputationChanged(eventName, msg)
-    msg = msg:gsub(" %(%+.*%)" ,"")
-    local faction, value, neg, updated = msg:match(fsInc)
-    if not faction then
-        faction, value, neg, updated = msg:match(fsInc2)
-        if not faction then
-            faction = msg:match(fsInc3)
-            if not faction then
-                faction, value = msg:match(fsDec)
-                if not faction then return end
-                neg = true
-            end
+function private.CombatTextUpdated(_, messagetype)
+	if messagetype == 'FACTION' then
+        local info = {}
+		local faction, change = GetCurrentCombatTextEventInfo()
+        if Addon.db.profile.Debug then
+            Addon:Print("Event", faction, change)
         end
-    end
-    if tonumber(faction) then faction, value = value, tonumber(faction) else value = tonumber(value) end
+        info["faction"] = faction
 
-    local info = {}
+        if type(change) == "number" then
+            info["change"] = abs(change)
+            if tonumber(change) < 0 then
+                info["negative"] = true
+            end
+        else
+            info["change"] = 0
+        end
 
-    info["faction"] = faction
-    info["negative"] = neg
-    info["change"] = value
-
-    if factions[info.faction] == nil then
-        Addon:ScheduleTimer(function()
-            SetupFactions()
+        if factions[info.faction] == nil then
+            Addon:ScheduleTimer(function()
+                SetupFactions()
+                GetFactionInfo(info)
+                PrintReputation(info)
+                -- Debug
+                if Addon.db.profile.Debug then
+                    Addon:Print("New Faction " .. info.faction .. ((factions[info.faction].id and " found") or " not found"))
+                end
+            end, 1)
+        else
             GetFactionInfo(info)
             PrintReputation(info)
-            -- Debug
-            if Addon.db.profile.Debug then
-                Addon:Print("New Faction " .. info.faction .. ((factions[info.faction].id and " found") or " not found"))
-            end
-        end, 1)
-    else
-        GetFactionInfo(info)
-        PrintReputation(info)
-    end
+        end
+	end
 end
 
 function private.chatCmdShowConfig(input)
@@ -356,7 +360,11 @@ end
 
 function Addon:OnEnable()
     SetupFactions()
-    Addon:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", private.ReputationChanged)
+    Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
     Addon:InitializeDataBroker()
+end
+
+function Addon:OnDisable()
+    Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
 end
