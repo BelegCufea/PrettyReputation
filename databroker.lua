@@ -53,20 +53,35 @@ function private.SetLabelText()
 end
 
 function private.AddSessionGains(tooltip)
+    local sortTooltipBy = Addon.db.profile.TooltipSort
     local lines = {}
     local count = 0
     for k,v in pairs(factions) do
         if v["session"] and v["session"] ~= 0 then
             count = count + 1
             local session = ((v["session"] > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v["session"]) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v["session"]) .. "|r")
-            lines[k] = session
+            lines[k] = {session, v["session"]}
         end
     end
     if count > 0 then
         tooltip:AddLine("Session gains/losses:",1,1,1)
-        for k,v in pairs(lines) do
-            tooltip:AddDoubleLine(k, v)
+
+        local keys = {}
+        for key in pairs(lines) do
+            table.insert(keys, key)
         end
+        if sortTooltipBy == "value" then
+            table.sort(keys, function(a, b)
+                return lines[a][2] > lines[b][2]
+            end)
+        end
+        if sortTooltipBy == "faction" then
+            table.sort(keys)
+        end
+        for _, key in ipairs(keys) do
+            tooltip:AddDoubleLine(key, lines[key][1])
+        end
+
         tooltip:AddLine(" ")
     end
 end

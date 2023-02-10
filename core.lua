@@ -25,6 +25,9 @@ local AddonDB_Defaults = {
         ColorsPreset = "wowpro",
         minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
         Track = false,
+        TrackPositive = false,
+        TrackGuild = false,
+        TooltipSort = "value",
         Debug = false,
     }
 }
@@ -100,11 +103,13 @@ local function SetupFactions()
     RestoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
 end
 
-local function TrackFaction(faction)
-    if faction ==  GUILD or faction == GetWatchedFactionInfo() then return end
+local function TrackFaction(info)
+    if info.faction == GetWatchedFactionInfo() then return end
+    if info.faction ==  GUILD and not Addon.db.profile.TrackGuild then return end
+    if info.negative and Addon.db.profile.TrackPositive then return end
     local collapsedHeaders = SaveRepHeaders()
     for i = 1, GetNumFactions() do
-        if faction == GetFactionInfo(i) then
+        if info.faction == GetFactionInfo(i) then
             SetWatchedFactionIndex(i)
             break
         end
@@ -285,7 +290,7 @@ local function PrintReputation(info)
     end
 
     if Addon.db.profile.Track and info and info.faction then
-        TrackFaction(info.faction)
+        TrackFaction(info)
     end
 end
 
@@ -299,7 +304,7 @@ function private.CombatTextUpdated(_, messagetype)
         info["faction"] = faction
 
         if type(change) == "number" then
-            info["change"] = abs(change)
+            info["change"] = math.abs(change)
             if tonumber(change) < 0 then
                 info["negative"] = true
             end

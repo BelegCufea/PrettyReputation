@@ -54,53 +54,103 @@ local options = {
 	type = "group",
     childGroups = "tab",
 	args = {
-        Enabled = {
-            type = "toggle",
-            order = 1,
-            name = "Enabled",
-            desc = "Print prettified reputation message into chat",
-            width = "half",
-            get = function(info) return Addon.db.profile.Enabled end,
-            set = function(info, value)
-                Addon.db.profile.Enabled = value
-                Addon:UpdateDataBrokerText()
-            end
-        },
-        MiniMap = {
-            type = "toggle",
-            order = 2,
-            name = "Show minmap icon",
-            get = function(info) return not Addon.db.profile.minimapIcon.hide end,
-            set = function(info, value)
-                Addon.db.profile.minimapIcon.hide = not value
-                if Addon.db.profile.minimapIcon.hide == true then
-                    Addon.icon:Hide(Addon.CONST.METADATA.NAME)
-                  else
-                    Addon.icon:Show(Addon.CONST.METADATA.NAME)
-                  end
-            end
-        },
-        Track = {
-            type = "toggle",
-            order = 3,
-            name = "Auto track",
-            desc = "Set faction with latest reputation change as watched (except for guild)",
-            width = "half",
-            get = function(info) return Addon.db.profile.Track end,
-            set = function(info, value)
-                Addon.db.profile.Track = value
-            end
-        },
-        Debug = {
-            type = "toggle",
-            order = 4,
-            name = "Debug",
-            desc = "Print debug messages in chat",
-            width = "half",
-            get = function(info) return Addon.db.profile.Debug end,
-            set = function(info, value)
-                Addon.db.profile.Debug = value
-            end
+        General = {
+            type = "group",
+            order = 0,
+            name = "General",
+            args = {
+                Enabled = {
+                    type = "toggle",
+                    order = 1,
+                    name = "Enabled",
+                    desc = "Print prettified reputation message into chat",
+                    width = "full",
+                    get = function(info) return Addon.db.profile.Enabled end,
+                    set = function(info, value)
+                        Addon.db.profile.Enabled = value
+                        Addon:UpdateDataBrokerText()
+                    end
+                },
+                MiniMap = {
+                    type = "toggle",
+                    order = 2,
+                    name = "Show minmap icon",
+                    width = "full",
+                    get = function(info) return not Addon.db.profile.minimapIcon.hide end,
+                    set = function(info, value)
+                        Addon.db.profile.minimapIcon.hide = not value
+                        if Addon.db.profile.minimapIcon.hide == true then
+                            Addon.icon:Hide(Addon.CONST.METADATA.NAME)
+                          else
+                            Addon.icon:Show(Addon.CONST.METADATA.NAME)
+                          end
+                    end
+                },
+                Track = {
+                    type = "group",
+                    order = 3,
+                    name = "Track",
+                    inline = true,
+                    args = {
+                        Enabled = {
+                            type = "toggle",
+                            order = 1,
+                            name = "Auto track",
+                            desc = "Set faction with latest reputation change as watched",
+                            get = function(info) return Addon.db.profile.Track end,
+                            set = function(info, value)
+                                Addon.db.profile.Track = value
+                            end
+                        },
+                        OnlyPositive = {
+                            type = "toggle",
+                            order = 2,
+                            name = "Only gain",
+                            desc = "Only switch on a gain (not on a loss)",
+                            get = function(info) return Addon.db.profile.TrackPositive end,
+                            set = function(info, value)
+                                Addon.db.profile.TrackPositive = value
+                            end
+                        },
+                        Guild = {
+                            type = "toggle",
+                            order = 3,
+                            name = "Guild",
+                            desc = "Also switch on guild reputation change",
+                            get = function(info) return Addon.db.profile.TrackGuild end,
+                            set = function(info, value)
+                                Addon.db.profile.TrackGuild = value
+                            end
+                        }
+                    }
+                },
+                Tooltip = {
+                    type = "select",
+                    order = 4,
+                    name = "Sort minimap/databroker tooltip by",
+                    values = {
+                        ["value"] = "Value",
+                        ["faction"] = "Faction name",
+                    },
+                    style = "dropdown",
+                    get = function(info) return Addon.db.profile.TooltipSort end,
+                    set = function(info, value)
+                        Addon.db.profile.TooltipSort = value
+                    end,
+                },
+                Seperator1 = { type = "description", order = 5, fontSize = "small",name = "",width = "full", },
+                Debug = {
+                    type = "toggle",
+                    order = 9,
+                    name = "Debug",
+                    desc = "Print debug messages in chat",
+                    width = "full",
+                    get = function(info) return Addon.db.profile.Debug end,
+                    set = function(info, value)
+                        Addon.db.profile.Debug = value
+                    end
+                },
+            }
         },
         Message = {
             type = "group",
