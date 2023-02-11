@@ -105,6 +105,7 @@ local function SetupFactions()
 end
 
 local function TrackFaction(info)
+    if not info then return end
     if info.faction == GetWatchedFactionInfo() then return end
     if info.faction ==  GUILD and not Addon.db.profile.TrackGuild then return end
     if info.negative and Addon.db.profile.TrackPositive then return end
@@ -279,19 +280,13 @@ local function ConstructMessage(info)
 end
 
 local function PrintReputation(info)
-    if info.name then
-        Addon:Pour(ConstructMessage(info), 1, 1, 1)
-        --print(ConstructMessage(info))
-    else
-        Addon:Pour(ConstructMessage(info))
-    end
-
+    Addon:Pour(ConstructMessage(info), 1, 1, 1)
     if Addon.db.profile.Debug then
         info["debug"] = true
         Addon:Print(ConstructMessage(info))
     end
 
-    if Addon.db.profile.Track and info and info.faction then
+    if Addon.db.profile.Track then
         TrackFaction(info)
     end
 end
