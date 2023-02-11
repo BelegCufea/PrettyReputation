@@ -6,7 +6,7 @@ Show more information about reputation gain in your chat
 
 ## Features
 
-* Prints configurable message about reputation change in your chat. There are many options how to set up your message.
+* Prints configurable message about reputation change in your prefered output. There are many options how to set up your message.
 * Track session reputation gains or losses on minimap icon/databroker.
 * Set faction with latest reputation change as watched.
 * Add your own tags or modify available ones. ([Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
@@ -18,7 +18,10 @@ Locate the 'Pretty Reputation' section within the Options -> Addon section or ri
 * In `pattern` field compose your desired message format. You can choose from several predefined tags.
 * Define your perfect bar representing your reputation progress. Choose optimal character and how many of these would form the bar.
 * Define colors for each reputation standing. Choose form several predefined color schemes.
+* Set your prefered output method (Chat, Floating text ...)
+
 ![Compose your message](https://i.imgur.com/YELQmpR.png)
+
 ![Choose your colors](https://i.imgur.com/bUX5xyK.png)
 
 ## Issues

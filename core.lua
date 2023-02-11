@@ -1,5 +1,5 @@
 local ADDON_NAME = ...;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0");
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "LibSink-2.0");
 
 local GetFactionInfoByID = GetFactionInfoByID
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
@@ -28,6 +28,7 @@ local AddonDB_Defaults = {
         TrackPositive = false,
         TrackGuild = false,
         TooltipSort = "value",
+        sink20OutputSink = "ChatFrame",
         Debug = false,
     }
 }
@@ -279,9 +280,10 @@ end
 
 local function PrintReputation(info)
     if info.name then
-        print(ConstructMessage(info))
+        Addon:Pour(ConstructMessage(info), 1, 1, 1)
+        --print(ConstructMessage(info))
     else
-        Addon:Print(ConstructMessage(info))
+        Addon:Pour(ConstructMessage(info))
     end
 
     if Addon.db.profile.Debug then

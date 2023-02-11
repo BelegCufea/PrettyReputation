@@ -110,7 +110,8 @@ local options = {
                             get = function(info) return Addon.db.profile.TrackPositive end,
                             set = function(info, value)
                                 Addon.db.profile.TrackPositive = value
-                            end
+                            end,
+                            disabled = function() return not (Addon.db.profile.Track) end
                         },
                         Guild = {
                             type = "toggle",
@@ -120,7 +121,8 @@ local options = {
                             get = function(info) return Addon.db.profile.TrackGuild end,
                             set = function(info, value)
                                 Addon.db.profile.TrackGuild = value
-                            end
+                            end,
+                            disabled = function() return not (Addon.db.profile.Track) end
                         }
                     }
                 },
@@ -129,7 +131,7 @@ local options = {
                     order = 4,
                     name = "Sort minimap/databroker tooltip by",
                     values = {
-                        ["value"] = "Value",
+                        ["value"] = "Session gain/loss",
                         ["faction"] = "Faction name",
                     },
                     style = "dropdown",
@@ -409,7 +411,7 @@ local options = {
         },
         About = {
             type = "group",
-            order = 30,
+            order = 90,
             name = "About",
               args = {
                 generalText1 = {
@@ -465,6 +467,11 @@ local options = {
 
 function Config:OnEnable()
     options.args.Profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(Addon.db)
+    options.args.Profile.order = 30
+    options.args.General.args.Output = Addon:GetSinkAce3OptionsDataTable()
+    options.args.General.args.Output.order = 5
+    options.args.General.args.Output.inline = true
+    Addon:SetSinkStorage(Addon.db.profile)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)
 end
