@@ -145,4 +145,17 @@ Addon.TAGS.Definition = {
             return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"
         end
     },
+    ["more"] = {
+        desc = "How many of this gain/loss to reach next/prevois standing",
+        value = function(info)
+            if info.change then
+                if info.negative then
+                    return math.ceil(info.current/info.change)
+                else
+                    return math.ceil((info.maximum - info.current)/info.change)
+                end
+            end
+            return ""
+        end
+    }
 }
