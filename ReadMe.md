@@ -1,24 +1,24 @@
 # Pretty Reputation
 
-Show more information about reputation gain in your chat
+Show more information about reputation gain in your chat.
 
 ![Example](https://i.imgur.com/b1VF8EX.png)
 
 ## Features
 
-* Prints configurable message about reputation change in your prefered output. There are many options how to set up your message.
-* Track session reputation gains or losses on minimap icon/databroker.
-* Set faction with latest reputation change as watched.
-* Add your own tags or modify available ones. ([Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
+- Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
+- Track session reputation gains or losses on the minimap icon/databroker.
+- Set the faction with the latest reputation change as watched.
+- Add your own tags or modify existing ones. (See [Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
 
 ## Configuration
 
-Locate the 'Pretty Reputation' section within the Options -> Addon section or right-click minimap icon. You can also use `/pr` in chat to get list of available commands.
+Locate the 'Pretty Reputation' section within the 'Options -> Addon' section, or right-click the minimap icon. You can also use `/pr` in chat to get a list of available commands.
 
-* In `pattern` field compose your desired message format. You can choose from several predefined tags.
-* Define your perfect bar representing your reputation progress. Choose optimal character and how many of these would form the bar.
-* Define colors for each reputation standing. Choose form several predefined color schemes.
-* Set your prefered output method (Chat, Floating text ...)
+- In the `pattern` field, compose your desired message format. You can choose from several predefined tags.
+- Define your ideal bar to represent your reputation progress. Choose an optimal character, and determine how many of these will form the bar.
+- Define colors for each reputation standing. Choose from several predefined color schemes.
+- Set your preferred output method (Chat, Floating text, etc.)
 
 ![Compose your message](https://i.imgur.com/YELQmpR.png)
 

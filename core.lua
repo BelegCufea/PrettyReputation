@@ -31,6 +31,7 @@ local AddonDB_Defaults = {
         TooltipSort = "value",
         sink20OutputSink = "ChatFrame",
         sinkChat = false,
+        sinkChatFrames = {"ChatFrame1"},
         Debug = false,
     }
 }
@@ -284,8 +285,10 @@ end
 local function PrintReputation(info)
     local message = ConstructMessage(info)
     Addon:Pour(message, 1, 1, 1)
-    if (Addon.db.profile.sink20OutputSink ~= "ChatFrame") and Addon.db.profile.sinkChat then
-        print(message)
+    if Addon.db.profile.sinkChat and (Addon.db.profile.sink20OutputSink ~= "ChatFrame") then
+        for _, v in pairs(Addon.db.profile.sinkChatFrames) do
+            _G[v]:AddMessage(message)
+        end
     end
     if Addon.db.profile.Debug then
         info["debug"] = true

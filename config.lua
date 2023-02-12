@@ -49,6 +49,63 @@ local function standingColorsSet(value)
     Addon.db.profile.ColorsPreset = value
 end
 
+local function contains_item(t, item)
+    if next(t) == nil then return false end
+    for _, value in pairs(t) do
+        if value == item then
+            return true
+        end
+    end
+    return false
+end
+
+local function remove_item(t, item)
+    local new_table = {}
+    for _, value in pairs(t) do
+        if value ~= item then
+            table.insert(new_table, value)
+        end
+    end
+    return new_table
+end
+
+local function ChatFrameGet(info)
+    return contains_item(Addon.db.profile.sinkChatFrames, info[#info])
+end
+
+local function ChatFrameSet(info, value)
+    if value then
+        table.insert(Addon.db.profile.sinkChatFrames, info[#info])
+    else
+        Addon.db.profile.sinkChatFrames = remove_item(Addon.db.profile.sinkChatFrames, info[#info])
+    end
+end
+
+local function getChatFrames()
+    local options = {
+        type = "group",
+        name = "Output to Chat Frames",
+        inline = true,
+        disabled = function() return (not (Addon.db.profile.sinkChat)) or (Addon.db.profile.sink20OutputSink == "ChatFrame") end,
+    }
+
+    local frames = {}
+    for i = 1, NUM_CHAT_WINDOWS do
+        local frame = {
+            type = "toggle",
+            order = i,
+            name = _G["ChatFrame" .. i].name,
+            get = ChatFrameGet,
+            set = ChatFrameSet,
+        }
+        frames["ChatFrame" .. i] = frame
+    end
+
+    options.args = frames
+
+    return options
+end
+
 local options = {
 	name = AddonTitle,
 	type = "group",
@@ -139,6 +196,18 @@ local options = {
                     set = function(info, value)
                         Addon.db.profile.TooltipSort = value
                     end,
+                },
+                SinkChat = {
+                    type = "toggle",
+                    order = 6,
+                    name = "Also display message in following chat frames",
+                    desc = ". If you want to display the message only in first chat frame, you can select 'Chat' option above. If you only need to display in chat but not in first chat frame, choose 'None' option above and below select in which frames you would like to see the message.",
+                    width = "full",
+                    disabled = function() return (Addon.db.profile.sink20OutputSink == "ChatFrame") end,
+                    get = function(info) return Addon.db.profile.sinkChat end,
+                    set = function(info, value)
+                        Addon.db.profile.sinkChat = value
+                    end
                 },
                 Seperator1 = { type = "description", order = 5, fontSize = "small",name = "",width = "full", },
                 Debug = {
@@ -471,17 +540,8 @@ function Config:OnEnable()
     options.args.General.args.Output = Addon:GetSinkAce3OptionsDataTable()
     options.args.General.args.Output.order = 5
     options.args.General.args.Output.inline = true
-    local sinkChat = {
-        type = "toggle",
-        order = -999,
-        name = "Always display in chat",
-        width = "full",
-        get = function(info) return Addon.db.profile.sinkChat end,
-        set = function(info, value)
-            Addon.db.profile.sinkChat = value
-        end
-    }
-    options.args.General.args.Output.args.SinkChat = sinkChat
+    options.args.General.args.ChatFrames = getChatFrames()
+    options.args.General.args.ChatFrames.order = 7
     Addon:SetSinkStorage(Addon.db.profile)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)
