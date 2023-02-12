@@ -19,7 +19,8 @@ local AddonDB_Defaults = {
             pattern = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
             barChar = "||",
             barLength = 20,
-            showParagonCount = true
+            showParagonCount = true,
+            shortCharCount = 1,
         },
         Colors = Addon.CONST.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
@@ -29,6 +30,7 @@ local AddonDB_Defaults = {
         TrackGuild = false,
         TooltipSort = "value",
         sink20OutputSink = "ChatFrame",
+        sinkChat = false,
         Debug = false,
     }
 }
@@ -280,7 +282,11 @@ local function ConstructMessage(info)
 end
 
 local function PrintReputation(info)
-    Addon:Pour(ConstructMessage(info), 1, 1, 1)
+    local message = ConstructMessage(info)
+    Addon:Pour(message, 1, 1, 1)
+    if (Addon.db.profile.sink20OutputSink ~= "ChatFrame") and Addon.db.profile.sinkChat then
+        print(message)
+    end
     if Addon.db.profile.Debug then
         info["debug"] = true
         Addon:Print(ConstructMessage(info))

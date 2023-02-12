@@ -105,6 +105,9 @@
         "CombatText_StandardScroll",
         "UIErrorsFrame",
         "RaidWarningFrame",
-        "CombatText_UpdateDisplayedMessages"
+        "CombatText_UpdateDisplayedMessages",
+        "INVSLOT_FIRST_EQUIPPED",
+        "INVSLOT_LAST_EQUIPPED",
+        "EquipmentManager_UnpackLocation"
     ]
 }

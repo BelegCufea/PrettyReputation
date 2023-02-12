@@ -471,6 +471,17 @@ function Config:OnEnable()
     options.args.General.args.Output = Addon:GetSinkAce3OptionsDataTable()
     options.args.General.args.Output.order = 5
     options.args.General.args.Output.inline = true
+    local sinkChat = {
+        type = "toggle",
+        order = -999,
+        name = "Always display in chat",
+        width = "full",
+        get = function(info) return Addon.db.profile.sinkChat end,
+        set = function(info, value)
+            Addon.db.profile.sinkChat = value
+        end
+    }
+    options.args.General.args.Output.args.SinkChat = sinkChat
     Addon:SetSinkStorage(Addon.db.profile)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)

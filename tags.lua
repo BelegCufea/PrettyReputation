@@ -49,6 +49,22 @@ Addon.TAGS.Definition = {
             end
         end
     },
+    ["standingShort"] = {
+        desc = "First letter of current reputation standing",
+        value = function(info)
+            local characters = Addon.db.profile.Reputation.shortCharCount
+            local standingTextShort = string.sub(info.standingText, 1, characters) .. info.renown
+            if (info.standingId == 10) and string.find(info.standingText, " ") then
+                local level = string.sub(info.standingText, string.find(info.standingText, " ") + 1)
+                standingTextShort = standingTextShort .. level
+            end
+            if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
+                return standingTextShort .. " (" .. info.paragon .. ")"
+            else
+                return standingTextShort
+            end
+        end
+    },
     ["c_standing"] = {
         desc = "Colored current reputation standing",
         value = function(info)
@@ -58,6 +74,20 @@ Addon.TAGS.Definition = {
                 return info.standingColor .. info.standingText .. "|r" .. paragonColor .. " (" .. info.paragon .. ")|r"
             else
                 return info.standingColor .. info.standingText .. "|r"
+            end
+        end
+    },
+    ["c_standingShort"] = {
+        desc = "Colored first letter of current reputation standing",
+        value = function(info)
+            local characters = Addon.db.profile.Reputation.shortCharCount
+            local standingTextShort = string.sub(info.standingText, 1, characters) .. info.renown
+            if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
+                local reputationColors = Addon.db.profile.Colors
+                local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
+                return info.standingColor .. standingTextShort .. "|r" .. paragonColor .. " (" .. info.paragon .. ")|r"
+            else
+                return info.standingColor .. standingTextShort .. "|r"
             end
         end
     },
@@ -142,6 +172,18 @@ Addon.TAGS.Definition = {
             local bar = string.rep(barChar, barLen)
             local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barLen))
             local percentBarText =  Addon.CONST.MESSAGE_COLORS.BAR_FULL .. string.sub(bar, 0, percentBar * 2) .. "|r" .. Addon.CONST.MESSAGE_COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
+            return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"
+        end
+    },
+    ["c_bar"] = {
+        desc = "Shows barlike progress representation of current standing in standing color",
+        value = function(info)
+            if info.maximum == 0 then return "" end
+            local barChar = Addon.db.profile.Reputation.barChar
+            local barLen = Addon.db.profile.Reputation.barLength
+            local bar = string.rep(barChar, barLen)
+            local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barLen))
+            local percentBarText =  info.standingColor .. string.sub(bar, 0, percentBar * 2) .. "|r" .. Addon.CONST.MESSAGE_COLORS.BAR_EMPTY .. string.sub(bar, percentBar * 2 + 1) .. "|r"
             return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"
         end
     },
