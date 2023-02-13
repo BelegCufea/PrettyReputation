@@ -197,18 +197,6 @@ local options = {
                         Addon.db.profile.TooltipSort = value
                     end,
                 },
-                SinkChat = {
-                    type = "toggle",
-                    order = 6,
-                    name = "Also display message in following chat frames",
-                    desc = ". If you want to display the message only in first chat frame, you can select 'Chat' option above. If you only need to display in chat but not in first chat frame, choose 'None' option above and below select in which frames you would like to see the message.",
-                    width = "full",
-                    disabled = function() return (Addon.db.profile.sink20OutputSink == "ChatFrame") end,
-                    get = function(info) return Addon.db.profile.sinkChat end,
-                    set = function(info, value)
-                        Addon.db.profile.sinkChat = value
-                    end
-                },
                 Seperator1 = { type = "description", order = 5, fontSize = "small",name = "",width = "full", },
                 Debug = {
                     type = "toggle",
@@ -299,6 +287,22 @@ local options = {
                         Addon.db.profile.Reputation.showParagonCount = value
                     end
                 },
+                ShortTag = {
+                    type = "range",
+                    order = 13,
+                    name = "Number of characters for 'Short' TAGS",
+                    width = "full",
+                    min = 1,
+                    max = 100,
+                    softMin = 1,
+                    softMax = 10,
+                    step = 1,
+                    bigStep = 1,
+                    get = function(info) return Addon.db.profile.Reputation.shortCharCount end,
+                    set = function(info, value)
+                        Addon.db.profile.Reputation.shortCharCount = value
+                    end
+                },
                 TagsHeader = {
                     type = "header",
                     order = 30,
@@ -311,9 +315,28 @@ local options = {
                 },
             },
         },
-        Colors = {
+        Output = {
             type = "group",
             order = 20,
+            name = "Output",
+            args = {
+                SinkChat = {
+                    type = "toggle",
+                    order = 20,
+                    name = "Also display message in following chat frames",
+                    desc = ". If you want to display the message only in first chat frame, you can select 'Chat' option above. If you only need to display in chat but not in first chat frame, choose 'None' option above and below select in which frames you would like to see the message.",
+                    width = "full",
+                    disabled = function() return (Addon.db.profile.sink20OutputSink == "ChatFrame") end,
+                    get = function(info) return Addon.db.profile.sinkChat end,
+                    set = function(info, value)
+                        Addon.db.profile.sinkChat = value
+                    end
+                },
+            },
+        },
+        Colors = {
+            type = "group",
+            order = 30,
             name = "Colors",
             args = {
                 ReputationColors = {
@@ -536,12 +559,13 @@ local options = {
 
 function Config:OnEnable()
     options.args.Profile = LibStub("AceDBOptions-3.0"):GetOptionsTable(Addon.db)
-    options.args.Profile.order = 30
-    options.args.General.args.Output = Addon:GetSinkAce3OptionsDataTable()
-    options.args.General.args.Output.order = 5
-    options.args.General.args.Output.inline = true
-    options.args.General.args.ChatFrames = getChatFrames()
-    options.args.General.args.ChatFrames.order = 7
+    options.args.Profile.order = 80
+    options.args.Output.args.Sink = Addon:GetSinkAce3OptionsDataTable()
+    options.args.Output.args.Sink.order = 10
+    options.args.Output.args.Sink.inline = true
+    options.args.Output.args.ChatFrames = getChatFrames()
+    options.args.Output.args.ChatFrames.order = 30
+    options.args.Output.args.ChatFrames.inline = true
     Addon:SetSinkStorage(Addon.db.profile)
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)

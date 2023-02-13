@@ -6,6 +6,7 @@ Addon.TAGS.Options = {
         barChar = function() return Addon.db.profile.Reputation.barChar end,
         barLength = function() return Addon.db.profile.Reputation.barLength end,
         showParagonCount = function() return Addon.db.profile.Reputation.showParagonCount end,
+        shortCharCount = function() return Addon.db.profile.Reputation.shortCharCount end,
     },
     Colors = function()
         return Addon.db.profile.Colors
@@ -30,6 +31,16 @@ Addon.TAGS.Const = {
     }
 }
 
+local function first_letters(sentence, x)
+    local result = ""
+    for word in string.gmatch(sentence, "%a+") do
+        local first_letter = string.upper(string.sub(word, 1, 1))
+        local rest_of_word = string.sub(word, 2, x)
+        result = result .. first_letter .. rest_of_word
+    end
+    return result
+end
+
 Addon.TAGS.Definition = {
     ["name"] = {
         desc = "Name of the faction",
@@ -50,10 +61,9 @@ Addon.TAGS.Definition = {
         end
     },
     ["standingShort"] = {
-        desc = "First letter of current reputation standing",
+        desc = "A shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local characters = Addon.db.profile.Reputation.shortCharCount
-            local standingTextShort = string.sub(info.standingText, 1, characters) .. info.renown
+            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount) .. info.renown
             if (info.standingId == 10) and string.find(info.standingText, " ") then
                 local level = string.sub(info.standingText, string.find(info.standingText, " ") + 1)
                 standingTextShort = standingTextShort .. level
@@ -78,10 +88,9 @@ Addon.TAGS.Definition = {
         end
     },
     ["c_standingShort"] = {
-        desc = "Colored first letter of current reputation standing",
+        desc = "A colored, shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local characters = Addon.db.profile.Reputation.shortCharCount
-            local standingTextShort = string.sub(info.standingText, 1, characters) .. info.renown
+            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount) .. info.renown
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 local reputationColors = Addon.db.profile.Colors
                 local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
