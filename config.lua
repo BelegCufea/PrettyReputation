@@ -242,9 +242,26 @@ local options = {
                         },
                     }
                 },
+                TagsHeader = {
+                    type = "header",
+                    order = 30,
+                    name = "Available tags"
+                },
+                AvailableTags = {
+                    type = "description",
+                    order = 31,
+                    name = function() return tags() end
+                },
+            },
+        },
+        TagsOptions = {
+            type = "group",
+            order = 20,
+            name = "Tags options",
+            args = {
                 Bar = {
                     type = "group",
-                    order = 11,
+                    order = 10,
                     name = "Progress bar",
                     inline = true,
                     args = {
@@ -277,21 +294,12 @@ local options = {
                         },
                     }
                 },
-                MessageParagonCount = {
-                    type = "toggle",
-                    order = 12,
-                    name = "show paragon count in standing text",
-                    width = "full",
-                    get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
-                    set = function(info, value)
-                        Addon.db.profile.Reputation.showParagonCount = value
-                    end
-                },
+                Seperator1 = { type = "header", order = 11, name = "" },
                 ShortTag = {
                     type = "range",
-                    order = 13,
-                    name = "Number of characters for 'Short' TAGS",
-                    width = "full",
+                    order = 20,
+                    name = "'Short' TAG length",
+                    desc = "Number of characters for 'Short' TAGS",
                     min = 1,
                     max = 100,
                     softMin = 1,
@@ -303,21 +311,22 @@ local options = {
                         Addon.db.profile.Reputation.shortCharCount = value
                     end
                 },
-                TagsHeader = {
-                    type = "header",
+                Seperator2 = { type = "header", order = 21, name = "" },
+                MessageParagonCount = {
+                    type = "toggle",
                     order = 30,
-                    name = "Available tags"
-                },
-                AvailableTags = {
-                    type = "description",
-                    order = 31,
-                    name = function() return tags() end
+                    name = "show paragon count in standing text",
+                    width = "full",
+                    get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
+                    set = function(info, value)
+                        Addon.db.profile.Reputation.showParagonCount = value
+                    end
                 },
             },
         },
         Output = {
             type = "group",
-            order = 20,
+            order = 30,
             name = "Output",
             args = {
                 SinkChat = {
@@ -336,7 +345,7 @@ local options = {
         },
         Colors = {
             type = "group",
-            order = 30,
+            order = 40,
             name = "Colors",
             args = {
                 ReputationColors = {
