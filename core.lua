@@ -371,9 +371,9 @@ end
 
 function Addon:OnEnable()
     SetupFactions()
-    Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
     Addon:InitializeDataBroker()
+    Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
 end
 
 function Addon:OnDisable()
