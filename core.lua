@@ -1,5 +1,5 @@
 local ADDON_NAME = ...;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "LibSink-2.0");
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "LibSink-2.0");
 
 local GetFactionInfoByID = GetFactionInfoByID
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
@@ -93,15 +93,6 @@ local function SetupFactions()
             end
         else
             break
-        end
-    end
-    -- Add watched faction if not already there (just in case)
-    local name, _, _, _, _, factionId = GetWatchedFactionInfo()
-    if factionId and name then
-        if (factionId) and not factions[name] then
-            factions[name] = { Id = factionId, session = 0}
-        elseif (factionId) and not factions[name].id then
-            factions[name].id = factionId
         end
     end
     RestoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
@@ -253,7 +244,7 @@ end
 
 local function ConstructMessage(info)
     if info == nil or info.name == nil then
-        return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. ", session: " .. info.session .. "]"
+        return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]"
     end
 
     local message = Addon.db.profile.Reputation.pattern
@@ -319,15 +310,15 @@ function private.CombatTextUpdated(_, messagetype)
         end
 
         if factions[info.faction] == nil then
-            Addon:ScheduleTimer(function()
+            C_Timer.After(0.25, function()
                 SetupFactions()
                 GetFactionInfo(info)
                 PrintReputation(info)
-                -- Debug
+                    -- Debug
                 if Addon.db.profile.Debug then
                     Addon:Print("New Faction " .. info.faction .. ((factions[info.faction].id and " found") or " not found"))
                 end
-            end, 1)
+            end)
         else
             GetFactionInfo(info)
             PrintReputation(info)
@@ -346,12 +337,12 @@ function private.chatCmdShowConfig(input)
         print(format(argStr, "enable", "Enables showing reputation message in chat."))
         print(format(argStr, "disable", "Disables showing reputation message in chat."))
         print(format(arg2Str, "help", "?", "Print this again."))
-        print(format(argStr, "version", "ver", "Print Addon Version"))
+        print(format(argStr, "ver", "Print Addon Version"))
     elseif cmd == "config" then
         -- happens twice because there is a bug in the blizz implementation and the first call doesn't work. subsequent calls do.
         InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
         InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
-    elseif cmd == "version" or cmd == "ver" then
+    elseif cmd == "ver" then
         Addon:Print(("You are running version |cff1784d1%s|r."):format(Addon.CONST.METADATA.VERSION))
     elseif cmd == "toggle" then
         Addon.db.profile.Enabled = not Addon.db.profile.Enabled

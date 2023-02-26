@@ -2,6 +2,8 @@ local Addon = select(2, ...)
 
 local Config = Addon:NewModule("Config")
 Addon.Config = Config
+local ConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local ConfigDialog = LibStub("AceConfigDialog-3.0")
 
 local function tags()
     local result = ""
@@ -576,6 +578,6 @@ function Config:OnEnable()
     options.args.Output.args.ChatFrames.order = 30
     options.args.Output.args.ChatFrames.inline = true
     Addon:SetSinkStorage(Addon.db.profile)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(Addon.CONST.METADATA.NAME)
+	ConfigRegistry:RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
+	ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME)
 end
