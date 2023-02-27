@@ -21,6 +21,7 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 libs\LibSink-2.0\LibSink-2.0\lib.xml
 
 const.lua
+debug.lua
 tags.lua
 core.lua
 config.lua

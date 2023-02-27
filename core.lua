@@ -8,6 +8,11 @@ local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local IsFactionParagon = C_Reputation.IsFactionParagon
 
+local Debug = Addon.DEBUG
+local Const = Addon.CONST
+local Tags = Addon.TAGS
+local Options
+
 local private = {}
 local factions = {}
 Addon.Factions = factions
@@ -22,7 +27,7 @@ local AddonDB_Defaults = {
             showParagonCount = true,
             shortCharCount = 1,
         },
-        Colors = Addon.CONST.REP_COLORS.wowproColors,
+        Colors = Const.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
         minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
         Track = false,
@@ -101,8 +106,8 @@ end
 local function TrackFaction(info)
     if not info then return end
     if info.faction == GetWatchedFactionInfo() then return end
-    if info.faction ==  GUILD and not Addon.db.profile.TrackGuild then return end
-    if info.negative and Addon.db.profile.TrackPositive then return end
+    if info.faction ==  GUILD and not Options.TrackGuild then return end
+    if info.negative and Options.TrackPositive then return end
     local collapsedHeaders = SaveRepHeaders()
     for i = 1, GetNumFactions() do
         if info.faction == GetFactionInfo(i) then
@@ -125,8 +130,8 @@ local function GetFactionLabel(standingId)
 end
 
 local function GetRepInfo(info)
-    local reputationColors = Addon.db.profile.Colors
-    local showParagonCount = Addon.db.profile.Reputation.showParagonCount
+    local reputationColors = Options.Colors
+    local showParagonCount = Options.Reputation.showParagonCount
     local name, standingId, bottomValue, topValue, barValue
 
     if (info.factionId and info.factionId ~= 0) then
@@ -232,7 +237,7 @@ local function GetFactionInfo(info)
         local session = factions[info.faction] and (factions[info.faction].session + (info.change * ((info.negative and -1 or 1)))) or 0
         factions[info.faction].session = session
         info["session"] = session
-        if Addon.db.profile.Enabled then
+        if Options.Enabled then
             local info = GetRepInfo(info)
             if info.color then
                 info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
@@ -247,24 +252,28 @@ local function ConstructMessage(info)
         return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]"
     end
 
-    local message = Addon.db.profile.Reputation.pattern
+    local message = Options.Reputation.pattern
 
     -- Debug
     if info.debug then
         message = ""
+        local debug = {}
         local tkeys = {}
         -- populate the table that holds the keys
-        for k in pairs(Addon.TAGS.Definition) do table.insert(tkeys, k) end
+        for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
         -- sort the keys
         table.sort(tkeys)
         -- use the keys to retrieve the values in the sorted order
         for _, k in ipairs(tkeys) do
-            message = message .. Addon.CONST.CONFIG_COLORS.TAG .. k .. "|r: [" .. Addon.TAGS.Definition[k].value(info) .. "], "
+            --message = message .. Const.CONFIG_COLORS.TAG .. k .. "|r: [" .. Tags.Definition[k].value(info) .. "], "
+            local tag = {tag = k, value = Tags.Definition[k].value(info)}
+            table.insert(debug, tag)
         end
-        return message
+        --return message
+        return debug
     end
 
-    for k,v in pairs(Addon.TAGS.Definition) do
+    for k,v in pairs(Tags.Definition) do
         if string.find(message, "%[" .. k .. "%]") then
             message = string.gsub(message, "%[" .. k .. "%]", v.value(info))
         end
@@ -276,17 +285,17 @@ end
 local function PrintReputation(info)
     local message = ConstructMessage(info)
     Addon:Pour(message, 1, 1, 1)
-    if Addon.db.profile.sinkChat and (Addon.db.profile.sink20OutputSink ~= "ChatFrame") then
-        for _, v in pairs(Addon.db.profile.sinkChatFrames) do
+    if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
+        for _, v in pairs(Options.sinkChatFrames) do
             _G[v]:AddMessage(message)
         end
     end
-    if Addon.db.profile.Debug then
+    if Options.Debug then
         info["debug"] = true
-        Addon:Print(ConstructMessage(info))
+        Debug:Info(ConstructMessage(info), "Tags", "VDT")
     end
 
-    if Addon.db.profile.Track then
+    if Options.Track then
         TrackFaction(info)
     end
 end
@@ -295,8 +304,9 @@ function private.CombatTextUpdated(_, messagetype)
 	if messagetype == 'FACTION' then
         local info = {}
 		local faction, change = GetCurrentCombatTextEventInfo()
-        if Addon.db.profile.Debug then
-            Addon:Print("Event", faction, change)
+        if Options.Debug then
+            local debug = {faction = faction, change = change}
+            Debug:Info(debug, "Event", "VDT")
         end
         info["faction"] = faction
 
@@ -310,18 +320,20 @@ function private.CombatTextUpdated(_, messagetype)
         end
 
         if factions[info.faction] == nil then
-            C_Timer.After(0.25, function()
+            C_Timer.After(0.5, function()
                 SetupFactions()
                 GetFactionInfo(info)
                 PrintReputation(info)
                     -- Debug
-                if Addon.db.profile.Debug then
-                    Addon:Print("New Faction " .. info.faction .. ((factions[info.faction].id and " found") or " not found"))
+                if Options.Debug then
+                    Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
                 end
             end)
         else
-            GetFactionInfo(info)
-            PrintReputation(info)
+            C_Timer.After(0.1, function()
+                GetFactionInfo(info)
+                PrintReputation(info)
+            end)
         end
 	end
 end
@@ -340,18 +352,18 @@ function private.chatCmdShowConfig(input)
         print(format(argStr, "ver", "Print Addon Version"))
     elseif cmd == "config" then
         -- happens twice because there is a bug in the blizz implementation and the first call doesn't work. subsequent calls do.
-        InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
-        InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
+        InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
+        InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
     elseif cmd == "ver" then
-        Addon:Print(("You are running version |cff1784d1%s|r."):format(Addon.CONST.METADATA.VERSION))
+        Addon:Print(("You are running version |cff1784d1%s|r."):format(Const.METADATA.VERSION))
     elseif cmd == "toggle" then
-        Addon.db.profile.Enabled = not Addon.db.profile.Enabled
+        Options.Enabled = not Options.Enabled
         Addon:UpdateDataBrokerText()
     elseif cmd == "enable" then
-        Addon.db.profile.Enabled = true
+        Options.Enabled = true
         Addon:UpdateDataBrokerText()
     elseif cmd == "disable" then
-        Addon.db.profile.Enabled = false
+        Options.Enabled = false
         Addon:UpdateDataBrokerText()
     end
 end
@@ -361,8 +373,9 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
-    SetupFactions()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
+    Options = Addon.db.profile
+    SetupFactions()
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
 end
