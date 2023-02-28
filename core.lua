@@ -254,25 +254,6 @@ local function ConstructMessage(info)
 
     local message = Options.Reputation.pattern
 
-    -- Debug
-    if info.debug then
-        message = ""
-        local debug = {}
-        local tkeys = {}
-        -- populate the table that holds the keys
-        for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
-        -- sort the keys
-        table.sort(tkeys)
-        -- use the keys to retrieve the values in the sorted order
-        for _, k in ipairs(tkeys) do
-            --message = message .. Const.CONFIG_COLORS.TAG .. k .. "|r: [" .. Tags.Definition[k].value(info) .. "], "
-            local tag = {tag = k, value = Tags.Definition[k].value(info)}
-            table.insert(debug, tag)
-        end
-        --return message
-        return debug
-    end
-
     for k,v in pairs(Tags.Definition) do
         if string.find(message, "%[" .. k .. "%]") then
             message = string.gsub(message, "%[" .. k .. "%]", v.value(info))
@@ -290,13 +271,21 @@ local function PrintReputation(info)
             _G[v]:AddMessage(message)
         end
     end
-    if Options.Debug then
-        info["debug"] = true
-        Debug:Info(ConstructMessage(info), "Tags", "VDT")
-    end
 
     if Options.Track then
         TrackFaction(info)
+    end
+
+    if Options.Debug then
+        Debug:Info(info, "Info", "VDT")
+        local debug = {}
+        local tkeys = {}
+        for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
+        table.sort(tkeys)
+        for _, k in ipairs(tkeys) do
+            debug[k] = Tags.Definition[k].value(info)
+        end
+        Debug:Info(debug, "Tags", "VDT")
     end
 end
 
@@ -304,10 +293,7 @@ function private.CombatTextUpdated(_, messagetype)
 	if messagetype == 'FACTION' then
         local info = {}
 		local faction, change = GetCurrentCombatTextEventInfo()
-        if Options.Debug then
-            local debug = {faction = faction, change = change}
-            Debug:Info(debug, "Event", "VDT")
-        end
+        Debug:Info(((faction == nil and "N/A") or faction) .. " - " .. ((change == nil and "N/A") or change), "Event")
         info["faction"] = faction
 
         if type(change) == "number" then
