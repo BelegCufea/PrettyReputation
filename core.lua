@@ -7,6 +7,7 @@ local IsMajorFaction = C_Reputation.IsMajorFaction
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local IsFactionParagon = C_Reputation.IsFactionParagon
+local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
 
 local Debug = Addon.DEBUG
 local Const = Addon.CONST
@@ -152,7 +153,7 @@ local function GetRepInfo(info)
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
-                info["icon"] = data.textureKit
+                info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
                 if not isCapped then
                     return info
                 end
@@ -216,7 +217,6 @@ local function GetRepInfo(info)
 			info["maximum"] = 1
 			info["color"] = reputationColors[standingId] or reputationColors[5]
 			info["standingText"] = friendInfo.reaction
-            info["icon"] = friendInfo.texture
 			if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold

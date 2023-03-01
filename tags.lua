@@ -208,5 +208,14 @@ Addon.TAGS.Definition = {
             end
             return ""
         end
-    }
+    },
+    ["icon"] = {
+        desc = "Show faction icon if available",
+        value = function(info)
+            if info.icon then
+                return "|T" .. info.icon ..":0|t"
+            end
+            return ""
+        end
+    },
 }
