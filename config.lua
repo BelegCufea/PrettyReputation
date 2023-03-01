@@ -93,14 +93,17 @@ local function getChatFrames()
 
     local frames = {}
     for i = 1, NUM_CHAT_WINDOWS do
-        local frame = {
-            type = "toggle",
-            order = i,
-            name = _G["ChatFrame" .. i].name,
-            get = ChatFrameGet,
-            set = ChatFrameSet,
-        }
-        frames["ChatFrame" .. i] = frame
+		local name = strlower(GetChatWindowInfo(i) or "")
+		if name ~= "" and _G["ChatFrame"..i.."Tab"]:IsVisible() then
+            local frame = {
+                type = "toggle",
+                order = i,
+                name = _G["ChatFrame" .. i].name,
+                get = ChatFrameGet,
+                set = ChatFrameSet,
+            }
+            frames["ChatFrame" .. i] = frame
+		end
     end
 
     options.args = frames

@@ -152,6 +152,7 @@ local function GetRepInfo(info)
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
+                info["icon"] = data.textureKit
                 if not isCapped then
                     return info
                 end
@@ -215,6 +216,7 @@ local function GetRepInfo(info)
 			info["maximum"] = 1
 			info["color"] = reputationColors[standingId] or reputationColors[5]
 			info["standingText"] = friendInfo.reaction
+            info["icon"] = friendInfo.texture
 			if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
