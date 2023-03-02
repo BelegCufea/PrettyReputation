@@ -312,16 +312,11 @@ function private.CombatTextUpdated(_, messagetype)
                 SetupFactions()
                 GetFactionInfo(info)
                 PrintReputation(info)
-                    -- Debug
-                if Options.Debug then
-                    Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
-                end
+                Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
             end)
         else
-            C_Timer.After(0.1, function()
-                GetFactionInfo(info)
-                PrintReputation(info)
-            end)
+            GetFactionInfo(info)
+            PrintReputation(info)
         end
 	end
 end
