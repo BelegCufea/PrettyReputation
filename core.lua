@@ -15,6 +15,7 @@ local Tags = Addon.TAGS
 local Options
 
 local private = {}
+local icons = {}
 local factions = {}
 Addon.Factions = factions
 
@@ -85,8 +86,16 @@ local function RestoreRepHeaders(collapsed)
 	end
 end
 
+local function SetupIcons() -- FactionAddict
+    if not faFactionData then return end
+	for maintableRow in ipairs(faFactionData) do
+        icons[faFactionData[maintableRow][1]] = faFactionData[maintableRow][2]
+	end
+end
+
 local function SetupFactions()
     local collapsedHeaders = SaveRepHeaders() -- pretty please make all factions visible
+    if next(icons) == nil then SetupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
@@ -143,6 +152,9 @@ local function GetRepInfo(info)
         info["top"] = topValue
         info["paragon"] = ""
         info["renown"] = ""
+        if icons and icons[info.factionId] then
+            info["icon"] = icons[info.factionId]
+        end
 
         if (IsMajorFaction(info.factionId)) then
             info["color"] = reputationColors[10]

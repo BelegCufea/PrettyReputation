@@ -1,10 +1,11 @@
 ## Interface: 100005
 ## Title: Pretty Reputation
 ## Notes: Shows more info about your reputation gain
-## Version: 1.1.6
+## Version: 1.1.6a
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled
+## OptionalDeps: FactionAddict
 ## X-Embeds: Ace3, LibDataBroker-1.1, CallbackHandler-1.0
 ## X-Curse-Project-ID: 821079
 
