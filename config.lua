@@ -566,6 +566,21 @@ local options = {
                     name = "github.com/BelegCufea/PrettyReputation",
                     width = "double",
                 },
+                seperator1 = { type = "header", order = 900, name = "Supported addons", },
+                generalText6 = {
+                    type = "description",
+                    order = 910,
+                    fontSize = "medium",
+                    name = "Faction Addict:",
+                    width = "half",
+                },
+                generalText7 = {
+                    type = "description",
+                    order = 920,
+                    fontSize = "medium",
+                    name = "curseforge.com/wow/addons/faction-addict",
+                    width = "double",
+                },
               }
           }
 	},

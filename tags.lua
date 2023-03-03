@@ -210,7 +210,7 @@ Addon.TAGS.Definition = {
         end
     },
     ["icon"] = {
-        desc = "Show faction icon if available",
+        desc = "Show faction icon if available (all, if Faction Addict is installed - see About)",
         value = function(info)
             if info.icon then
                 return "|T" .. info.icon ..":0|t"
