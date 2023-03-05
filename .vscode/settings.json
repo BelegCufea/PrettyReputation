@@ -109,6 +109,18 @@
         "INVSLOT_FIRST_EQUIPPED",
         "INVSLOT_LAST_EQUIPPED",
         "EquipmentManager_UnpackLocation",
-        "NUM_CHAT_WINDOWS"
+        "NUM_CHAT_WINDOWS",
+        "SettingsPanel",
+        "ReloadUI",
+        "EditModeManagerFrame",
+        "TRACKER_HEADER_DUNGEON",
+        "ZONE",
+        "DUNGEONS_BUTTON",
+        "CHALLENGE_MODE",
+        "TRACKER_HEADER_SCENARIO",
+        "UNLOCK",
+        "TRACKER_HEADER_PROVINGGROUNDS",
+        "QuestMapFrame_UpdateAll",
+        "MAX_QUESTS"
     ]
 }

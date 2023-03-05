@@ -4,6 +4,7 @@ local Config = Addon:NewModule("Config")
 Addon.Config = Config
 local ConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local function tags()
     local result = ""
@@ -295,6 +296,50 @@ local options = {
                             get = function(info) return Addon.db.profile.Reputation.barLength end,
                             set = function(info, value)
                                 Addon.db.profile.Reputation.barLength = value
+                            end
+                        },
+                        blank1 = { type = "description", order = 10, fontSize = "small",name = "",width = "full", },
+                        MessageBarTexture = {
+                            type = "select",
+                            order = 11,
+                            name = "solid bar texture",
+                            dialogControl = "LSM30_Statusbar",
+                            values = AceGUIWidgetLSMlists.statusbar,
+                            get = function() return Addon.db.profile.Reputation.barSolidTexture end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.barSolidTexture = value
+                            end,
+                        },
+                        MessageBarWidth = {
+                            type = "range",
+                            order = 12,
+                            name = "solid bar width",
+                            desc = "width of solid progress bar",
+                            min = 1,
+                            max = 200,
+                            softMin = 5,
+                            softMax = 100,
+                            step = 1,
+                            bigStep = 5,
+                            get = function(info) return Addon.db.profile.Reputation.barSolidWidth end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.barSolidWidth = value
+                            end
+                        },
+                        MessageBarHeight = {
+                            type = "range",
+                            order = 13,
+                            name = "solid bar height",
+                            desc = "height of solid progress bar",
+                            min = 1,
+                            max = 50,
+                            softMin = 5,
+                            softMax = 20,
+                            step = 1,
+                            bigStep = 1,
+                            get = function(info) return Addon.db.profile.Reputation.barSolidHeight end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.barSolidHeight = value
                             end
                         },
                     }

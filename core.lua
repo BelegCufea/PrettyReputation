@@ -1,5 +1,5 @@
 local ADDON_NAME = ...;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "LibSink-2.0");
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "LibSink-2.0")
 
 local GetFactionInfoByID = GetFactionInfoByID
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
@@ -26,6 +26,9 @@ local AddonDB_Defaults = {
             pattern = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
             barChar = "||",
             barLength = 20,
+            barSolidWidth = 50,
+            barSolidHeight = 10,
+            barSolidTexture = "Solid",
             showParagonCount = true,
             shortCharCount = 1,
         },
