@@ -31,6 +31,7 @@ local AddonDB_Defaults = {
             barSolidTexture = "Blizzard",
             showParagonCount = true,
             shortCharCount = 1,
+            iconHeight = 0,
         },
         Colors = Const.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",

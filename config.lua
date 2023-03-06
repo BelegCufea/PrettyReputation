@@ -372,9 +372,33 @@ local options = {
                         },
                     },
                 },
-                ShortTag = {
+                Icon = {
                     type = "group",
                     order = 40,
+                    name = "[icon]",
+                    desc = "options for [icon] TAG",
+                    args = {
+                        Height = {
+                            type = "range",
+                            order = 1,
+                            name = "icon size (0=text height)",
+                            desc = "sets height of icon, 0 for text height",
+                            min = 0,
+                            max = 64,
+                            softMin = 0,
+                            softMax = 32,
+                            step = 1,
+                            bigStep = 1,
+                            get = function(info) return Addon.db.profile.Reputation.iconHeight end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.iconHeight = value
+                            end
+                        },
+                    },
+                },
+                ShortTag = {
+                    type = "group",
+                    order = 50,
                     name = "[...Short]",
                     desc = "options for TAGs ending with 'Short'",
                     args = {

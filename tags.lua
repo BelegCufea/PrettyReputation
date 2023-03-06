@@ -46,6 +46,32 @@ local function first_letters(sentence, x)
     return result
 end
 
+local function get_texture(info, colorFull, colorEmpty)
+    if info.maximum == 0 then return "" end
+    local textureHeight = 32 -- well it may work
+    local textureWidth = 256 -- this one also :-)
+    local barHeight = Addon.db.profile.Reputation.barSolidHeight
+    local barWidth = Addon.db.profile.Reputation.barSolidWidth
+    local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
+    local percentChange = math.floor((info.change / info.maximum * 100) / (100 / barWidth))
+    local textureSplit = math.floor((info.current / info.maximum) * textureWidth)
+    local textureChange = math.floor((info.change / info.maximum) * textureWidth)
+    local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
+    local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
+    local rF, gF, bF = tonumber("0x" .. string.sub(colorFull, 1, 2)), tonumber("0x" .. string.sub(colorFull, 3, 4)), tonumber("0x" .. string.sub(colorFull, 5, 6))
+    local rE, gE, bE = tonumber("0x" .. string.sub(colorEmpty, 1, 2)), tonumber("0x" .. string.sub(colorEmpty, 3, 4)), tonumber("0x" .. string.sub(colorEmpty, 5, 6))
+    local barFull = texture:format(barTexture, barHeight, percentBar, 0, textureSplit, rF, gF, bF)
+    local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, textureSplit + 1, textureWidth, rE, gE, bE)
+
+    if percentBar == 0 then
+        barFull = ""
+    end
+    if percentBar == barWidth then
+        barEmpty = ""
+    end
+    return barFull .. barEmpty
+end
+
 Addon.TAGS.Definition = {
     ["name"] = {
         desc = "Name of the faction",
@@ -204,43 +230,17 @@ Addon.TAGS.Definition = {
     ["barTexture"] = {
         desc = "Shows textured bar representing current standing",
         value = function(info)
-            if info.maximum == 0 then return "" end
-            local textureHeight = 32 -- well it may work
-            local textureWidth = 256 -- this one also :-)
-            local barHeight = Addon.db.profile.Reputation.barSolidHeight
-            local barWidth = Addon.db.profile.Reputation.barSolidWidth
-            local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
-            local barSplit = math.floor((info.current / info.maximum) * textureWidth)
-            local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
-            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
-            local color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_FULL, 5, 10)
-            local r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
-            color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
-            r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar + 1, barSplit + 1, textureWidth, r, g, b)
-            return barFull .. barEmpty
+            local colorFull = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_FULL, 5, 10)
+            local colorEmpty = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
+            return get_texture(info, colorFull, colorEmpty)
         end
     },
     ["c_barTexture"] = {
         desc = "Shows textured bar representing current standing colored by standing",
         value = function(info)
-            if info.maximum == 0 then return "" end
-            local textureHeight = 32 -- well it may work
-            local textureWidth = 256 -- this one also :-)
-            local barHeight = Addon.db.profile.Reputation.barSolidHeight
-            local barWidth = Addon.db.profile.Reputation.barSolidWidth
-            local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
-            local barSplit = math.floor((info.current / info.maximum) * textureWidth)
-            local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
-            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
-            local color = string.sub(info.standingColor, 5, 10)
-            local r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
-            color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
-            r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar + 1, barSplit + 1, textureWidth, r, g, b)
-            return barFull .. barEmpty
+            local colorFull = string.sub(info.standingColor, 5, 10)
+            local colorEmpty = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
+            return  get_texture(info, colorFull, colorEmpty)
         end
     },
     ["more"] = {
@@ -260,7 +260,7 @@ Addon.TAGS.Definition = {
         desc = "Show faction icon if available (all, if Faction Addict is installed - see About)",
         value = function(info)
             if info.icon then
-                return "|T" .. info.icon ..":0|t"
+                return "|T" .. info.icon ..":" .. Addon.db.profile.Reputation.iconHeight .. "|t"
             end
             return ""
         end
