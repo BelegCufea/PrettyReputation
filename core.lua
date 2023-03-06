@@ -28,7 +28,7 @@ local AddonDB_Defaults = {
             barLength = 20,
             barSolidWidth = 50,
             barSolidHeight = 10,
-            barSolidTexture = "Solid",
+            barSolidTexture = "Blizzard",
             showParagonCount = true,
             shortCharCount = 1,
         },

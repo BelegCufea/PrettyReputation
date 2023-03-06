@@ -268,10 +268,10 @@ local options = {
                 Bar = {
                     type = "group",
                     order = 10,
-                    name = "Progress bar",
-                    inline = true,
+                    name = "[bar]",
+                    desc = "options for [bar] and [c_bar] TAGs",
                     args = {
-                        MessageBarCharacter = {
+                        BarCharacter = {
                             type = "input",
                             order = 1,
                             name = "bar character",
@@ -282,7 +282,8 @@ local options = {
                                 Addon.db.profile.Reputation.barChar = value
                             end
                         },
-                        MessageBarLength = {
+                        Blank1 = { type = "description", order = 1.1, fontSize = "small",name = "",width = "full", },
+                        BarLength = {
                             type = "range",
                             order = 2,
                             name = "bar length",
@@ -298,10 +299,17 @@ local options = {
                                 Addon.db.profile.Reputation.barLength = value
                             end
                         },
-                        blank1 = { type = "description", order = 10, fontSize = "small",name = "",width = "full", },
-                        MessageBarTexture = {
+                    },
+                },
+                BarTexture = {
+                    type = "group",
+                    order = 20,
+                    name = "[barTexture]",
+                    desc = "options for [barTexture] and [c_barTexture] TAGs",
+                    args = {
+                        BarTexture = {
                             type = "select",
-                            order = 11,
+                            order = 1,
                             name = "solid bar texture",
                             dialogControl = "LSM30_Statusbar",
                             values = AceGUIWidgetLSMlists.statusbar,
@@ -310,9 +318,10 @@ local options = {
                                 Addon.db.profile.Reputation.barSolidTexture = value
                             end,
                         },
-                        MessageBarWidth = {
+                        Blank1 = { type = "description", order = 1.1, fontSize = "small",name = "",width = "full", },
+                        BarWidth = {
                             type = "range",
-                            order = 12,
+                            order = 2,
                             name = "solid bar width",
                             desc = "width of solid progress bar",
                             min = 1,
@@ -326,9 +335,10 @@ local options = {
                                 Addon.db.profile.Reputation.barSolidWidth = value
                             end
                         },
-                        MessageBarHeight = {
+                        Blank2 = { type = "description", order = 2.1, fontSize = "small",name = "",width = "full", },
+                        BarHeight = {
                             type = "range",
-                            order = 13,
+                            order = 3,
                             name = "solid bar height",
                             desc = "height of solid progress bar",
                             min = 1,
@@ -342,35 +352,49 @@ local options = {
                                 Addon.db.profile.Reputation.barSolidHeight = value
                             end
                         },
-                    }
+                    },
                 },
-                Seperator1 = { type = "header", order = 11, name = "" },
-                ShortTag = {
-                    type = "range",
-                    order = 20,
-                    name = "'Short' TAG length",
-                    desc = "Number of characters for 'Short' TAGS",
-                    min = 1,
-                    max = 100,
-                    softMin = 1,
-                    softMax = 10,
-                    step = 1,
-                    bigStep = 1,
-                    get = function(info) return Addon.db.profile.Reputation.shortCharCount end,
-                    set = function(info, value)
-                        Addon.db.profile.Reputation.shortCharCount = value
-                    end
-                },
-                Seperator2 = { type = "header", order = 21, name = "" },
-                MessageParagonCount = {
-                    type = "toggle",
+                StandigText = {
+                    type = "group",
                     order = 30,
-                    name = "show paragon count in standing text",
-                    width = "full",
-                    get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
-                    set = function(info, value)
-                        Addon.db.profile.Reputation.showParagonCount = value
-                    end
+                    name = "[standingText]",
+                    desc = "options for [standingText] and [c_standingText] TAGs",
+                    args = {
+                        ParagonCount = {
+                            type = "toggle",
+                            order = 1,
+                            name = "show paragon count in standing text",
+                            width = "full",
+                            get = function(info) return Addon.db.profile.Reputation.showParagonCount end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.showParagonCount = value
+                            end
+                        },
+                    },
+                },
+                ShortTag = {
+                    type = "group",
+                    order = 40,
+                    name = "[...Short]",
+                    desc = "options for TAGs ending with 'Short'",
+                    args = {
+                        ShortTagChars = {
+                            type = "range",
+                            order = 1,
+                            name = "number of characters for 'Short' TAGs",
+                            width = 1.2,
+                            min = 1,
+                            max = 100,
+                            softMin = 1,
+                            softMax = 10,
+                            step = 1,
+                            bigStep = 1,
+                            get = function(info) return Addon.db.profile.Reputation.shortCharCount end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.shortCharCount = value
+                            end
+                        },
+                    },
                 },
             },
         },

@@ -218,7 +218,7 @@ Addon.TAGS.Definition = {
             local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
             color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
             r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit + 1, textureWidth, r, g, b)
+            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar + 1, barSplit + 1, textureWidth, r, g, b)
             return barFull .. barEmpty
         end
     },
@@ -239,7 +239,7 @@ Addon.TAGS.Definition = {
             local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
             color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
             r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit + 1, textureWidth, r, g, b)
+            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar + 1, barSplit + 1, textureWidth, r, g, b)
             return barFull .. barEmpty
         end
     },
