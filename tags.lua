@@ -212,13 +212,13 @@ Addon.TAGS.Definition = {
             local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
             local barSplit = math.floor((info.current / info.maximum) * textureWidth)
             local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
-            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:32:%d:%d:%d|t"
+            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
             local color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_FULL, 5, 10)
             local r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
             local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
             color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
             r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit, textureWidth, r, g, b)
+            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit + 1, textureWidth, r, g, b)
             return barFull .. barEmpty
         end
     },
@@ -233,13 +233,13 @@ Addon.TAGS.Definition = {
             local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
             local barSplit = math.floor((info.current / info.maximum) * textureWidth)
             local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
-            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:32:%d:%d:%d|t"
+            local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
             local color = string.sub(info.standingColor, 5, 10)
             local r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
             local barFull = texture:format(barTexture, barHeight, percentBar, 0, barSplit, r, g, b)
             color = string.sub(Addon.CONST.MESSAGE_COLORS.BAR_EMPTY, 5, 10)
             r, g, b = tonumber("0x" .. string.sub(color, 1, 2)), tonumber("0x" .. string.sub(color, 3, 4)), tonumber("0x" .. string.sub(color, 5, 6))
-            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit, textureWidth, r, g, b)
+            local barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barSplit + 1, textureWidth, r, g, b)
             return barFull .. barEmpty
         end
     },

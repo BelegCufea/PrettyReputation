@@ -4,6 +4,10 @@ Show more information about reputation gain in your chat.
 
 ![Example](https://i.imgur.com/b1VF8EX.png)
 
+Or
+
+![WithTexture](https://i.imgur.com/nzuDQS7.png)
+
 ## Features
 
 - Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
@@ -16,13 +20,28 @@ Show more information about reputation gain in your chat.
 Locate the 'Pretty Reputation' section within the 'Options -> Addon' section, or right-click the minimap icon. You can also use `/pr` in chat to get a list of available commands.
 
 - In the `pattern` field, compose your desired message format. You can choose from several predefined tags.
-- Define your ideal bar to represent your reputation progress. Choose an optimal character, and determine how many of these will form the bar.
+- Define your ideal bar to represent your reputation progress.
+    - Choose an optimal character, and determine how many of these will form the bar.
+    - Or use texture for the bar. Define its width and height.
 - Define colors for each reputation standing. Choose from several predefined color schemes.
 - Set your preferred output method (Chat, Floating text, etc.)
 
-![Compose your message](https://i.imgur.com/YELQmpR.png)
+---
+> Compose a message
 
-![Choose your colors](https://i.imgur.com/bUX5xyK.png)
+![Compose your message](https://i.imgur.com/Pm7V3hX.png)
+
+> Modify several TAGs behaviour
+
+![Modify TAGs](https://i.imgur.com/i4e8zuR.png)
+
+> Select output for your message
+
+![Select output](https://i.imgur.com/ncqgJoM.png)
+
+> Pick color scheme or define your own colors
+
+![Choose your colors](https://i.imgur.com/EJWI8lp.png)
 
 ## Issues
 
