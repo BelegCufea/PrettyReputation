@@ -33,6 +33,10 @@ local AddonDB_Defaults = {
             shortCharCount = 1,
             iconHeight = 0,
         },
+        Test = {
+            faction = "Darkmoon Faire",
+            change = 100,
+        },
         Colors = Const.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
         minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
@@ -307,34 +311,45 @@ local function PrintReputation(info)
     end
 end
 
-function private.CombatTextUpdated(_, messagetype)
-	if messagetype == 'FACTION' then
-        local info = {}
-		local faction, change = GetCurrentCombatTextEventInfo()
-        Debug:Info(((faction == nil and "N/A") or faction) .. " - " .. ((change == nil and "N/A") or change), "Event")
-        info["faction"] = faction
+function private.processFaction(faction, change)
+    local info = {}
+    Debug:Info(((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change), "Event")
+    info["faction"] = faction
 
-        if type(change) == "number" then
-            info["change"] = math.abs(change)
-            if tonumber(change) < 0 then
-                info["negative"] = true
-            end
-        else
-            info["change"] = 0
+    if type(change) == "number" then
+        info["change"] = math.abs(change)
+        if tonumber(change) < 0 then
+            info["negative"] = true
         end
+    else
+        info["change"] = 0
+    end
 
-        if factions[info.faction] == nil then
-            C_Timer.After(0.5, function()
-                SetupFactions()
-                GetFactionInfo(info)
-                PrintReputation(info)
-                Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
-            end)
-        else
+    if factions[info.faction] == nil then
+        C_Timer.After(0.5, function()
+            SetupFactions()
             GetFactionInfo(info)
             PrintReputation(info)
-        end
+            Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
+        end)
+    else
+        GetFactionInfo(info)
+        PrintReputation(info)
+    end
+end
+
+function private.CombatTextUpdated(_, messagetype)
+	if messagetype == 'FACTION' then
+		local faction, change = GetCurrentCombatTextEventInfo()
+        private.processFaction(faction, change)
 	end
+end
+
+function Addon:Test()
+    local faction, change = Options.Test.faction, Options.Test.change
+    local session = factions[faction].session
+    private.processFaction(faction, change)
+    factions[faction].session = session
 end
 
 function private.chatCmdShowConfig(input)

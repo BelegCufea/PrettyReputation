@@ -121,6 +121,7 @@
         "UNLOCK",
         "TRACKER_HEADER_PROVINGGROUNDS",
         "QuestMapFrame_UpdateAll",
-        "MAX_QUESTS"
+        "MAX_QUESTS",
+        "ID"
     ]
 }

@@ -6,6 +6,10 @@ local ConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
 local LSM = LibStub("LibSharedMedia-3.0")
 
+local factions = Addon.Factions
+local Debug = Addon.DEBUG
+
+
 local function tags()
     local result = ""
     local tkeys = {}
@@ -110,6 +114,24 @@ local function getChatFrames()
     options.args = frames
 
     return options
+end
+
+local function getFactions()
+    local list = {}
+
+    local found
+
+    for k,_ in pairs(factions) do
+        if not found then found = k end
+        if k == Addon.db.profile.Test.faction then found = k end
+        list[k] = k
+    end
+
+    Addon.db.profile.Test.faction = found
+
+    list["Darkmoon Faire"] = "Darkmoon Faire"
+    table.sort(list)
+    return list
 end
 
 local options = {
@@ -224,7 +246,7 @@ local options = {
             args = {
                 Pattern = {
                     type = "group",
-                    order = 11,
+                    order = 10,
                     name = "Message",
                     inline = true,
                     args = {
@@ -233,7 +255,8 @@ local options = {
                             order = 1,
                             name = "pattern",
                             desc = "Construct your reputation message",
-                            width = "full",
+                            width = 2.75,
+                            multiline =true,
                             get = function(info) return Addon.db.profile.Reputation.pattern end,
                             set = function(info, value)
                                 Addon.db.profile.Reputation.pattern = value
@@ -242,11 +265,50 @@ local options = {
                         DefaultMessageSet = {
                             type = "execute",
                             order = 2,
-                            name = "Set default pattern",
+                            name = "Default",
                             desc = Addon.CONST.PATTERN,
+                            width = "half",
                             func = function() Addon.db.profile.Reputation.pattern = Addon.CONST.PATTERN end
                         },
-                    }
+                        Blank1 = { type = "description", order = 90, fontSize = "small",name = "",width = "full", },
+                        TestDesc = {
+                            type = "description",
+                            order = 91,
+                            name = "Test: ",
+                            width = 0.25,
+                        },
+                        Facion = {
+                            type = "select",
+                            order = 92,
+                            name = "faction",
+                            width = 1.2,
+                            values = function() return getFactions() end,
+                            get = function(info) return Addon.db.profile.Test.faction end,
+                            set = function(info, value)
+                                Addon.db.profile.Test.faction = value
+                            end,
+                        },
+                        Change = {
+                            type = 'input',
+                            order = 93,
+                            name = 'gain',
+                            desc = 'positive number for gain, negative for loss',
+                            width = 0.75,
+                            pattern = '^[-]?%d+$',
+                            usage = "<number>",
+                            get = function(info) return tostring(Addon.db.profile.Test.change) end,
+                            set = function(info, value)
+                                Addon.db.profile.Test.change = tonumber(value)
+                            end,
+                        },
+                        Test = {
+                            type = 'execute',
+                            order = 94,
+                            name = 'TEST',
+                            width = "half",
+                            func = function() Addon:Test() end,
+                        },
+                    },
                 },
                 TagsHeader = {
                     type = "header",
