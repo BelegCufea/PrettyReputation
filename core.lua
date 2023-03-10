@@ -32,6 +32,7 @@ local AddonDB_Defaults = {
             showParagonCount = true,
             shortCharCount = 1,
             iconHeight = 0,
+            iconStyle = 'default',
         },
         Test = {
             faction = "Darkmoon Faire",

@@ -456,6 +456,21 @@ local options = {
                                 Addon.db.profile.Reputation.iconHeight = value
                             end
                         },
+                        Blank1 = { type = "description", order = 1.1, fontSize = "small",name = "",width = "full", },
+                        Style = {
+                            type = "select",
+                            order = 2,
+                            name = "style",
+                            desc = "style of icon",
+                            values = {
+                                ["default"] = "Unmodified",
+                                ["clean"] = "Clean (no borders)",
+                            },
+                            get = function(info) return Addon.db.profile.Reputation.iconStyle end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.iconStyle = value
+                            end
+                        }
                     },
                 },
                 ShortTag = {
@@ -481,6 +496,43 @@ local options = {
                             end
                         },
                     },
+                },
+                TestDesc = {
+                    type = "description",
+                    order = -94,
+                    name = "Test: ",
+                    width = 0.25,
+                },
+                Facion = {
+                    type = "select",
+                    order = -93,
+                    name = "faction",
+                    width = 1.2,
+                    values = function() return getFactions() end,
+                    get = function(info) return Addon.db.profile.Test.faction end,
+                    set = function(info, value)
+                        Addon.db.profile.Test.faction = value
+                    end,
+                },
+                Change = {
+                    type = 'input',
+                    order = -91,
+                    name = 'gain',
+                    desc = 'positive number for gain, negative for loss',
+                    width = 0.75,
+                    pattern = '^[-]?%d+$',
+                    usage = "<number>",
+                    get = function(info) return tostring(Addon.db.profile.Test.change) end,
+                    set = function(info, value)
+                        Addon.db.profile.Test.change = tonumber(value)
+                    end,
+                },
+                Test = {
+                    type = 'execute',
+                    order = -90,
+                    name = 'TEST',
+                    width = "half",
+                    func = function() Addon:Test() end,
                 },
             },
         },

@@ -23,6 +23,11 @@ CONST.MESSAGE_COLORS = {
     NEGATIVE = '|cffff4700'
 }
 
+CONST.ICON = {
+    CLEAN = "|T%s:%d:%d:0:0:64:64:4:60:4:60:255:255:255|t",
+    DEFAULT = "|T%s:%d:%d:0:0:64:64:0:64:0:64:255:255:255|t",
+}
+
 CONST.REP_COLORS = {
     blizzardColors = FACTION_BAR_COLORS,  --hack to add back Blizzard colors
     asciiColors = {

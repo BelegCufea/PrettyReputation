@@ -256,7 +256,11 @@ Addon.TAGS.Definition = {
         desc = "Show faction icon if available (all, if Faction Addict is installed - see About)",
         value = function(info)
             if info.icon then
-                return "|T" .. info.icon ..":" .. Addon.db.profile.Reputation.iconHeight .. "|t"
+                if Addon.db.profile.Reputation.iconStyle == 'clean' then
+                    return string.format(Addon.CONST.ICON.CLEAN, info.icon, Addon.db.profile.Reputation.iconHeight, Addon.db.profile.Reputation.iconHeight)
+                else
+                    return string.format(Addon.CONST.ICON.DEFAULT, info.icon, Addon.db.profile.Reputation.iconHeight, Addon.db.profile.Reputation.iconHeight)
+                end
             end
             return ""
         end
