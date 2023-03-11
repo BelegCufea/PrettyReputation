@@ -463,7 +463,7 @@ local options = {
                             name = "style",
                             desc = "style of icon",
                             values = {
-                                ["default"] = "Unmodified",
+                                ["default"] = "Blizzard",
                                 ["clean"] = "Clean (no borders)",
                             },
                             get = function(info) return Addon.db.profile.Reputation.iconStyle end,
