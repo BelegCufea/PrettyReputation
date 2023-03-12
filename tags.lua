@@ -9,10 +9,12 @@ Addon.TAGS.Options = {
         barLength = function() return Addon.db.profile.Reputation.barLength end,
         barTextureHeight = function() return Addon.db.profile.Reputation.barSolidHeight end,
         barTextureWidth = function() return Addon.db.profile.Reputation.barSolidWidth end,
+        barTextureOffset = function() return Addon.db.profile.Reputation.barSolidOffset end,
         barTexture = function() return LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture) end,
         showParagonCount = function() return Addon.db.profile.Reputation.showParagonCount end,
         shortCharCount = function() return Addon.db.profile.Reputation.shortCharCount end,
         iconSize = function() return Addon.db.profile.Reputation.iconHeight end,
+        iconStyle = function() return Addon.db.profile.Reputation.iconStyle end,
     },
     Colors = function()
         return Addon.db.profile.Colors
@@ -66,20 +68,21 @@ local function get_texture(info, colorFull, colorEmpty)
     local textureWidth = 256 -- this one also :-)
     local barHeight = Addon.db.profile.Reputation.barSolidHeight
     local barWidth = Addon.db.profile.Reputation.barSolidWidth
+    local barOffset = Addon.db.profile.Reputation.barSolidOffset
     local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
     local textureSplit = math.floor((info.current / info.maximum) * textureWidth)
     local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
-    local texture = "|T%s:%d:%d:0:0:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
+    local texture = "|T%s:%d:%d:0:%d:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
     local rF, gF, bF = tonumber("0x" .. string.sub(colorFull, 1, 2)), tonumber("0x" .. string.sub(colorFull, 3, 4)), tonumber("0x" .. string.sub(colorFull, 5, 6))
     local rE, gE, bE = tonumber("0x" .. string.sub(colorEmpty, 1, 2)), tonumber("0x" .. string.sub(colorEmpty, 3, 4)), tonumber("0x" .. string.sub(colorEmpty, 5, 6))
 
     local barFull = ""
     local barEmpty = ""
     if percentBar > 0 then
-        barFull = texture:format(barTexture, barHeight, percentBar, 0, textureSplit, rF, gF, bF)
+        barFull = texture:format(barTexture, barHeight, percentBar, barOffset, 0, textureSplit, rF, gF, bF)
     end
     if percentBar < barWidth then
-        barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, textureSplit + 1, textureWidth, rE, gE, bE)
+        barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barOffset, textureSplit + 1, textureWidth, rE, gE, bE)
     end
     return barFull .. barEmpty
 end

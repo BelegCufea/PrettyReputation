@@ -372,7 +372,7 @@ local options = {
                         BarTexture = {
                             type = "select",
                             order = 1,
-                            name = "solid bar texture",
+                            name = "texture",
                             dialogControl = "LSM30_Statusbar",
                             values = AceGUIWidgetLSMlists.statusbar,
                             get = function() return Addon.db.profile.Reputation.barSolidTexture end,
@@ -384,8 +384,8 @@ local options = {
                         BarWidth = {
                             type = "range",
                             order = 2,
-                            name = "solid bar width",
-                            desc = "width of solid progress bar",
+                            name = "width",
+                            desc = "width of progress bar",
                             min = 1,
                             max = 200,
                             softMin = 5,
@@ -401,8 +401,8 @@ local options = {
                         BarHeight = {
                             type = "range",
                             order = 3,
-                            name = "solid bar height",
-                            desc = "height of solid progress bar",
+                            name = "height",
+                            desc = "height of progress bar",
                             min = 1,
                             max = 50,
                             softMin = 5,
@@ -412,6 +412,23 @@ local options = {
                             get = function(info) return Addon.db.profile.Reputation.barSolidHeight end,
                             set = function(info, value)
                                 Addon.db.profile.Reputation.barSolidHeight = value
+                            end
+                        },
+                        Blank3 = { type = "description", order = 3.1, fontSize = "small",name = "",width = "full", },
+                        BarOffset = {
+                            type = "range",
+                            order = 4,
+                            name = "offset",
+                            desc = "vertical offset of progress bar from bottom text line",
+                            min = -20,
+                            max = 20,
+                            softMin = -10,
+                            softMax = 10,
+                            step = 1,
+                            bigStep = 1,
+                            get = function(info) return Addon.db.profile.Reputation.barSolidOffset end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.barSolidOffset = value
                             end
                         },
                     },
