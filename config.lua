@@ -4,7 +4,6 @@ local Config = Addon:NewModule("Config")
 Addon.Config = Config
 local ConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local ConfigDialog = LibStub("AceConfigDialog-3.0")
-local LSM = LibStub("LibSharedMedia-3.0")
 
 local factions = Addon.Factions
 local Debug = Addon.DEBUG
@@ -134,6 +133,11 @@ local function getFactions()
     return list
 end
 
+local function SetBarsOptions()
+    Addon:SetBarsOptions()
+    Addon:UpdateBars()
+end
+
 local options = {
 	name = AddonTitle,
 	type = "group",
@@ -154,6 +158,7 @@ local options = {
                     set = function(info, value)
                         Addon.db.profile.Enabled = value
                         Addon:UpdateDataBrokerText()
+                        Addon:SetBarsOptions()
                     end
                 },
                 MiniMap = {
@@ -570,6 +575,172 @@ local options = {
                         Addon.db.profile.sinkChat = value
                     end
                 },
+                Bars = {
+                    type = "group",
+                    order = 40,
+                    name = "Reputation bars",
+                    inline = true,
+                    args = {
+                        Enabled = {
+                            type = "toggle",
+                            order = 10,
+                            name = "Enable",
+                            get = function(info) return Addon.db.profile.Bars.enabled end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.enabled = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Locked = {
+                            type = "toggle",
+                            order = 20,
+                            name = "Lock position",
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.locked end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.locked = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Icon = {
+                            type = "toggle",
+                            order = 30,
+                            name = "Show faction icons",
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.icon end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.icon = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Texture = {
+                            type = "select",
+                            dialogControl = "LSM30_Statusbar",
+                            order = 110,
+                            name = "Texture",
+                            values = AceGUIWidgetLSMlists.statusbar,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.texture end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.texture = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Width = {
+                            type = "range",
+                            order = 120,
+                            name = "Width",
+                            min = 20,
+                            max = 2000,
+                            softMin = 50,
+                            softMax = 500,
+                            step = 1,
+                            bigStep = 10,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.width end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.width = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Height = {
+                            type = "range",
+                            order = 130,
+                            name = "Height",
+                            min = 2,
+                            max = 64,
+                            softMin = 5,
+                            softMax = 32,
+                            step = 1,
+                            bigStep = 1,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.height end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.height = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Font = {
+                            type = "select",
+                            dialogControl = "LSM30_Font",
+                            order = 210,
+                            name = "Font",
+                            values = AceGUIWidgetLSMlists.font,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.font end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.font = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        FontSize = {
+                            type = "range",
+                            order = 220,
+                            name = "Font size",
+                            min = 5,
+                            max = 64,
+                            softMin = 5,
+                            softMax = 32,
+                            step = 1,
+                            bigStep = 1,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.fontSize end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.fontSize = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        FontOutline = {
+                            type = "select",
+                            order = 230,
+                            name = "Font outline",
+                            values = {
+                                [""] = "None",
+                                ["OUTLINE"] = "Normal",
+                                ["THICKOUTLINE"] = "Thick",
+                            },
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.fontOutline end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.fontOutline = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Alpha = {
+                            type = "range",
+                            order = 250,
+                            name = "Opacity",
+                            min = 0,
+                            max = 1,
+                            step = 0.01,
+                            isPercent = true,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.alpha end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.alpha = value
+                                SetBarsOptions()
+                            end,
+                        },
+                        Sort = {
+                            type = "select",
+                            order = 260,
+                            name = "Sort bars by",
+                            values = {
+                                ["faction"] = "Faction name",
+                                ["session"] = "Session gain/loss",
+                                ["overall"] = "Overall reputation value",
+                                ["recent"] = "Time of last change",
+                            },
+                            style = "dropdown",
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.sort end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.sort = value
+                                SetBarsOptions()
+                            end,
+                        },
+                    }
+                }
             },
         },
         Colors = {

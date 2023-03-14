@@ -1,12 +1,11 @@
 ## Interface: 100005
 ## Title: Pretty Reputation
 ## Notes: Shows more info about your reputation gain
-## Version: 1.1.8a
+## Version: 1.2.0
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled
 ## OptionalDeps: FactionAddict
-## X-Embeds: Ace3, LibDataBroker-1.1, CallbackHandler-1.0
 ## X-Curse-Project-ID: 821079
 
 Libs\LibStub\LibStub.lua
@@ -20,13 +19,15 @@ Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
-libs\LibSink-2.0\LibSink-2.0\lib.xml
+libs\LibSink-2.0\lib.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+Libs\LibBars-1.0\lib.xml
 
 const.lua
 debug.lua
 tags.lua
 core.lua
-config.lua
 databroker.lua
+bars.lua
+config.lua

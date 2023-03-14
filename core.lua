@@ -12,6 +12,7 @@ local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFa
 local Debug = Addon.DEBUG
 local Const = Addon.CONST
 local Tags = Addon.TAGS
+local Bars = Addon.Bars
 local Options
 
 local private = {}
@@ -34,6 +35,21 @@ local AddonDB_Defaults = {
             shortCharCount = 1,
             iconHeight = 0,
             iconStyle = 'default',
+        },
+        Bars = {
+            enabled = true,
+            locked = false,
+            texture = "Blizzard",
+            width = 300,
+            height = 18,
+            posx = 100,
+            posy = -100,
+            icon = true,
+            font = "Bazooka",
+            fontSize = 11,
+            fontOutline = "OUTLINE",
+            alpha = 0.8,
+            sort = "session",
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -162,12 +178,14 @@ local function GetRepInfo(info)
         info["top"] = topValue
         info["paragon"] = ""
         info["renown"] = ""
+        info["hasReward"] = false
         if icons and icons[info.factionId] then
             info["icon"] = icons[info.factionId]
         end
 
         if (IsMajorFaction(info.factionId)) then
             info["color"] = reputationColors[10]
+            info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionId)
 			local isCapped = HasMaximumRenown(info.factionId)
             if data then
@@ -188,6 +206,7 @@ local function GetRepInfo(info)
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
                     info["paragon"] = info["paragon"] .. reward
+                    info["hasReward"] = true
                     if not showParagonCount then
                         info["standingText"] = info["standingText"] .. " " .. reward
                     end
@@ -215,6 +234,7 @@ local function GetRepInfo(info)
 
 		if (IsFactionParagon(info.factionId)) then
 			info["color"] = reputationColors[9]
+            info["isParagon"] = true
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = GetFactionLabel("paragon")
@@ -260,14 +280,17 @@ local function GetFactionInfo(info)
         info["factionId"] = factionId
         local session = factions[info.faction] and (factions[info.faction].session + (info.change * ((info.negative and -1 or 1)))) or 0
         factions[info.faction].session = session
+        info["lastUpdated"] = GetTime()
         info["session"] = session
         if Options.Enabled then
             local info = GetRepInfo(info)
             if info.color then
                 info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
             end
+            factions[info.faction].info = info
         end
     end
+    Debug:Info(factions, "factions", "VDT")
     return info
 end
 
@@ -313,6 +336,35 @@ local function PrintReputation(info)
     end
 end
 
+function Addon:SetBarsOptions()
+    if not Bars then
+        Bars = Addon.Bars
+    end
+    if Options.Bars.enabled then
+        if not Bars:IsEnabled() then Bars:Enable() end
+    else
+        if Bars:IsEnabled() then Bars:Disable() end
+    end
+
+    if Options.Enabled and Options.Bars.enabled then
+        if not Bars:IsEnabled() then Bars:Enable() end
+    end
+
+    if not Options.Enabled  then
+        if Bars:IsEnabled() then Bars:Disable() end
+    end
+
+    Bars:SetOptions()
+end
+
+function Addon:UpdateBars()
+    if not Bars then
+        Bars = Addon.Bars
+    end
+
+    Bars:Update()
+end
+
 function private.processFaction(faction, change)
     local info = {}
     Debug:Info(((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change), "Event")
@@ -332,11 +384,13 @@ function private.processFaction(faction, change)
             SetupFactions()
             GetFactionInfo(info)
             PrintReputation(info)
+            Addon:UpdateBars()
             Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
         end)
     else
         GetFactionInfo(info)
         PrintReputation(info)
+        Addon:UpdateBars()
     end
 end
 
@@ -352,6 +406,9 @@ function Addon:Test()
     local session = factions[faction].session
     private.processFaction(faction, change)
     factions[faction].session = session
+    if factions[faction].info and factions[faction].info.session then
+        factions[faction].info.session = session
+    end
 end
 
 function private.chatCmdShowConfig(input)
