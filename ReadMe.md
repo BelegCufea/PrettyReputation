@@ -12,7 +12,7 @@ Or
 
 - Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
 - Track session reputation gains or losses on the minimap icon/databroker.
-- Show bars with session reputation changes.
+- Show on-screen bars with session reputation changes.
 - Set the faction with the latest reputation change as watched.
 - Add your own tags or modify existing ones. (See [Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
 

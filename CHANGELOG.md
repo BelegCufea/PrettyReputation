@@ -1,10 +1,11 @@
 # v1.2.0 ()
 
 ## New
-- Added option to show Bars for every faction that had a reputation change during current session (settings in `Output` panel for now)
+- Added option to show on-screen Bars for every faction that had a reputation change during current session (settings in new `Reputation bars` panel)
 
 ## Update
 - Cleaned Libraries
+- Slightly changed options section (moved profiles and about panel to their own section)
 
 # v1.1.8a (11.3.2023)
 

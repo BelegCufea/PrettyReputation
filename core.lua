@@ -44,12 +44,13 @@ local AddonDB_Defaults = {
             height = 18,
             posx = 100,
             posy = -100,
-            icon = true,
+            icon = false,
             font = "Bazooka",
             fontSize = 11,
             fontOutline = "OUTLINE",
             alpha = 0.8,
             sort = "session",
+            growUp = false,
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -165,8 +166,35 @@ local function GetFactionLabel(standingId)
 	return GetText("FACTION_STANDING_LABEL" .. standingId, SEX)
 end
 
-local function GetRepInfo(info)
+function Addon:GetFactionColor(info)
     local reputationColors = Options.Colors
+
+    if (info.factionId and info.factionId ~= 0) then
+        local _, _, standingId = GetFactionInfoByID(info.factionId)
+
+        if (IsMajorFaction(info.factionId)) then
+            return reputationColors[10]
+		end
+
+		if (standingId == nil) then
+            return {r = 1, b = 0, g = 0}
+		end
+
+		if (IsFactionParagon(info.factionId)) then
+			return reputationColors[9]
+		end
+
+		local friendInfo = GetFriendshipReputation(info.factionId)
+		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
+			return reputationColors[standingId] or reputationColors[5]
+
+		end
+        return reputationColors[standingId] or reputationColors[5]
+	end
+    return nil
+end
+
+local function GetRepInfo(info)
     local showParagonCount = Options.Reputation.showParagonCount
     local name, standingId, bottomValue, topValue, barValue
 
@@ -178,13 +206,19 @@ local function GetRepInfo(info)
         info["top"] = topValue
         info["paragon"] = ""
         info["renown"] = ""
-        info["hasReward"] = false
+        info["reward"] = ""
         if icons and icons[info.factionId] then
             info["icon"] = icons[info.factionId]
         end
 
+        info["color"] = Addon:GetFactionColor(info)
+        if info.color then
+            info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
+        else
+            info["standingColor"] = ""
+        end
+
         if (IsMajorFaction(info.factionId)) then
-            info["color"] = reputationColors[10]
             info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionId)
 			local isCapped = HasMaximumRenown(info.factionId)
@@ -206,7 +240,7 @@ local function GetRepInfo(info)
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
                     info["paragon"] = info["paragon"] .. reward
-                    info["hasReward"] = true
+                    info["reward"] = reward
                     if not showParagonCount then
                         info["standingText"] = info["standingText"] .. " " .. reward
                     end
@@ -233,7 +267,6 @@ local function GetRepInfo(info)
 		end
 
 		if (IsFactionParagon(info.factionId)) then
-			info["color"] = reputationColors[9]
             info["isParagon"] = true
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
@@ -257,7 +290,6 @@ local function GetRepInfo(info)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
-			info["color"] = reputationColors[standingId] or reputationColors[5]
 			info["standingText"] = friendInfo.reaction
 			if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
@@ -268,10 +300,10 @@ local function GetRepInfo(info)
 
         info["current"] = barValue - bottomValue
         info["maximum"] = topValue - bottomValue
-        info["color"] = reputationColors[standingId] or reputationColors[5]
         info["standingText"] = GetFactionLabel(standingId)
         return info
 	end
+    return info
 end
 
 local function GetFactionInfo(info)
@@ -283,11 +315,7 @@ local function GetFactionInfo(info)
         info["lastUpdated"] = GetTime()
         info["session"] = session
         if Options.Enabled then
-            local info = GetRepInfo(info)
-            if info.color then
-                info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
-            end
-            factions[info.faction].info = info
+            factions[info.faction].info = GetRepInfo(info)
         end
     end
     Debug:Info(factions, "factions", "VDT")
@@ -439,6 +467,10 @@ function private.chatCmdShowConfig(input)
         Options.Enabled = false
         Addon:UpdateDataBrokerText()
     end
+end
+
+function Addon:OnProfileChanged(event, database, newProfileKey)
+
 end
 
 function Addon:OnInitialize()

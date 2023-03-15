@@ -10,9 +10,36 @@ local Options
 local BarsGroup
 
 local function BarSortOrder(a, b)
-	if not a.sort then return true end
-	if not b.sort then return false end
-	return a.sort < b.sort
+    local growUp = Options.Bars.growUp
+	if not a.sort then return not growUp end
+	if not b.sort then return growUp end
+    if growUp then
+        return a.sort > b.sort
+    else
+        return a.sort < b.sort
+    end
+end
+
+local function BarSort(info)
+    if Options.Bars.sort == "session" then
+        return -info.session
+     elseif Options.Bars.sort == "overall" then
+        return -(info.bottom + info.current)
+     elseif Options.Bars.sort == "recent" then
+        return -info.lastUpdated
+     else
+        return info.faction
+     end
+     return nil
+end
+
+local function PrepareFactionName(name)
+    local cutBeginningWith = ' - '
+    if name:find(cutBeginningWith, 1, true) then
+        name = name:match("^(.-) %-%s.*$")
+    end
+
+    return name
 end
 
 function Bars:Update()
@@ -24,43 +51,43 @@ function Bars:Update()
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionId, nil, 0, 100)
                 UIFrameFadeIn(bar, 0.5, 0, Options.Bars.alpha)
                 v.bar = bar
-             end
+            end
 
-             if Options.Bars.sort == "session" then
-                bar.sort = v.info.session
-             elseif Options.Bars.sort == "overall" then
-                bar.sort = v.info.bottom + v.info.current
-             elseif Options.Bars.sort == "recent" then
-                bar.sort = v.info.lastUpdated
-             else
-                bar.sort = v.info.faction
-             end
-             Debug:Info(Options.Bars.sort, "optionssort")
-             Debug:Info(bar.sort, "barsort")
+            local session = ((v.info.session > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v.info.session) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v.info.session) .. "|r")
 
-             if v.info.icon and v.info.icon ~= "" then
-                bar:SetIcon(v.info.icon)
-             else
-                bar:HideIcon()
-             end
-             bar:UnsetAllColors()
-             bar:SetColorAt(0, v.info.color.r, v.info.color.g, v.info.color.b, 1)
+            bar:SetValue(v.info.current, v.info.maximum)
 
-             local session = ((v.info.session > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v.info.session) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v.info.session) .. "|r")
+            local faction = PrepareFactionName(v.info.name)
+            if v.info.renown and v.info.renown ~= "" then
+                faction = faction .. " [" .. v.info.renown .. "]"
+            end
+            if v.info.paragon and v.info.paragon ~= "" then
+                faction = faction .. " x" .. v.info.paragon
+            end
+            if v.info.reward and v.info.reward ~= "" then
+                session = session .. v.info.reward
+            end
+            faction = string.format("%s (%s / %s)", faction, BreakUpLargeNumbers(v.info.current), BreakUpLargeNumbers(v.info.maximum))
 
-             bar:SetValue(v.info.current, v.info.maximum)
-
-             local faction = string.format("%s (%s / %s)", v.info.name, BreakUpLargeNumbers(v.info.current), BreakUpLargeNumbers(v.info.maximum))
-
-             bar:SetLabel(faction)
-             bar:SetTimerLabel(session)
+            bar:SetLabel(faction)
+            bar:SetTimerLabel(session)
         end
-        if v.info and v.info.name and v.info.session and v.info.session == 0 and v.bar then
-            BarsGroup:RemoveBar(v.bar)
-            v.bar = nil
+        if v.bar and v.info then
+            v.bar.sort = BarSort(v.info)
+            if v.info.icon and v.info.icon ~= "" then
+                v.bar:SetIcon(v.info.icon)
+            else
+                v.bar:HideIcon()
+            end
+            v.bar:UnsetAllColors()
+            local color = Addon:GetFactionColor(v.info)
+            v.bar:SetColorAt(0, color.r, color.g, color.b, 1)
+            if (v.info.session == 0) and ((v.info.lastUpdated + 60) < GetTime()) then
+                BarsGroup:RemoveBar(v.bar)
+                v.bar = nil
+            end
         end
     end
-    Debug:Info(BarsGroup, "BarsGroup", "VDT")
     BarsGroup:SortBars()
 end
 
@@ -72,7 +99,7 @@ local function LoadPosition()
 end
 
 local function SavePosition()
-	local x, y = 0,0
+	local x, y = 0, 0
 	local s = BarsGroup:GetEffectiveScale()
 	local l = BarsGroup:GetLeft()
 	if l then
@@ -103,6 +130,7 @@ function Bars:SetOptions()
     BarsGroup:SetLength(Options.Bars.width)
     BarsGroup:SetThickness( Options.Bars.height)
     BarsGroup:SetAlpha(Options.Bars.alpha)
+    BarsGroup:ReverseGrowth(Options.Bars.growUp)
 
     LoadPosition()
 
