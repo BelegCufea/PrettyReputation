@@ -64,9 +64,7 @@ function Bars:Update()
             if v.info.paragon and v.info.paragon ~= "" then
                 faction = faction .. " x" .. v.info.paragon
             end
-            if v.info.reward and v.info.reward ~= "" then
-                session = session .. v.info.reward
-            end
+
             faction = string.format("%s (%s / %s)", faction, BreakUpLargeNumbers(v.info.current), BreakUpLargeNumbers(v.info.maximum))
 
             bar:SetLabel(faction)
@@ -74,11 +72,7 @@ function Bars:Update()
         end
         if v.bar and v.info then
             v.bar.sort = BarSort(v.info)
-            if v.info.icon and v.info.icon ~= "" then
-                v.bar:SetIcon(v.info.icon)
-            else
-                v.bar:HideIcon()
-            end
+            v.bar:SetIcon(v.info.icon)
             v.bar:UnsetAllColors()
             local color = Addon:GetFactionColor(v.info)
             v.bar:SetColorAt(0, color.r, color.g, color.b, 1)

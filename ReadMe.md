@@ -40,6 +40,10 @@ Locate the 'Pretty Reputation' section within the 'Options -> Addon' section, or
 
 ![Select output](https://i.imgur.com/ncqgJoM.png)
 
+> Choose if and how you want your reputation bars to apear
+
+![Modify On-Screen bars](https://i.imgur.com/wv4Isro.png)
+
 > Pick color scheme or define your own colors
 
 ![Choose your colors](https://i.imgur.com/EJWI8lp.png)

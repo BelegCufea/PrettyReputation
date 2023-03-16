@@ -985,4 +985,7 @@ function Config:OnEnable()
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "About", Addon.CONST.METADATA.NAME, "About")
+    if Addon.Bars then
+        Addon.Bars:SetOptions()
+    end
 end

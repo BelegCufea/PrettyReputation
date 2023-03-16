@@ -45,7 +45,7 @@ local AddonDB_Defaults = {
             posx = 100,
             posy = -100,
             icon = false,
-            font = "Bazooka",
+            font = "2002",
             fontSize = 11,
             fontOutline = "OUTLINE",
             alpha = 0.8,
@@ -206,7 +206,6 @@ local function GetRepInfo(info)
         info["top"] = topValue
         info["paragon"] = ""
         info["renown"] = ""
-        info["reward"] = ""
         if icons and icons[info.factionId] then
             info["icon"] = icons[info.factionId]
         end
@@ -234,14 +233,13 @@ local function GetRepInfo(info)
 
                 local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
-                if showParagonCount then
-                    info["paragon"] =  info["paragon"] .. paragonLevel+1
+                if showParagonCount and paragonLevel > 0 then
+                    info["paragon"] =  info["paragon"] .. paragonLevel
                 end
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
                     info["paragon"] = info["paragon"] .. reward
-                    info["reward"] = reward
-                    if not showParagonCount then
+                      if not showParagonCount then
                         info["standingText"] = info["standingText"] .. " " .. reward
                     end
                 end
@@ -342,6 +340,7 @@ local function PrintReputation(info)
     local message = ConstructMessage(info)
     Addon:Pour(message, 1, 1, 1)
     if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
+        Debug:Info(Options.sinkChatFrames, "sinkChatFrames", "VDT")
         for _, v in pairs(Options.sinkChatFrames) do
             _G[v]:AddMessage(message)
         end

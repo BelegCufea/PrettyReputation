@@ -1,11 +1,18 @@
-# v1.2.0 ()
+# v1.2.0 (16.3.2023)
 
 ## New
 - Added option to show on-screen Bars for every faction that had a reputation change during current session (settings in new `Reputation bars` panel)
+    - *When testing settings (using TEST button), testing Bars will be displayed for at leat 1 minute. After that any reputation change will hide them.*
+
+![On-screen bars](https://i.imgur.com/qp4AvbO.png)
 
 ## Update
 - Cleaned Libraries
-- Slightly changed options section (moved profiles and about panel to their own section)
+- Slightly changed structure of options section
+    - *moved profiles and about panel to their own section*
+    - *moved `TEST` above panels*
+- Modified paragon count to be more in-line with other addons (it is now one less then it used to)
+- Added option to move [barTexture] up or down (settings on `Tag options` panel)
 
 # v1.1.8a (11.3.2023)
 
