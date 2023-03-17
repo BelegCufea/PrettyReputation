@@ -1,5 +1,5 @@
 local ADDON_NAME = ...;
-local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "LibSink-2.0")
+local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "LibSink-2.0")
 
 local GetFactionInfoByID = GetFactionInfoByID
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
@@ -51,6 +51,8 @@ local AddonDB_Defaults = {
             alpha = 0.8,
             sort = "session",
             growUp = false,
+            tooltipAnchor = "ANCHOR_BOTTOMRIGHT",
+            removeAfter = 0
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -66,11 +68,12 @@ local AddonDB_Defaults = {
         sink20OutputSink = "ChatFrame",
         sinkChat = false,
         sinkChatFrames = {"ChatFrame1"},
+        Splash = false,
         Debug = false,
     }
 }
 
-local function SaveRepHeaders()
+function private.saveRepHeaders()
     local parse = true -- make it an option?
     local collapsed = {}
     if not parse then
@@ -99,7 +102,7 @@ local function SaveRepHeaders()
     return collapsed
 end
 
-local function RestoreRepHeaders(collapsed)
+function private.restoreRepHeaders(collapsed)
     if next(collapsed) == nil then
         return
     end
@@ -113,16 +116,16 @@ local function RestoreRepHeaders(collapsed)
 	end
 end
 
-local function SetupIcons() -- FactionAddict
+function private.setupIcons() -- FactionAddict
     if not faFactionData then return end
 	for maintableRow in ipairs(faFactionData) do
         icons[faFactionData[maintableRow][1]] = faFactionData[maintableRow][2]
 	end
 end
 
-local function SetupFactions()
-    local collapsedHeaders = SaveRepHeaders() -- pretty please make all factions visible
-    if next(icons) == nil then SetupIcons() end -- load FactionAddict Icons
+function private.setupFactions()
+    local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
+    if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
         local nextName = GetFactionInfo(i + 1)
@@ -133,30 +136,38 @@ local function SetupFactions()
             elseif (factionId) and not factions[name].id then
                 factions[name].id = factionId
             end
+            if not factions[name].info then
+                local info = {}
+                info["faction"] = name
+                info["factionId"] = factionId
+                info["change"] = 0
+                info["session"] = 0
+                factions[name].info = private.getRepInfo(info)
+            end
         else
             break
         end
     end
-    RestoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+    private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
 end
 
-local function TrackFaction(info)
+function private.trackFaction(info)
     if not info then return end
     if info.faction == GetWatchedFactionInfo() then return end
     if info.faction ==  GUILD and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
-    local collapsedHeaders = SaveRepHeaders()
+    local collapsedHeaders = private.saveRepHeaders()
     for i = 1, GetNumFactions() do
         if info.faction == GetFactionInfo(i) then
             SetWatchedFactionIndex(i)
             break
         end
     end
-    RestoreRepHeaders(collapsedHeaders)
+    private.restoreRepHeaders(collapsedHeaders)
 end
 
 local SEX = UnitSex("player")
-local function GetFactionLabel(standingId)
+function private.getFactionLabel(standingId)
 	if standingId == "paragon" then
 		return "Paragon"
 	end
@@ -194,7 +205,7 @@ function Addon:GetFactionColor(info)
     return nil
 end
 
-local function GetRepInfo(info)
+function private.getRepInfo(info)
     local showParagonCount = Options.Reputation.showParagonCount
     local name, standingId, bottomValue, topValue, barValue
 
@@ -298,29 +309,33 @@ local function GetRepInfo(info)
 
         info["current"] = barValue - bottomValue
         info["maximum"] = topValue - bottomValue
-        info["standingText"] = GetFactionLabel(standingId)
+        info["standingText"] = private.getFactionLabel(standingId)
         return info
 	end
     return info
 end
 
-local function GetFactionInfo(info)
+function private.getFactionSession(info)
+    return factions[info.faction] and (factions[info.faction].session + (info.change * ((info.negative and -1 or 1)))) or 0
+end
+
+function private.getFactionInfo(info)
     if factions[info.faction] then
         local factionId = factions[info.faction].id
         info["factionId"] = factionId
-        local session = factions[info.faction] and (factions[info.faction].session + (info.change * ((info.negative and -1 or 1)))) or 0
+        local session = private.getFactionSession(info)
         factions[info.faction].session = session
         info["lastUpdated"] = GetTime()
         info["session"] = session
         if Options.Enabled then
-            factions[info.faction].info = GetRepInfo(info)
+            factions[info.faction].info = private.getRepInfo(info)
         end
     end
     Debug:Info(factions, "factions", "VDT")
     return info
 end
 
-local function ConstructMessage(info)
+function private.constructMessage(info)
     if info == nil or info.name == nil then
         return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]"
     end
@@ -336,18 +351,17 @@ local function ConstructMessage(info)
     return message
 end
 
-local function PrintReputation(info)
-    local message = ConstructMessage(info)
+function private.printReputation(info)
+    local message = private.constructMessage(info)
     Addon:Pour(message, 1, 1, 1)
     if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
-        Debug:Info(Options.sinkChatFrames, "sinkChatFrames", "VDT")
         for _, v in pairs(Options.sinkChatFrames) do
             _G[v]:AddMessage(message)
         end
     end
 
-    if Options.Track then
-        TrackFaction(info)
+    if Options.Track and not Options.Splash then
+        private.trackFaction(info)
     end
 
     if Options.Debug then
@@ -392,6 +406,31 @@ function Addon:UpdateBars()
     Bars:Update()
 end
 
+function private.processAllFactions()
+    private.setupFactions()
+    local trackFaction
+    for k, v in pairs(factions) do
+        local oldCurrent = v.info.current
+        local info = private.getRepInfo(v.info)
+        if oldCurrent ~= info.current then
+            info.change = math.abs(info.current - oldCurrent)
+            info.negative = info.current < v.info.current
+            local session = private.getFactionSession(info)
+            factions[info.faction].session = session
+            info.session = session
+            info.lastUpdated = GetTime()
+            private.printReputation(info)
+            if not trackFaction then
+                trackFaction = info
+            elseif trackFaction.change < info.change then
+                trackFaction = info
+            end
+        end
+    end
+    private.trackFaction(trackFaction)
+    Debug:Info(factions, "factions", "VDT")
+end
+
 function private.processFaction(faction, change)
     local info = {}
     Debug:Info(((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change), "Event")
@@ -406,18 +445,25 @@ function private.processFaction(faction, change)
         info["change"] = 0
     end
 
-    if factions[info.faction] == nil then
-        C_Timer.After(0.5, function()
-            SetupFactions()
-            GetFactionInfo(info)
-            PrintReputation(info)
+    if not Options.Splash then
+        if factions[info.faction] == nil then
+            C_Timer.After(0.5, function()
+                private.setupFactions()
+                info = private.getFactionInfo(info)
+                private.printReputation(info)
+                Addon:UpdateBars()
+                Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
+            end)
+        else
+            info = private.getFactionInfo(info)
+            private.printReputation(info)
             Addon:UpdateBars()
-            Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
-        end)
+        end
     else
-        GetFactionInfo(info)
-        PrintReputation(info)
-        Addon:UpdateBars()
+        C_Timer.After(0.1, function()
+            private.processAllFactions()
+            Addon:UpdateBars()
+        end)
     end
 end
 
@@ -431,7 +477,10 @@ end
 function Addon:Test()
     local faction, change = Options.Test.faction, Options.Test.change
     local session = factions[faction].session
+    local splash = Options.Splash
+    Options.Splash = false
     private.processFaction(faction, change)
+    Options.Splash = splash
     factions[faction].session = session
     if factions[faction].info and factions[faction].info.session then
         factions[faction].info.session = session
@@ -479,7 +528,7 @@ end
 function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
     Options = Addon.db.profile
-    SetupFactions()
+    private.setupFactions()
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
 end

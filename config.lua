@@ -181,9 +181,20 @@ local options = {
                                 end
                             end
                         },
+                        Splash = {
+                            type = "toggle",
+                            order = 3,
+                            name = "Show splash reputation (May slow down the game!)",
+                            desc = "Sometimes you can receive reputation changes with factions that are not announced by Blizzard. The addon has an option to display these changes as well, but be aware that this feature may slow down the system and it's not recommended unless you really need it.",
+                            width = "full",
+                            get = function(info) return Addon.db.profile.Splash end,
+                            set = function(info, value)
+                                Addon.db.profile.Splash = value
+                            end
+                        },
                         Track = {
                             type = "group",
-                            order = 3,
+                            order = 4,
                             name = "Track",
                             inline = true,
                             args = {
@@ -223,7 +234,7 @@ local options = {
                         },
                         Tooltip = {
                             type = "select",
-                            order = 4,
+                            order = 5,
                             name = "Sort minimap/databroker tooltip by",
                             values = {
                                 ["value"] = "Session gain/loss",
@@ -235,7 +246,7 @@ local options = {
                                 Addon.db.profile.TooltipSort = value
                             end,
                         },
-                        Seperator1 = { type = "description", order = 5, fontSize = "small",name = "",width = "full", },
+                        Seperator1 = { type = "description", order = 6, fontSize = "small",name = "",width = "full", },
                         Debug = {
                             type = "toggle",
                             order = 9,
@@ -670,9 +681,27 @@ local options = {
                                 SetBarsOptions()
                             end,
                         },
+                        TooltipAnchor = {
+                            type = "select",
+                            order = 330,
+                            name = "Anchor Tooltip to:",
+                            values = {
+                                ["ANCHOR_TOP"] = "Top",
+                                ["ANCHOR_BOTTOM"] = "Bottom",
+                                ["RIGHT"] = "Right",
+                                ["LEFT"] = "Left",
+                                ["ANCHOR_CURSOR"] = "Cursor",
+                            },
+                            style = "dropdown",
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.tooltipAnchor end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.tooltipAnchor = value
+                            end,
+                        },
                         GrowUp = {
                             type = "toggle",
-                            order = 330,
+                            order = 410,
                             name = "Grows upward",
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
                             get = function(info) return Addon.db.profile.Bars.growUp end,
@@ -681,7 +710,24 @@ local options = {
                                 SetBarsOptions()
                             end,
                         },
-                    }
+                        RemoveAfter = {
+                            type = "range",
+                            order = 420,
+                            name = "Time (s)",
+                            desc = "After how many seconds without reputation change will the faction bar be visible. 0=never hide.",
+                            min = 0,
+                            max = 300,
+                            softMin = 0,
+                            softMax = 180,
+                            step = 1,
+                            bigStep = 5,
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.removeAfter end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.removeAfter = value
+                            end,
+                        },
+                    },
                 },
                 Colors = {
                     type = "group",

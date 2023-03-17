@@ -1,3 +1,11 @@
+# v1.2.1 ()
+
+## New
+ - Added an option for on-screen bars to hide after an adjustable time (set in the `Reputation bars` panel). *If enabled, the TEST bars will only be visible for the set amount of time; otherwise, they will be visible for 60 seconds and then disappear.*
+- Added a tooltip for on-screen reputation bars that shows the faction standing and how much reputation is needed to reach the next standing (positioning available on the `Reputation bars` panel).
+- Added an option to show "splash" reputation changes (settings available on the `General` panel).
+    - *Sometimes Blizzard changes some reputations internally without notifying the user.* **Please note that enabling this option may slow down the game a bit**, so use it only if needed. None of these "splashes" exist in the latest content (found 5 linked ones {Alliance Wanguard/Horde Expedition} in WotLK expansion so far).
+
 # v1.2.0 (16.3.2023)
 
 ## New

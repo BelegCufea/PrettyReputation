@@ -9,6 +9,9 @@ local Const = Addon.CONST
 local Options
 local BarsGroup
 
+local bars = {}
+local expiredTimer
+
 local function BarSortOrder(a, b)
     local growUp = Options.Bars.growUp
 	if not a.sort then return not growUp end
@@ -34,12 +37,81 @@ local function BarSort(info)
 end
 
 local function PrepareFactionName(name)
-    local cutBeginningWith = ' - '
+    local cutBeginningWith = " - "
     if name:find(cutBeginningWith, 1, true) then
         name = name:match("^(.-) %-%s.*$")
     end
 
     return name
+end
+
+local function ConstructTooltipAnchor(tooltipAnchor)
+    local ofsx = 0
+    local ofsy = 0
+    if tooltipAnchor == "RIGHT" then
+        ofsx = 2
+    end
+    if tooltipAnchor == "LEFT" then
+        ofsx = -2
+        if Options.Bars.icon then
+            ofsx = ofsx - Options.Bars.height
+        end
+    end
+    if tooltipAnchor == "RIGHT" or tooltipAnchor == "LEFT" then
+        if Options.Bars.growUp then
+            ofsy = ofsy - Options.Bars.height
+        else
+            tooltipAnchor = "BOTTOM" .. tooltipAnchor
+            ofsy = ofsy + Options.Bars.height
+        end
+        tooltipAnchor = "ANCHOR_" .. tooltipAnchor
+    end
+    return tooltipAnchor, ofsx, ofsy
+end
+
+local function ShowFactionTooltip(bar)
+    if factions[bar.faction] then
+        local faction = factions[bar.faction]
+        if faction.info and faction.info.name then
+            local tooltipAnchor, ofsx, ofsy = ConstructTooltipAnchor(Options.Bars.tooltipAnchor)
+            GameTooltip:SetOwner(bar, tooltipAnchor, ofsx, ofsy)
+            GameTooltip:AddLine(Const.MESSAGE_COLORS .NAME .. faction.info.name .. "|r")
+            GameTooltip:AddLine(" ")
+            local standing = faction.info.standingColor .. faction.info.standingText .. "|r"
+            --local session = ((faction.info.session > 0) and (Const.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(faction.info.session) .. "|r")) or (Const.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(faction.session) .. "|r")
+            local toGo = (faction.info.negative and ("-" .. BreakUpLargeNumbers(faction.info.current)) or BreakUpLargeNumbers((faction.info.maximum - faction.info.current)))
+            GameTooltip:AddDoubleLine("Standing:", standing)
+            --GameTooltip:AddDoubleLine("Session:", session)
+            GameTooltip:AddDoubleLine("To next:", toGo)
+            GameTooltip:Show()
+        end
+    end
+end
+
+local function HideFactionTooltip(bar)
+    GameTooltip:Hide()
+end
+
+function Bars:RemoveExpired()
+    local now = GetTime()
+    for i = #bars, 1, -1 do
+        local name = bars[i]
+        local faction = factions[name]
+        local info =  faction and faction.info
+        local remove = false
+        if Options.Bars.removeAfter == 0 then -- remove only Bars with session gain = 0
+            remove = info and (info.session == 0) and ((now - info.lastUpdated) >= 60)
+        else
+            remove = info and ((now - info.lastUpdated) >= Options.Bars.removeAfter)
+        end
+        if remove then
+            if faction.bar then
+                BarsGroup:RemoveBar(faction.bar)
+                faction.bar = nil
+                table.remove(bars, i)
+            end
+        end
+    end
 end
 
 function Bars:Update()
@@ -50,10 +122,14 @@ function Bars:Update()
             if not bar then
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionId, nil, 0, 100)
                 UIFrameFadeIn(bar, 0.5, 0, Options.Bars.alpha)
+                bar.faction = v.info.faction
+                bar:SetScript("OnEnter", function(self) ShowFactionTooltip(self) end)
+                bar:SetScript("OnLeave", function(self) HideFactionTooltip(self) end)
+                table.insert(bars, v.info.faction)
                 v.bar = bar
             end
 
-            local session = ((v.info.session > 0) and (Addon.CONST.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v.info.session) .. "|r")) or (Addon.CONST.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v.info.session) .. "|r")
+            local session = ((v.info.session > 0) and (Const.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v.info.session) .. "|r")) or (Const.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v.info.session) .. "|r")
 
             bar:SetValue(v.info.current, v.info.maximum)
 
@@ -76,10 +152,6 @@ function Bars:Update()
             v.bar:UnsetAllColors()
             local color = Addon:GetFactionColor(v.info)
             v.bar:SetColorAt(0, color.r, color.g, color.b, 1)
-            if (v.info.session == 0) and ((v.info.lastUpdated + 60) < GetTime()) then
-                BarsGroup:RemoveBar(v.bar)
-                v.bar = nil
-            end
         end
     end
     BarsGroup:SortBars()
@@ -148,11 +220,16 @@ function Bars:OnEnable()
 
     Bars:SetOptions()
     BarsGroup:Show()
+	expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
 end
 
 function Bars:OnDisable()
 	if BarsGroup then
 		BarsGroup:Hide()
+	end
+	if expiredTimer then
+		Addon:CancelTimer(expiredTimer, true)
+		expiredTimer = nil
 	end
 end
 
