@@ -1,3 +1,8 @@
+# v1.2.1a (18.3.2023)
+
+## Fixes
+- Error `PrettyReputation/core.lua:282: attempt to call global 'GetFactionLabel' (a nil value)`
+
 # v1.2.1 (18.3.2023)
 
 ## New
