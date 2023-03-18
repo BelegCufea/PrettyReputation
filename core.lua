@@ -51,7 +51,7 @@ local AddonDB_Defaults = {
             alpha = 0.8,
             sort = "session",
             growUp = false,
-            tooltipAnchor = "ANCHOR_BOTTOMRIGHT",
+            tooltipAnchor = "RIGHT",
             removeAfter = 0
         },
         Test = {
@@ -391,7 +391,7 @@ function Addon:SetBarsOptions()
         if not Bars:IsEnabled() then Bars:Enable() end
     end
 
-    if not Options.Enabled  then
+    if not Options.Enabled then
         if Bars:IsEnabled() then Bars:Disable() end
     end
 
@@ -406,15 +406,19 @@ function Addon:UpdateBars()
     Bars:Update()
 end
 
-function private.processAllFactions()
-    private.setupFactions()
+function private.processAllFactions(factionInfo)
     local trackFaction
     for k, v in pairs(factions) do
-        local oldCurrent = v.info.current
+        local oldCurrent = v.info.current + v.info.bottom
         local info = private.getRepInfo(v.info)
-        if oldCurrent ~= info.current then
-            info.change = math.abs(info.current - oldCurrent)
-            info.negative = info.current < v.info.current
+        local newCurrent = info.current + info.bottom
+        local change = newCurrent - oldCurrent
+        if (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
+            change = factionInfo.change * ((factionInfo.negative and -1) or 1)
+        end
+        if change ~= 0 then
+            info.change = math.abs(change)
+            info.negative = change < 0
             local session = private.getFactionSession(info)
             factions[info.faction].session = session
             info.session = session
@@ -447,7 +451,7 @@ function private.processFaction(faction, change)
 
     if not Options.Splash then
         if factions[info.faction] == nil then
-            C_Timer.After(0.5, function()
+            C_Timer.After(0.2, function()
                 private.setupFactions()
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
@@ -461,7 +465,8 @@ function private.processFaction(faction, change)
         end
     else
         C_Timer.After(0.1, function()
-            private.processAllFactions()
+            private.setupFactions()
+            private.processAllFactions(info)
             Addon:UpdateBars()
         end)
     end
@@ -475,6 +480,7 @@ function private.CombatTextUpdated(_, messagetype)
 end
 
 function Addon:Test()
+    if not Options.Enabled then return end
     local faction, change = Options.Test.faction, Options.Test.change
     local session = factions[faction].session
     local splash = Options.Splash
@@ -507,18 +513,28 @@ function private.chatCmdShowConfig(input)
         Addon:Print(("You are running version |cff1784d1%s|r."):format(Const.METADATA.VERSION))
     elseif cmd == "toggle" then
         Options.Enabled = not Options.Enabled
-        Addon:UpdateDataBrokerText()
+        Addon:OnToggle()
     elseif cmd == "enable" then
         Options.Enabled = true
-        Addon:UpdateDataBrokerText()
+        Addon:OnToggle()
     elseif cmd == "disable" then
         Options.Enabled = false
-        Addon:UpdateDataBrokerText()
+        Addon:OnToggle()
     end
 end
 
 function Addon:OnProfileChanged(event, database, newProfileKey)
 
+end
+
+function Addon:OnToggle()
+    Addon:UpdateDataBrokerText()
+    Addon:SetBarsOptions()
+    if Options.Enabled then
+        Addon:Print(Const.MESSAGE_COLORS.POSITIVE .. "Enabled|r")
+    else
+        Addon:Print(Const.MESSAGE_COLORS.NEGATIVE .. "Disabled|r")
+    end
 end
 
 function Addon:OnInitialize()

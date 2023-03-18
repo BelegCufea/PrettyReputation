@@ -30,7 +30,7 @@ local settings = {
     OnClick = function(self, button, down)
         if button == "LeftButton" then
             Addon.db.profile.Enabled = not Addon.db.profile.Enabled
-            private.SetLabelText()
+            Addon:OnToggle()
         end
         if button == "RightButton" then
             InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)

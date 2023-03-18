@@ -162,8 +162,7 @@ local options = {
                             get = function(info) return Addon.db.profile.Enabled end,
                             set = function(info, value)
                                 Addon.db.profile.Enabled = value
-                                Addon:UpdateDataBrokerText()
-                                Addon:SetBarsOptions()
+                                Addon:OnToggle()
                             end
                         },
                         MiniMap = {
@@ -184,8 +183,8 @@ local options = {
                         Splash = {
                             type = "toggle",
                             order = 3,
-                            name = "Show splash reputation (May slow down the game!)",
-                            desc = "Sometimes you can receive reputation changes with factions that are not announced by Blizzard. The addon has an option to display these changes as well, but be aware that this feature may slow down the system and it's not recommended unless you really need it.",
+                            name = "Show splash reputation (|cnWARNING_FONT_COLOR:May cause lag!|r)",
+                            desc = "Sometimes you can receive reputation changes with factions that are not announced by Blizzard. The addon has an option to display these changes as well, but be aware that this feature may slow down the system and it's not recommended unless you really need it. It won't catch the first reputation change for a newly discovered 'splased' factions.",
                             width = "full",
                             get = function(info) return Addon.db.profile.Splash end,
                             set = function(info, value)
@@ -526,7 +525,8 @@ local options = {
                         Enabled = {
                             type = "toggle",
                             order = 10,
-                            name = "Enable",
+                            name = "Enabled",
+                            width = "full",
                             get = function(info) return Addon.db.profile.Bars.enabled end,
                             set = function(info, value)
                                 Addon.db.profile.Bars.enabled = value
@@ -535,7 +535,7 @@ local options = {
                         },
                         Locked = {
                             type = "toggle",
-                            order = 20,
+                            order = 110,
                             name = "Lock position",
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
                             get = function(info) return Addon.db.profile.Bars.locked end,
@@ -546,7 +546,7 @@ local options = {
                         },
                         Icon = {
                             type = "toggle",
-                            order = 30,
+                            order = 120,
                             name = "Show faction icons",
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
                             get = function(info) return Addon.db.profile.Bars.icon end,
@@ -555,10 +555,21 @@ local options = {
                                 SetBarsOptions()
                             end,
                         },
+                        GrowUp = {
+                            type = "toggle",
+                            order = 130,
+                            name = "Grows upward",
+                            disabled = function() return not Addon.db.profile.Bars.enabled end,
+                            get = function(info) return Addon.db.profile.Bars.growUp end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.growUp = value
+                                SetBarsOptions()
+                            end,
+                        },
                         Texture = {
                             type = "select",
                             dialogControl = "LSM30_Statusbar",
-                            order = 110,
+                            order = 210,
                             name = "Texture",
                             values = AceGUIWidgetLSMlists.statusbar,
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
@@ -570,7 +581,7 @@ local options = {
                         },
                         Width = {
                             type = "range",
-                            order = 120,
+                            order = 220,
                             name = "Width",
                             min = 20,
                             max = 2000,
@@ -587,7 +598,7 @@ local options = {
                         },
                         Height = {
                             type = "range",
-                            order = 130,
+                            order = 230,
                             name = "Height",
                             min = 2,
                             max = 64,
@@ -605,7 +616,7 @@ local options = {
                         Font = {
                             type = "select",
                             dialogControl = "LSM30_Font",
-                            order = 210,
+                            order = 310,
                             name = "Font",
                             values = AceGUIWidgetLSMlists.font,
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
@@ -617,7 +628,7 @@ local options = {
                         },
                         FontSize = {
                             type = "range",
-                            order = 220,
+                            order = 320,
                             name = "Font size",
                             min = 5,
                             max = 64,
@@ -634,7 +645,7 @@ local options = {
                         },
                         FontOutline = {
                             type = "select",
-                            order = 230,
+                            order = 330,
                             name = "Font outline",
                             values = {
                                 [""] = "None",
@@ -650,7 +661,7 @@ local options = {
                         },
                         Alpha = {
                             type = "range",
-                            order = 310,
+                            order = 410,
                             name = "Opacity",
                             min = 0,
                             max = 1,
@@ -665,7 +676,7 @@ local options = {
                         },
                         Sort = {
                             type = "select",
-                            order = 320,
+                            order = 420,
                             name = "Sort bars by",
                             values = {
                                 ["faction"] = "Faction name",
@@ -683,8 +694,8 @@ local options = {
                         },
                         TooltipAnchor = {
                             type = "select",
-                            order = 330,
-                            name = "Anchor Tooltip to:",
+                            order = 430,
+                            name = "Anchor tooltip to",
                             values = {
                                 ["ANCHOR_TOP"] = "Top",
                                 ["ANCHOR_BOTTOM"] = "Bottom",
@@ -699,26 +710,15 @@ local options = {
                                 Addon.db.profile.Bars.tooltipAnchor = value
                             end,
                         },
-                        GrowUp = {
-                            type = "toggle",
-                            order = 410,
-                            name = "Grows upward",
-                            disabled = function() return not Addon.db.profile.Bars.enabled end,
-                            get = function(info) return Addon.db.profile.Bars.growUp end,
-                            set = function(info, value)
-                                Addon.db.profile.Bars.growUp = value
-                                SetBarsOptions()
-                            end,
-                        },
                         RemoveAfter = {
                             type = "range",
-                            order = 420,
+                            order = 510,
                             name = "Time (s)",
-                            desc = "After how many seconds without reputation change will the faction bar be visible. 0=never hide.",
+                            desc = "For how many seconds without reputation change will the faction bar be visible. 0=never hide.",
                             min = 0,
-                            max = 300,
+                            max = 900,
                             softMin = 0,
-                            softMax = 180,
+                            softMax = 300,
                             step = 1,
                             bigStep = 5,
                             disabled = function() return not Addon.db.profile.Bars.enabled end,
@@ -942,6 +942,7 @@ local options = {
                     order = 940,
                     name = 'TEST',
                     width = "half",
+                    disabled = function() return not Addon.db.profile.Enabled end,
                     func = function() Addon:Test() end,
                 },
             },

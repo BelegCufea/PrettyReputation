@@ -94,6 +94,7 @@ end
 
 function Bars:RemoveExpired()
     local now = GetTime()
+    local needsUpdate = false
     for i = #bars, 1, -1 do
         local name = bars[i]
         local faction = factions[name]
@@ -106,11 +107,16 @@ function Bars:RemoveExpired()
         end
         if remove then
             if faction.bar then
+                needsUpdate = true
                 BarsGroup:RemoveBar(faction.bar)
                 faction.bar = nil
                 table.remove(bars, i)
             end
         end
+    end
+    if needsUpdate then
+        BarsGroup:SortBars()
+        Bars:Update()
     end
 end
 
@@ -220,11 +226,13 @@ function Bars:OnEnable()
 
     Bars:SetOptions()
     BarsGroup:Show()
-	expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
+	if not expiredTimer then
+	    expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
+    end
 end
 
 function Bars:OnDisable()
-	if BarsGroup then
+    if BarsGroup then
 		BarsGroup:Hide()
 	end
 	if expiredTimer then
