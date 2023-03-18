@@ -279,7 +279,7 @@ function private.getRepInfo(info)
             info["isParagon"] = true
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
-			info["standingText"] = GetFactionLabel("paragon")
+			info["standingText"] = private.getFactionLabel("paragon")
 			if showParagonCount then
                 info["paragon"] =  info["paragon"] .. paragonLevel+1
             end
