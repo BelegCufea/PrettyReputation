@@ -413,9 +413,9 @@ function private.processAllFactions(factionInfo)
         local info = private.getRepInfo(v.info)
         local newCurrent = info.current + info.bottom
         local change = newCurrent - oldCurrent
-        --if (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
-        --    change = factionInfo.change * ((factionInfo.negative and -1) or 1)
-        --end
+        if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
+            change = factionInfo.change * ((factionInfo.negative and -1) or 1)
+        end
         if change ~= 0 then
             info.change = math.abs(change)
             info.negative = change < 0
@@ -449,10 +449,11 @@ function private.processFaction(faction, change)
         info["change"] = 0
     end
 
+    info["new"] = (factions[info.faction] == nil)
     if not Options.Splash then
-        if factions[info.faction] == nil then
-            C_Timer.After(0.2, function()
-                Debug:Info("New faction", "Report type:")
+        if info.new then
+            C_Timer.After(0.1, function()
+                --Debug:Info("New faction", "Report type:")
                 private.setupFactions()
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
@@ -460,13 +461,13 @@ function private.processFaction(faction, change)
                 Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
             end)
         else
-            Debug:Info("Standard", "Report type:")
+            --Debug:Info("Standard", "Report type:")
             info = private.getFactionInfo(info)
             private.printReputation(info)
             Addon:UpdateBars()
         end
     else
-        Debug:Info("Splash reputation", "Report type:")
+        --Debug:Info("Splash reputation", "Report type:")
         C_Timer.After(0.1, function()
             private.setupFactions()
             private.processAllFactions(info)
@@ -548,6 +549,7 @@ function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true) -- set true to prefer 'Default' profile as default
     Options = Addon.db.profile
     private.setupFactions()
+    --if Options.Debug then factions["The Silver Covenant"] = nil end
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
 end
