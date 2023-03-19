@@ -1,3 +1,11 @@
+# v1.2.1b (19.3.2023)
+
+## New
+- Added feature to rightclick a on-screen bar to hide it.
+
+## Fixes
+- Ever-blinking on-screen bars when "time to display" is set to a non-zero value.
+
 # v1.2.1a (18.3.2023)
 
 ## Fixes
@@ -191,6 +199,3 @@
 - Initializing all (hopefully) available factions
 
 # v1.0.0 (30.1.2023)
-
-
-

@@ -83,6 +83,8 @@ local function ShowFactionTooltip(bar)
             GameTooltip:AddDoubleLine("Standing:", standing)
             --GameTooltip:AddDoubleLine("Session:", session)
             GameTooltip:AddDoubleLine("To next:", toGo)
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")
             GameTooltip:Show()
         end
     end
@@ -92,22 +94,39 @@ local function HideFactionTooltip(bar)
     GameTooltip:Hide()
 end
 
+local function RemoveBar(bar)
+    local name = bar.faction
+    local faction = factions[name]
+    local info =  faction and faction.info
+    if info then
+        info.lastUpdated = 0
+        Bars:RemoveExpired()
+    end
+end
+
+local function Expired(info)
+    local now = time()
+    local expired = false
+    if Options.Bars.removeAfter == 0 then -- remove only Bars with session gain = 0
+        expired = info and (info.session == 0) and ((now - info.lastUpdated) >= 60)
+    else
+        expired = info and ((now - info.lastUpdated) >= Options.Bars.removeAfter)
+    end
+
+    return expired
+end
+
 function Bars:RemoveExpired()
-    local now = GetTime()
     local needsUpdate = false
     for i = #bars, 1, -1 do
         local name = bars[i]
         local faction = factions[name]
         local info =  faction and faction.info
-        local remove = false
-        if Options.Bars.removeAfter == 0 then -- remove only Bars with session gain = 0
-            remove = info and (info.session == 0) and ((now - info.lastUpdated) >= 60)
-        else
-            remove = info and ((now - info.lastUpdated) >= Options.Bars.removeAfter)
-        end
+        local remove = Expired(info)
         if remove then
             if faction.bar then
                 needsUpdate = true
+                info.lastUpdated = 0
                 BarsGroup:RemoveBar(faction.bar)
                 faction.bar = nil
                 table.remove(bars, i)
@@ -123,7 +142,7 @@ end
 function Bars:Update()
     if not Options.Bars.enabled then return end
     for k,v in pairs(factions) do
-        if v.info and v.info.name and v.info.session and v.info.session ~= 0 then
+        if v.info and v.info.name and v.info.session and v.info.session ~= 0 and not Expired(v.info) then
             local bar = v.bar
             if not bar then
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionId, nil, 0, 100)
@@ -131,6 +150,7 @@ function Bars:Update()
                 bar.faction = v.info.faction
                 bar:SetScript("OnEnter", function(self) ShowFactionTooltip(self) end)
                 bar:SetScript("OnLeave", function(self) HideFactionTooltip(self) end)
+                bar:SetScript("OnMouseUp", function(self, button) if button == "RightButton" then RemoveBar(self) end end)
                 table.insert(bars, v.info.faction)
                 v.bar = bar
             end

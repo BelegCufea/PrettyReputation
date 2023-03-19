@@ -325,7 +325,7 @@ function private.getFactionInfo(info)
         info["factionId"] = factionId
         local session = private.getFactionSession(info)
         factions[info.faction].session = session
-        info["lastUpdated"] = GetTime()
+        info["lastUpdated"] = time()
         info["session"] = session
         if Options.Enabled then
             factions[info.faction].info = private.getRepInfo(info)
@@ -422,7 +422,7 @@ function private.processAllFactions(factionInfo)
             local session = private.getFactionSession(info)
             factions[info.faction].session = session
             info.session = session
-            info.lastUpdated = GetTime()
+            info.lastUpdated = time()
             private.printReputation(info)
             if not trackFaction then
                 trackFaction = info
