@@ -1,7 +1,18 @@
+# v1.2.1c (19.3.2023)
+
+## New
+- Added "Last change" to on-screen bar tooltip.
+
+## Fixes
+- Removing an on-screen bar by right-clicking was not working properly.
+
+## Misc
+- After doing some additional testing, the 'Splash' feature seems to be working properly. The code even throttles down multiple reputation changes for a faction. However, I will leave it turned off by default for now until further testing proves it to be reliable.
+
 # v1.2.1b (19.3.2023)
 
 ## New
-- Added feature to rightclick a on-screen bar to hide it.
+- Added a feature to hide an on-screen bar by right-clicking it.
 
 ## Fixes
 - Ever-blinking on-screen bars when "time to display" is set to a non-zero value.

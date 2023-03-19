@@ -78,11 +78,11 @@ local function ShowFactionTooltip(bar)
             GameTooltip:AddLine(Const.MESSAGE_COLORS .NAME .. faction.info.name .. "|r")
             GameTooltip:AddLine(" ")
             local standing = faction.info.standingColor .. faction.info.standingText .. "|r"
-            --local session = ((faction.info.session > 0) and (Const.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(faction.info.session) .. "|r")) or (Const.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(faction.session) .. "|r")
             local toGo = (faction.info.negative and ("-" .. BreakUpLargeNumbers(faction.info.current)) or BreakUpLargeNumbers((faction.info.maximum - faction.info.current)))
+            local timeElapsed = time() - faction.info.lastUpdated
             GameTooltip:AddDoubleLine("Standing:", standing)
-            --GameTooltip:AddDoubleLine("Session:", session)
             GameTooltip:AddDoubleLine("To next:", toGo)
+            GameTooltip:AddDoubleLine("Last change:", string.format("%d:%02d", math.floor(timeElapsed / 60), timeElapsed % 60))
             GameTooltip:AddLine(" ")
             GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")
             GameTooltip:Show()
@@ -107,10 +107,10 @@ end
 local function Expired(info)
     local now = time()
     local expired = false
-    if Options.Bars.removeAfter == 0 then -- remove only Bars with session gain = 0
-        expired = info and (info.session == 0) and ((now - info.lastUpdated) >= 60)
+    if Options.Bars.removeAfter == 0 then
+        expired = info and ((((info.session or 0) == 0) and ((now - (info.lastUpdated or 0)) >= 60)) or not info.lastUpdated or info.lastUpdated == 0)
     else
-        expired = info and ((now - info.lastUpdated) >= Options.Bars.removeAfter)
+        expired = info and ((now - (info.lastUpdated or 0)) >= Options.Bars.removeAfter)
     end
 
     return expired
