@@ -140,7 +140,9 @@ function Bars:RemoveExpired()
 end
 
 function Bars:Update()
-    if not Options.Bars.enabled then return end
+    if (not Options.Bars.enabled) or (not Options.Enabled) then
+            if Bars:IsEnabled() then Bars:Disable() end
+    end
     for k,v in pairs(factions) do
         if v.info and v.info.name and v.info.session and v.info.session ~= 0 and not Expired(v.info) then
             local bar = v.bar
@@ -240,12 +242,14 @@ function Bars:OnEnable()
 
 	if not BarsGroup then
         BarsGroup = Bars:NewBarGroup("Pretty Reputation Bars", nil, Options.Bars.width, Options.Bars.height, Const.METADATA.NAME .. "_Bars")
-	end
-    BarsGroup.RegisterCallback(self, "AnchorMoved")
-    BarsGroup:SetSortFunction(BarSortOrder)
+        BarsGroup.RegisterCallback(self, "AnchorMoved")
+        BarsGroup:SetSortFunction(BarSortOrder)
+    end
 
     Bars:SetOptions()
-    BarsGroup:Show()
+    if Options.Enabled and Options.Bars.enabled then
+        BarsGroup:Show()
+    end
 	if not expiredTimer then
 	    expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
     end

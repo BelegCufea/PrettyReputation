@@ -124,29 +124,30 @@ function private.setupIcons() -- FactionAddict
 end
 
 function private.setupFactions()
+    local lastName
     local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
     if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
-        local nextName = GetFactionInfo(i + 1)
-        if name == nextName and nextName ~= "Guild" then break end -- bugfix
-        if (name) then
-            if (factionId) and not factions[name] then
-                factions[name] = { id = factionId, session = 0}
-            elseif (factionId) and not factions[name].id then
-                factions[name].id = factionId
-            end
-            if not factions[name].info then
-                local info = {}
-                info["faction"] = name
-                info["factionId"] = factionId
-                info["change"] = 0
-                info["session"] = 0
-                factions[name].info = private.getRepInfo(info)
-            end
-        else
-            break
+        if not name or name == lastName and name ~= GUILD then break end
+        if not factions[name] then
+            factions[name] = { id = factionId, session = 0}
         end
+        if not factions[name].id then
+            factions[name].id = factionId
+        end
+        if not factions[name].session then
+            factions[name].session = 0
+        end
+        if not factions[name].info then
+            local info = {}
+            info["faction"] = name
+            info["factionId"] = factionId
+            info["change"] = 0
+            info["session"] = factions[name].session
+            factions[name].info = private.getRepInfo(info)
+        end
+        lastName = name
     end
     private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
 end
@@ -352,6 +353,7 @@ function private.constructMessage(info)
 end
 
 function private.printReputation(info)
+    if not Options.Enabled then return end
     local message = private.constructMessage(info)
     Addon:Pour(message, 1, 1, 1)
     if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
@@ -407,6 +409,8 @@ function Addon:UpdateBars()
 end
 
 function private.processAllFactions(factionInfo)
+    -- OK, need to run even if Options.Enabled is false to avoid wrong session gains
+    --debugprofilestart()
     local trackFaction
     for k, v in pairs(factions) do
         local oldCurrent = v.info.current + v.info.bottom
@@ -433,6 +437,8 @@ function private.processAllFactions(factionInfo)
     end
     private.trackFaction(trackFaction)
     Debug:Info(factions, "factions", "VDT")
+    --local elapsedTime = debugprofilestop()
+    --Debug:Info("Elapsed time: " .. elapsedTime .. " ms", "ellapsedTime")
 end
 
 function private.processFaction(faction, change)
