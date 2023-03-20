@@ -235,6 +235,11 @@ function Bars:SetOptions()
 		BarsGroup:Unlock()
 		BarsGroup:ShowAnchor()
 	end
+    if Options.Enabled and Options.Bars.enabled then
+        BarsGroup:Show()
+    else
+        BarsGroup:Hide()
+    end
 end
 
 function Bars:OnEnable()
@@ -247,9 +252,6 @@ function Bars:OnEnable()
     end
 
     Bars:SetOptions()
-    if Options.Enabled and Options.Bars.enabled then
-        BarsGroup:Show()
-    end
 	if not expiredTimer then
 	    expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
     end
