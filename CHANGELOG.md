@@ -1,9 +1,10 @@
-# v1.2.1d ()
+# v1.2.1d (20.3.2023)
 
 ## Fixes
 - Resolved an issue where messages were still being displayed even when the addon was disabled on the `General` panel.
-- Reputation bars were showing if they were disabled in previous session.
+- Reputation bars were showing if they were disabled in previous session (reported by filliph).
 - Fixed a situation where the addon wasn't registering the first reputation gain (or loss) for a newly "discovered" faction, if the 'Splash' feature was enabled. However, please note that this fix only applies to factions that are announced by Blizzard. Factions that gain or lose reputation without Blizzard's notification (i.e. 'splashed' factions) won't register the first gain or loss if they are newly discovered.
+- Fixed error `PrettyReputation/core.lua:139: attempt to index field '?' (a nil value)` on initial setup of reputations (reported by filliph - thanks mate)
 
 ## Misc
 - The 'Splash' feature is a nice addition, but it requires the addon to calculate all reputations every time there is a change, even if the addon is not enabled on the `General` panel. Although this process takes only a few milliseconds (on my old computer), it may be worth considering in certain situations.
