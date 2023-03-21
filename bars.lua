@@ -1,4 +1,5 @@
 local Addon = select(2, ...)
+local ADDON_NAME = ...
 local LSM = LibStub("LibSharedMedia-3.0")
 local Bars = Addon:NewModule("Bars", "LibBars-1.0")
 Addon.Bars = Bars
@@ -246,7 +247,7 @@ function Bars:OnEnable()
 	Options = Addon.db.profile
 
 	if not BarsGroup then
-        BarsGroup = Bars:NewBarGroup("Pretty Reputation Bars", nil, Options.Bars.width, Options.Bars.height, Const.METADATA.NAME .. "_Bars")
+        BarsGroup = Bars:NewBarGroup("Pretty Reputation Bars", nil, Options.Bars.width, Options.Bars.height, ADDON_NAME .. "Bars")
         BarsGroup.RegisterCallback(self, "AnchorMoved")
         BarsGroup:SetSortFunction(BarSortOrder)
     end

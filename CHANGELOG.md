@@ -1,3 +1,8 @@
+# v1.2.2 (21.3.2023)
+
+## Update
+- Bump TOC for 10.0.7 patch
+
 # v1.2.1d (20.3.2023)
 
 ## Fixes
