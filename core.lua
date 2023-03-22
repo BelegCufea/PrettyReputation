@@ -356,8 +356,10 @@ function private.constructMessage(info)
     local pattern = Options.Reputation.pattern
 
     local message = pattern:gsub("%[([^%[].-)%]", function(text)
-        info.prefix = text:match("^%b{}"):sub(2, -2) or ""
-        info.suffix = text:match("%b{}$"):sub(2, -2) or ""
+        info.prefix = text:match("^%b{}") or ""
+        if info.prefix ~= "" then info.prefix = info.prefix:sub(2, -2) end
+        info.suffix = text:match("%b{}$") or ""
+        if info.suffix ~= "" then info.suffix = info.suffix:sub(2, -2) end
         local key = text:gsub("%{(.-)%}", "")
         if not definitions[key] or not definitions[key].value then
             return "[" .. text .. "]"
