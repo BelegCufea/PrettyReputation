@@ -320,4 +320,4 @@ Addon.TAGS.Definition = {
             end
         end
     },
--}
+}
