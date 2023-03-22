@@ -218,6 +218,7 @@ function private.getRepInfo(info)
         info["top"] = topValue
         info["paragon"] = ""
         info["renown"] = ""
+        info["standingTextNext"] = ""
         if icons and icons[info.factionId] then
             info["icon"] = icons[info.factionId]
         end
@@ -238,6 +239,8 @@ function private.getRepInfo(info)
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
+                info["standingTextNext"] = RENOWN_LEVEL_LABEL .. (data.renownLevel + 1)
+                info["standingIdNext"] = 10
                 info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
                 if not isCapped then
                     return info
@@ -247,6 +250,10 @@ function private.getRepInfo(info)
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount and paragonLevel > 0 then
                     info["paragon"] =  info["paragon"] .. paragonLevel
+                    info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                    info["standingIdNext"] = 9
+                else
+                    info["standingTextNext"] = ""
                 end
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
@@ -282,7 +289,9 @@ function private.getRepInfo(info)
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
 			if showParagonCount then
-                info["paragon"] =  info["paragon"] .. paragonLevel+1
+                info["paragon"] =  info["paragon"] .. paragonLevel
+                info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                info["standingIdNext"] = 9
             end
 			if hasRewardPending then
                 local reward = "|A:ParagonReputation_Bag:0:0|a"
@@ -311,6 +320,8 @@ function private.getRepInfo(info)
         info["current"] = barValue - bottomValue
         info["maximum"] = topValue - bottomValue
         info["standingText"] = private.getFactionLabel(standingId)
+        info["standingTextNext"] = (info.negative and standingId > 1 and _G["FACTION_STANDING_LABEL".. standingId - 1]) or (not info.negative and standingId < 8 and _G["FACTION_STANDING_LABEL".. standingId + 1]) or ""
+        info["standingIdNext"] = (info.negative and standingId > 1 and (standingId - 1)) or (not info.negative and standingId < 8 and (standingId + 1))
         return info
 	end
     return info

@@ -39,12 +39,14 @@ Addon.TAGS.Const = {
     }
 }
 
-local function first_letters(sentence, x)
+local function first_letters(str, x)
     local result = ""
-    for word in string.gmatch(sentence, "%a+") do
-        local first_letter = string.upper(string.sub(word, 1, 1))
-        local rest_of_word = string.sub(word, 2, x)
-        result = result .. first_letter .. rest_of_word
+    for word in str:gmatch("%S+") do
+      if tonumber(word) ~= nil then
+        result = result .. word
+      else
+        result = result .. word:sub(1, x):gsub("^%l", string.upper)
+      end
     end
     return result
 end
@@ -109,11 +111,7 @@ Addon.TAGS.Definition = {
     ["standingShort"] = {
         desc = "A shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount) .. info.renown
-            if (info.standingId == 10) and string.find(info.standingText, " ") then
-                local level = string.sub(info.standingText, string.find(info.standingText, " ") + 1)
-                standingTextShort = standingTextShort .. level
-            end
+            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 return standingTextShort .. " (" .. info.paragon .. ")"
             else
@@ -136,7 +134,7 @@ Addon.TAGS.Definition = {
     ["c_standingShort"] = {
         desc = "A colored, shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount) .. info.renown
+            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 local reputationColors = Addon.db.profile.Colors
                 local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
@@ -285,5 +283,41 @@ Addon.TAGS.Definition = {
         value = function(info)
             return (info.negative and "decreased") or "increased"
         end
-    }
-}
+    },
+    ["standingNext"] = {
+        desc = "Shows next/previous (depending on gain or loss) standing/paragon",
+        value = function(info)
+            return info.standingTextNext
+        end
+    },
+    ["c_standingNext"] = {
+        desc = "Shows next/previous (depending on gain or loss) standing/renown/paragon in that standing color",
+        value = function(info)
+            if info.standingIdNext then
+                local reputationColors = Addon.db.profile.Colors
+                local standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[info.standingIdNext].r*255, reputationColors[info.standingIdNext].g*255, reputationColors[info.standingIdNext].b*255)
+                return standingColor .. info.standingTextNext .. "|r"
+            else
+                return info.standingColor
+            end
+        end
+    },
+    ["standingNextShort"] = {
+        desc = "Shows next/previous (depending on gain or loss) standing/paragon, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
+        value = function(info)
+            return first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount)
+        end
+    },
+    ["c_standingNextShort"] = {
+        desc = "Shows next/previous (depending on gain or loss) standing/renown/paragon in that standing color, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
+        value = function(info)
+            if info.standingIdNext then
+                local reputationColors = Addon.db.profile.Colors
+                local standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[info.standingIdNext].r*255, reputationColors[info.standingIdNext].g*255, reputationColors[info.standingIdNext].b*255)
+                return standingColor .. first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount) .. "|r"
+            else
+                return first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount)
+            end
+        end
+    },
+-}

@@ -191,6 +191,8 @@
         "BreakUpLargeNumbers",
         "strlower",
         "GetChatWindowInfo",
-        "GetAddOnMetadata"
+        "GetAddOnMetadata",
+        "RolePollPopup",
+        "RolePollPopupAcceptButton"
     ]
 }
