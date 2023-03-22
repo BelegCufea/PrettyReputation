@@ -308,7 +308,7 @@ local options = {
                         ConditionalTagsHeader = {
                             type = "header",
                             order = 20,
-                            name = "Conditional prefixes and suffixes for TAGS"
+                            name = "Conditional prefixes and suffixes for tags"
                         },
                         ConditionalTags = {
                             type = "description",

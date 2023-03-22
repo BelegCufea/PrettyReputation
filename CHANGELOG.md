@@ -1,16 +1,16 @@
  # v1.3.0-beta1 ()
 
 ## **Conditional prefixes and suffixes for TAGS**
-I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for bar, icon, etc.).
+I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for graphical tags like bar, icon, etc.).
 
-The format is as follows:
+The format is as follows, where both {prefix} and {suffix} are optional:
 
 ```
 [{prefix}TAG{suffix}]
 ```
-There cannot be any spaces between the opening bracket, {prefix}, TAG, {suffix}, and closing bracket. However, prefix and suffix can be any text.
+**If `[TAG]`** *(without prefexes and suffixes)* **evaluates to an empty value, neither the prefix nor the suffix in `[{prefix}TAG{suffix}]` will be displayed.**
 
-**Also, if `[TAG]` evaluates to an empty value, neither the prefix nor the suffix will be displayed.**
+There cannot be any spaces except inside the prefix or suffix, which can be any text, even with spaces (or only spaces if you wish).
 
 > Here are a few examples:
 
