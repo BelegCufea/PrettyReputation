@@ -23,6 +23,18 @@ local function tags()
     return result
 end
 
+local function conditionalTags()
+    local result = ""
+    result = result .. "This functionality allows adding conditional prefixes and/or suffixes to any text TAG (except for graphics ones like bar, icon etc.)" .. "\n"
+    result = result .. "\n"
+    result = result .. "Format is: |cnGOLD_FONT_COLOR:[{prefix}TAG{suffix}]|r, where both {prefix} and {suffix} are optional." .. "\n"
+    result = result .. "If [TAG] would return empty value, the output of [{prefix}TAG{suffix}] is also empty (ie. nothing will be displayed) " .. "\n"
+    result = result .. "No spaces are alowed except inside {} brackets as part of prefix or suffix text." .. "\n"
+    result = result .. "\n"
+    result = result .. "For example, |cnGOLD_FONT_COLOR:[{Level }paragonLevel{ paragon}]|r will display |cnGOLD_FONT_COLOR:Level 5 paragon|r if the Paragon level is 5, and nothing will be displayed if the faction does not have a Paragon level or has not reached it yet." .. "\n"
+    return result
+end
+
 local function standingColorsPresets()
     local presets = {}
     presets["custom"] = "Custom"
@@ -292,6 +304,16 @@ local options = {
                                     func = function() Addon.db.profile.Reputation.pattern = Addon.CONST.PATTERN end
                                 },
                             },
+                        },
+                        ConditionalTagsHeader = {
+                            type = "header",
+                            order = 20,
+                            name = "Conditional prefixes and suffixes for TAGS"
+                        },
+                        ConditionalTags = {
+                            type = "description",
+                            order = 21,
+                            name = function() return conditionalTags() end
                         },
                         TagsHeader = {
                             type = "header",

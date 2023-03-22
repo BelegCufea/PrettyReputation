@@ -352,14 +352,18 @@ function private.constructMessage(info)
         return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]"
     end
 
-    local message = Options.Reputation.pattern
+    local definitions = Tags.Definition
+    local pattern = Options.Reputation.pattern
 
-    for k,v in pairs(Tags.Definition) do
-        if string.find(message, "%[" .. k .. "%]") then
-            message = string.gsub(message, "%[" .. k .. "%]", v.value(info))
+    local message = pattern:gsub("%[([^%[].-)%]", function(text)
+        info.prefix = text:match("^%b{}"):sub(2, -2) or ""
+        info.suffix = text:match("%b{}$"):sub(2, -2) or ""
+        local key = text:gsub("%{(.-)%}", "")
+        if not definitions[key] or not definitions[key].value then
+            return "[" .. text .. "]"
         end
-    end
-
+        return definitions[key].value(info)
+    end)
     return message
 end
 
@@ -378,6 +382,8 @@ function private.printReputation(info)
     end
 
     if Options.Debug then
+        info.prefix = ""
+        info.suffix = ""
         Debug:Info(info, "Info", "VDT")
         local debug = {}
         local tkeys = {}
