@@ -1,3 +1,12 @@
+ # v1.2.3 ()
+
+## Update
+- Added TAGs `[standingColorStart]` and `[standingColorEnd]`. They will color the text between them in the message with a standing color. **These have to be used in pairs** and `[standingColorStart]` must precede `[standingColorEnd]`. (requested by filliph)
+- Added a TAG `[signText]`. It will display "increased" when a reputation is gained and "decreased" when it is lost.
+
+## Fixes
+- Choosing the "Blizzard" color scheme throwed an error: `PrettyReputation/bars.lua:182: attempt to index local 'color' (a nil value)` (reported by filliph - thanks mate)
+
 # v1.2.2 (21.3.2023)
 
 ## Update

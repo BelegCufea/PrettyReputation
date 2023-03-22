@@ -47,6 +47,7 @@ local function standingColorsSet(value)
     end
 
     local REP_COLORS = copy(Addon.CONST.REP_COLORS)
+    Debug:Info(REP_COLORS, "colors", "VDT")
     if value == "blizzard" then Addon.db.profile.Colors = REP_COLORS.blizzardColors end
     if value == "ascii" then Addon.db.profile.Colors = REP_COLORS.asciiColors end
     if value == "wowpro" then Addon.db.profile.Colors = REP_COLORS.wowproColors end

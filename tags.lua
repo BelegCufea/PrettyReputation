@@ -268,4 +268,22 @@ Addon.TAGS.Definition = {
             return ""
         end
     },
+    ["standingColorStart"] = {
+        desc = "Color the text between it and [standingColorEnd] with a standing color. |cnWARNING_FONT_COLOR:Must be used with [standingColorEnd] TAG!|r",
+        value = function(info)
+            return info.standingColor
+        end
+    },
+    ["standingColorEnd"] = {
+        desc = "Color the text between it and [standingColorStart] with a standing color. |cnWARNING_FONT_COLOR:Must be used with [standingColorStart] TAG!|r",
+        value = function(info)
+            return "|r"
+        end
+    },
+    ["signText"] = {
+        desc = "If a reputation is gained then it will display 'increased' when lost then 'decreased'",
+        value = function(info)
+            return (info.negative and "decreased") or "increased"
+        end
+    }
 }

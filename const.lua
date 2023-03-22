@@ -29,7 +29,18 @@ CONST.ICON = {
 }
 
 CONST.REP_COLORS = {
-    blizzardColors = FACTION_BAR_COLORS,  --hack to add back Blizzard colors
+    blizzardColors = {
+        [1]   = FACTION_BAR_COLORS[1],      -- hated
+        [2]   = FACTION_BAR_COLORS[2],      -- hostile
+        [3]   = FACTION_BAR_COLORS[3],      -- unfriendly
+        [4]   = FACTION_BAR_COLORS[4],      -- neutral
+        [5]   = FACTION_BAR_COLORS[5],      -- friendly
+        [6]   = FACTION_BAR_COLORS[6],      -- honored
+        [7]   = FACTION_BAR_COLORS[7],      -- revered
+        [8]   = FACTION_BAR_COLORS[8],      -- exalted
+        [9]   = { r= 0,   g= .6,  b= .1  }, -- paragon
+        [10]  = { r= 0,  g= .75,  b= .94 }, -- renown
+    },
     asciiColors = {
         [1]   = { r= .54, g= 0,   b= 0   }, -- hated
         [2]   = { r= 1,   g= .10, b= .1  }, -- hostile
