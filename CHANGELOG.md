@@ -1,4 +1,11 @@
- # v1.3.0-beta1 ()
+# v1.3.0-beta2 ()
+
+## Fixes
+- When 'Splash' is enabled and faction is renown or has paragon levels then the change and session values can be negative when a rank in the standing is gain.
+    - *This should also fixe `bottom` and `top` TAGs*
+- Reward bag shows on on-screen bars even, when it should not be there any more.
+
+# v1.3.0-beta1 (22.3.2023)
 
 ## **Conditional prefixes and suffixes for TAGS**
 I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for graphical tags like bar, icon, etc.).

@@ -148,7 +148,7 @@ end
 
 local function SetBarsOptions()
     Addon:SetBarsOptions()
-    Addon:UpdateBars()
+    Addon:UpdateBars(false)
 end
 
 local options = {

@@ -219,6 +219,7 @@ function private.getRepInfo(info)
         info["paragon"] = ""
         info["renown"] = ""
         info["standingTextNext"] = ""
+        info["reward"] = ""
         if icons and icons[info.factionId] then
             info["icon"] = icons[info.factionId]
         end
@@ -235,6 +236,8 @@ function private.getRepInfo(info)
 			local data = GetMajorFactionData(info.factionId)
 			local isCapped = HasMaximumRenown(info.factionId)
             if data then
+                info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
+                info["top"] = data.renownLevel * data.renownLevelThreshold
                 info["current"] = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
@@ -250,20 +253,21 @@ function private.getRepInfo(info)
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount and paragonLevel > 0 then
                     info["paragon"] =  info["paragon"] .. paragonLevel
-                    info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
-                    info["standingIdNext"] = 9
-                else
-                    info["standingTextNext"] = ""
                 end
+                info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                info["standingIdNext"] = 9
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
+                    info["reward"] = reward
                     info["paragon"] = info["paragon"] .. reward
-                      if not showParagonCount then
+                    if not showParagonCount then
                         info["standingText"] = info["standingText"] .. " " .. reward
                     end
                 end
                 info["current"] = mod(currentValue, threshold)
                 info["maximum"] = threshold
+                info["bottom"] = info["top"] + paragonLevel * threshold
+                info["top"] = info["bottom"] + threshold
                 return info
             else
                 info["current"] = 0
@@ -288,13 +292,14 @@ function private.getRepInfo(info)
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
-			if showParagonCount then
+			if showParagonCount and paragonLevel > 0 then
                 info["paragon"] =  info["paragon"] .. paragonLevel
-                info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
-                info["standingIdNext"] = 9
             end
+            info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+            info["standingIdNext"] = 9
 			if hasRewardPending then
                 local reward = "|A:ParagonReputation_Bag:0:0|a"
+                info["reward"] = reward
                 info["paragon"] =  info["paragon"] .. reward
                 if not showParagonCount then
                     info["standingText"] = info["standingText"] .. " " .. reward
@@ -302,7 +307,9 @@ function private.getRepInfo(info)
 			end
             info["current"] = mod(currentValue, threshold)
             info["maximum"] = threshold
-			return info
+            info["bottom"] = info["top"] + paragonLevel * threshold
+            info["top"] = info["bottom"] + threshold
+        return info
 		end
 
 		local friendInfo = GetFriendshipReputation(info.factionId)
@@ -419,7 +426,8 @@ function Addon:SetBarsOptions()
     Bars:SetOptions()
 end
 
-function Addon:UpdateBars()
+function Addon:UpdateBars(checkRewards)
+    if checkRewards then private.UpdateReward("UPDATE_BARS") end
     if not Bars then
         Bars = Addon.Bars
     end
@@ -432,10 +440,17 @@ function private.processAllFactions(factionInfo)
     --debugprofilestart()
     local trackFaction
     for k, v in pairs(factions) do
-        local oldCurrent = v.info.current + v.info.bottom
+        --local paragonLevelOld = v.info.paragon:match("^%d+")
+        --if not paragonLevelOld then paragonLevelOld = 0 end
+        --local toGoOld = v.info.maximum - v.info.current
+        local currentOld = v.info.current + v.info.bottom
         local info = private.getRepInfo(v.info)
-        local newCurrent = info.current + info.bottom
-        local change = newCurrent - oldCurrent
+        local change = (info.current + info.bottom) - currentOld
+        --local paragonLevelNew = v.info.paragon:match("^%d+")
+        --if not paragonLevelNew then paragonLevelNew = 0 end
+        --if paragonLevelOld ~= paragonLevelNew then
+        --    change = toGoOld + v.info.current
+        --end
         if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
             change = factionInfo.change * ((factionInfo.negative and -1) or 1)
         end
@@ -454,7 +469,7 @@ function private.processAllFactions(factionInfo)
             end
         end
     end
-    private.trackFaction(trackFaction)
+    if trackFaction then private.trackFaction(trackFaction) end
     Debug:Info(factions, "factions", "VDT")
     --local elapsedTime = debugprofilestop()
     --Debug:Info("Elapsed time: " .. elapsedTime .. " ms", "ellapsedTime")
@@ -482,21 +497,21 @@ function private.processFaction(faction, change)
                 private.setupFactions()
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
-                Addon:UpdateBars()
+                Addon:UpdateBars(true)
                 Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
             end)
         else
             --Debug:Info("Standard", "Report type:")
             info = private.getFactionInfo(info)
             private.printReputation(info)
-            Addon:UpdateBars()
+            Addon:UpdateBars(true)
         end
     else
         --Debug:Info("Splash reputation", "Report type:")
         C_Timer.After(0.1, function()
             private.setupFactions()
             private.processAllFactions(info)
-            Addon:UpdateBars()
+            Addon:UpdateBars(true)
         end)
     end
 end
@@ -506,6 +521,22 @@ function private.CombatTextUpdated(_, messagetype)
 		local faction, change = GetCurrentCombatTextEventInfo()
         private.processFaction(faction, change)
 	end
+end
+
+function private.UpdateReward(event)
+    for k, v in pairs(factions) do
+        if v.info.reward ~= "" then
+            local paragonLevel = v.info.paragon:match("^%d+")
+            Debug:Info(v.info.reward, event ": " ..v.info.name)
+            local _, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(v.info.factionID)
+            if not hasRewardPending then
+                Debug:Info("hide reward", v.info.name)
+                v.info.reward = ""
+                v.info.paragon = ((not paragonLevel) and "") or paragonLevel
+                v.info.lastUpdated = time()
+            end
+        end
+    end
 end
 
 function Addon:Test()
@@ -577,8 +608,14 @@ function Addon:OnEnable()
     --if Options.Debug then factions["The Silver Covenant"] = nil end
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
+    Addon:RegisterEvent("UPDATE_FACTION", private.UpdateReward)
+    Addon:RegisterEvent("QUEST_COMPLETE", private.UpdateReward)
+    Addon:RegisterEvent("QUEST_WATCH_UPDATE", private.UpdateReward)
 end
 
 function Addon:OnDisable()
+    Addon:UnregisterEvent("QUEST_WATCH_UPDATE")
+    Addon:UnregisterEvent("QUEST_COMPLETE")
+    Addon:UnregisterEvent("UPDATE_FACTION")
     Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
 end
