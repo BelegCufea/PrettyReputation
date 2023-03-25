@@ -533,7 +533,10 @@ end
 function private.UpdateReward(event)
     for k, v in pairs(factions) do
         if v.info.reward ~= "" then
-            local paragonLevel = v.info.paragon:match("^%d+")
+            local paragonLevel = 0
+            if v.info.poragon then
+                paragonLevel = v.info.paragon:match("^%d+")
+            end
             Debug:Info(v.info.reward, event ": " ..v.info.name)
             local _, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(v.info.factionID)
             if not hasRewardPending then
