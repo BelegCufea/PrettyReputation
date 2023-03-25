@@ -447,7 +447,9 @@ function private.processAllFactions(factionInfo)
         --if not paragonLevelOld then paragonLevelOld = 0 end
         --local toGoOld = v.info.maximum - v.info.current
         local currentOld = v.info.current + v.info.bottom
+        --if v.info.renown ~= "" then Debug:Info(v.info.renown, v.info.name .. " renown before:") end
         local info = private.getRepInfo(v.info)
+        --if v.info.renown ~= "" then Debug:Info(v.info.renown, v.info.name .. " renown after:") end
         local change = (info.current + info.bottom) - currentOld
         --local paragonLevelNew = v.info.paragon:match("^%d+")
         --if not paragonLevelNew then paragonLevelNew = 0 end
@@ -495,7 +497,7 @@ function private.processFaction(faction, change)
     info["new"] = (factions[info.faction] == nil)
     if not Options.Splash then
         if info.new then
-            C_Timer.After(0.1, function()
+            C_Timer.After(0.3, function()
                 --Debug:Info("New faction", "Report type:")
                 private.setupFactions()
                 info = private.getFactionInfo(info)
@@ -504,14 +506,16 @@ function private.processFaction(faction, change)
                 Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
             end)
         else
-            --Debug:Info("Standard", "Report type:")
-            info = private.getFactionInfo(info)
-            private.printReputation(info)
-            Addon:UpdateBars(true)
+            C_Timer.After(0.5, function()
+                --Debug:Info("Standard", "Report type:")
+                info = private.getFactionInfo(info)
+                private.printReputation(info)
+                Addon:UpdateBars(true)
+            end)
         end
     else
         --Debug:Info("Splash reputation", "Report type:")
-        C_Timer.After(0.1, function()
+        C_Timer.After(0.3, function()
             private.setupFactions()
             private.processAllFactions(info)
             Addon:UpdateBars(true)

@@ -163,7 +163,7 @@ function Bars:Update()
             bar:SetValue(v.info.current, v.info.maximum)
 
             local faction = PrepareFactionName(v.info.name)
-            if v.info.renown and v.info.renown ~= "" then
+            if v.info.renown and v.info.renown ~= "" and v.info.paragon == "" then
                 faction = faction .. " [" .. v.info.renown .. "]"
             end
             if v.info.paragon and v.info.paragon ~= "" then
