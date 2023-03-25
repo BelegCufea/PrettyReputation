@@ -316,10 +316,13 @@ function private.getRepInfo(info)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
+            info["bottom"] = friendInfo.reactionThreshold
+            info["top"] = friendInfo.reactionThreshold
 			info["standingText"] = friendInfo.reaction
 			if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
+                info["top"] = friendInfo.nextThreshold
 			end
 			return info
 		end
