@@ -532,7 +532,7 @@ end
 
 function private.UpdateReward(event)
     for k, v in pairs(factions) do
-        if v.info.reward ~= "" then
+        if v.info and v.info.reward and v.info.reward ~= "" then
             local paragonLevel = 0
             if v.info.poragon then
                 paragonLevel = v.info.paragon:match("^%d+")
