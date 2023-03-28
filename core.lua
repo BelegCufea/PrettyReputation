@@ -243,6 +243,7 @@ function private.getRepInfo(info)
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
                 info["standingTextNext"] = RENOWN_LEVEL_LABEL .. (data.renownLevel + 1)
+                info["standingId"] = 10
                 info["standingIdNext"] = 10
                 info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
                 if not isCapped then
@@ -255,6 +256,7 @@ function private.getRepInfo(info)
                     info["paragon"] =  info["paragon"] .. paragonLevel
                 end
                 info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                info["standingId"] = 9
                 info["standingIdNext"] = 9
                 if hasRewardPending then
                     local reward = "|A:ParagonReputation_Bag:0:0|a"
@@ -266,7 +268,7 @@ function private.getRepInfo(info)
                 end
                 info["current"] = mod(currentValue, threshold)
                 info["maximum"] = threshold
-                info["bottom"] = info["top"] + paragonLevel * threshold
+                info["bottom"] = info["bottom"] + paragonLevel * threshold
                 info["top"] = info["bottom"] + threshold
                 return info
             else
@@ -288,7 +290,6 @@ function private.getRepInfo(info)
 		end
 
 		if (IsFactionParagon(info.factionId)) then
-            info["isParagon"] = true
 			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
@@ -296,6 +297,7 @@ function private.getRepInfo(info)
                 info["paragon"] =  info["paragon"] .. paragonLevel
             end
             info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+            info["standingId"] = 9
             info["standingIdNext"] = 9
 			if hasRewardPending then
                 local reward = "|A:ParagonReputation_Bag:0:0|a"
@@ -537,7 +539,7 @@ function private.UpdateReward(event)
             if v.info.paragon then
                 paragonLevel = v.info.paragon:match("^%d+")
             end
-            Debug:Info(v.info.reward, event .. ": " ..v.info.name)
+            Debug:Info(v.info.reward, event .. ": " .. v.info.name)
             local _, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(v.info.factionId)
             if not hasRewardPending then
                 Debug:Info("hide reward", v.info.name)
