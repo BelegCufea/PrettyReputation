@@ -532,6 +532,7 @@ function private.CombatTextUpdated(_, messagetype)
 end
 
 function private.UpdateReward(event)
+    if not Options.Enabled or not Options.Bars.enabled then return end
     local updateBars = false
     for k, v in pairs(factions) do
         if v.info and v.info.reward and v.info.reward ~= "" then
@@ -539,10 +540,8 @@ function private.UpdateReward(event)
             if v.info.paragon then
                 paragonLevel = v.info.paragon:match("^%d+")
             end
-            Debug:Info(v.info.reward, event .. ": " .. v.info.name)
             local _, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(v.info.factionId)
             if not hasRewardPending then
-                Debug:Info("hide reward", v.info.name)
                 v.info.reward = ""
                 v.info.paragon = ((not paragonLevel) and "") or paragonLevel
                 v.info.lastUpdated = time()
