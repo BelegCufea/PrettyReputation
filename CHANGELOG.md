@@ -1,11 +1,40 @@
-# v1.3.0-beta2 (29.3.2023)
+# v1.3.0 ()
+
+## **Conditional prefixes and suffixes for TAGS**
+I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for graphical tags like bar, icon, etc.).
+
+The format is as follows, where both {prefix} and {suffix} are optional:
+
+```
+[{prefix}TAG{suffix}]
+```
+**If `[TAG]`** *(without prefexes and suffixes)* **evaluates to an empty value, neither the prefix nor the suffix in `[{prefix}TAG{suffix}]` will be displayed.**
+
+There cannot be any spaces except inside the prefix or suffix, which can be any text, even with spaces (or only spaces if you wish).
+
+> Here are a few examples:
+
+- `[{Renown level: }renownLevel]` = "Renown level: 25" (If the faction isn't renowned, nothing will be displayed!)
+- `[{Next rank: }standingNext]` = "Next rank: Honored" (Again, if [standingNext] does not return a value, nothing will be displayed.)
+- `[{Level }paragonLevel{ paragon}]` = "Level 5 paragon" (Nothing will be displayed if there is no Paragon level available.)
+
+## Added
+- Added TAGs `[standingColorStart]` and `[standingColorEnd]`. They will color the text between them in the message with a standing color. **These have to be used in pairs** and `[standingColorStart]` must precede `[standingColorEnd]`. (requested by filliph)
+- Added a TAG `[signText]`. It will display "increased" when a reputation is gained and "decreased" when it is lost.
+- Added group of TAGs `[standingNext]` (with `[c_...]` and `[...Short]` variants). They will display next standing/renown/paragon standing. They only work for standard  *... -> "Neutral" -> "Friendly" -> "Honored" -> ...* progression or for renown and paragon factions.
+
+## Fixes
+- Choosing the "Blizzard" color scheme throwed an error: `PrettyReputation/bars.lua:182: attempt to index local 'color' (a nil value)` (reported by filliph - thanks mate)
+
+
+# *v1.3.0-beta2 (29.3.2023)*
 
 ## Fixes
 - When 'Splash' is enabled and faction is renown or has paragon levels then the change and session values can be negative when a rank in the standing is gain.
     - *This should also fixe `bottom` and `top` TAGs*
 - Reward bag shows on on-screen bars even, when it should not be there any more.
 
-# v1.3.0-beta1 (22.3.2023)
+# *v1.3.0-beta1 (22.3.2023)*
 
 ## **Conditional prefixes and suffixes for TAGS**
 I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for graphical tags like bar, icon, etc.).
@@ -157,13 +186,13 @@ There cannot be any spaces except inside the prefix or suffix, which can be any 
 - Streamlined options by rearranging some settings to make them more understandable.
 - Changed the behavior of the `standingShort` and `c_standingShort` tags. Now, it is possible to choose the number of letters from each word in the standing text that will be displayed. For example, if you set the number of characters to 3, you will get the following shortened forms: 'Friendly' => 'Fri', 'True Friend' => 'TruFri', 'Revered' => 'Rev', 'Renowned 25' => 'Ren25', and so on. By default, only the first letter of each word is displayed (i.e. 'F', 'TF', 'R', 'R25').
 
-# v1.1.5-beta2 (13.2.2023)
+# *v1.1.5-beta2 (13.2.2023)*
 
 ## Updated
 - Streamlined the structure of the Options.
 - Changed the behavior of the `standingShort` and `c_standingShort` tags. It is now possible to choose the number of letters from each word in the standing text to be displayed. For example, if you set the number of characters to 3, you will get the following: Friendly => Fri, True Friend => TruFri, Revered => Rev, Renowned 25 => Ren25, and so on. If one character is chosen (default), you will get F, TF, R, R25, respectively.
 
-# v1.1.5-beta1 (12.2.2023)
+# *v1.1.5-beta1 (12.2.2023)*
 
 ## New
 
@@ -203,7 +232,7 @@ There cannot be any spaces except inside the prefix or suffix, which can be any 
 ## Fixes
 - Another try to process new reputations
 
-# v1.1.1-beta1 (6.2.2023)
+# *v1.1.1-beta1 (6.2.2023)*
 
 ## New
 - Added option to set faction with latest change as watched
@@ -219,12 +248,12 @@ There cannot be any spaces except inside the prefix or suffix, which can be any 
 ## Fixes
 - "Optimized" message composition
 
-# v1.1.0-beta2 (4.2.2023)
+# *v1.1.0-beta2 (4.2.2023)*
 
 ## Update
 - Few modifications for external TAGS editing
 
-# v1.1.0-beta1 (3.2.2023)
+# *v1.1.0-beta1 (3.2.2023)*
 
 ## New
 - Modified TAGS logic so they can be added or modified externally
