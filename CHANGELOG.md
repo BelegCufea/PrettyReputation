@@ -1,4 +1,4 @@
-# v1.3.0-beta2 ()
+# v1.3.0-beta2 (29.3.2023)
 
 ## Fixes
 - When 'Splash' is enabled and faction is renown or has paragon levels then the change and session values can be negative when a rank in the standing is gain.
