@@ -431,8 +431,7 @@ function Addon:SetBarsOptions()
     Bars:SetOptions()
 end
 
-function Addon:UpdateBars(checkRewards)
-    if checkRewards then private.UpdateReward("UPDATE_BARS") end
+function Addon:UpdateBars()
     if not Bars then
         Bars = Addon.Bars
     end
@@ -504,7 +503,7 @@ function private.processFaction(faction, change)
                 private.setupFactions()
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
-                Addon:UpdateBars(true)
+                Addon:UpdateBars()
                 Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
             end)
         else
@@ -512,7 +511,7 @@ function private.processFaction(faction, change)
                 --Debug:Info("Standard", "Report type:")
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
-                Addon:UpdateBars(true)
+                Addon:UpdateBars()
             end)
         end
     else
@@ -520,7 +519,7 @@ function private.processFaction(faction, change)
         C_Timer.After(0.3, function()
             private.setupFactions()
             private.processAllFactions(info)
-            Addon:UpdateBars(true)
+            Addon:UpdateBars()
         end)
     end
 end
@@ -533,6 +532,7 @@ function private.CombatTextUpdated(_, messagetype)
 end
 
 function private.UpdateReward(event)
+    local updateBars = false
     for k, v in pairs(factions) do
         if v.info and v.info.reward and v.info.reward ~= "" then
             local paragonLevel = 0
@@ -546,9 +546,11 @@ function private.UpdateReward(event)
                 v.info.reward = ""
                 v.info.paragon = ((not paragonLevel) and "") or paragonLevel
                 v.info.lastUpdated = time()
+                updateBars = true
             end
         end
     end
+    if updateBars then Addon:UpdateBars() end
 end
 
 function Addon:Test()
@@ -620,14 +622,10 @@ function Addon:OnEnable()
     --if Options.Debug then factions["The Silver Covenant"] = nil end
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
-    Addon:RegisterEvent("UPDATE_FACTION", private.UpdateReward)
-    Addon:RegisterEvent("QUEST_COMPLETE", private.UpdateReward)
-    Addon:RegisterEvent("QUEST_WATCH_UPDATE", private.UpdateReward)
+    Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
 end
 
 function Addon:OnDisable()
-    Addon:UnregisterEvent("QUEST_WATCH_UPDATE")
-    Addon:UnregisterEvent("QUEST_COMPLETE")
-    Addon:UnregisterEvent("UPDATE_FACTION")
+    Addon:UnregisterEvent("QUEST_TURNED_IN")
     Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
 end
