@@ -35,6 +35,36 @@ local function conditionalTags()
     return result
 end
 
+local function faq()
+    local FAQ = Addon.FAQ
+    if not FAQ then return end
+    local result = {
+        type = "group",
+        order = 70,
+        name = FAQ.Header,
+        args = {},
+    }
+    for k,v in pairs(FAQ.Points) do
+        local order = k:match("^(%d+)%.")
+        local header = k:match("%d+%.%s*(.+)")
+        local description = v:gsub(" '", " |cnNORMAL_FONT_COLOR:")
+        description = description:gsub("'", "|r")
+        result.args["header" .. order] = {
+            type = "header",
+            order = order * 10,
+            name = header,
+        }
+        result.args["description" .. order] = {
+            type = "description",
+            order = order * 10 + 1,
+            name = description,
+            fontSize = "medium",
+        }
+        result.args["blank" .. order] = { type = "description", order = order * 10 + 2, fontSize = "large",name = " ",width = "full", }
+    end
+    return result
+end
+
 local function standingColorsPresets()
     local presets = {}
     presets["custom"] = "Custom"
@@ -305,16 +335,6 @@ local options = {
                                 },
                             },
                         },
-                        ConditionalTagsHeader = {
-                            type = "header",
-                            order = 20,
-                            name = "Conditional prefixes and suffixes for tags"
-                        },
-                        ConditionalTags = {
-                            type = "description",
-                            order = 21,
-                            name = function() return conditionalTags() end
-                        },
                         TagsHeader = {
                             type = "header",
                             order = 30,
@@ -324,6 +344,16 @@ local options = {
                             type = "description",
                             order = 31,
                             name = function() return tags() end
+                        },
+                        ConditionalTagsHeader = {
+                            type = "header",
+                            order = 40,
+                            name = "Conditional prefixes and suffixes for tags"
+                        },
+                        ConditionalTags = {
+                            type = "description",
+                            order = 41,
+                            name = function() return conditionalTags() end
                         },
                     },
                 },
@@ -950,7 +980,7 @@ local options = {
                 TestChange = {
                     type = 'input',
                     order = 930,
-                    name = 'gain',
+                    name = 'change',
                     desc = 'positive number for gain, negative for loss',
                     width = 0.75,
                     pattern = '^[-]?%d+$',
@@ -1050,11 +1080,15 @@ function Config:OnEnable()
     options.args.Settings.args.Output.args.ChatFrames = getChatFrames()
     options.args.Settings.args.Output.args.ChatFrames.order = 30
     options.args.Settings.args.Output.args.ChatFrames.inline = true
+    options.args.FAQ = faq()
     Addon:SetSinkStorage(Addon.db.profile)
 	ConfigRegistry:RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "About", Addon.CONST.METADATA.NAME, "About")
+    if options.args.FAQ then
+        ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, Addon.FAQ.Header, Addon.CONST.METADATA.NAME, "FAQ")
+    end
     if Addon.Bars then
         Addon.Bars:SetOptions()
     end
