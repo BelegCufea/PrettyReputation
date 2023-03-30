@@ -1,4 +1,4 @@
-# v1.3.0 ()
+# v1.3.0 (30.3.2023)
 
 ## **Conditional prefixes and suffixes for TAGS**
 I have added functionality that allows adding conditional prefixes and/or suffixes to any text TAG (except for graphical tags like bar, icon, etc.).
@@ -19,6 +19,7 @@ There cannot be any spaces except inside the prefix or suffix, which can be any 
 - `[{Level }paragonLevel{ paragon}]` = "Level 5 paragon" (Nothing will be displayed if there is no Paragon level available.)
 
 ## Added
+- New `FAQ/Help` section
 - Added TAGs `[standingColorStart]` and `[standingColorEnd]`. They will color the text between them in the message with a standing color. **These have to be used in pairs** and `[standingColorStart]` must precede `[standingColorEnd]`. (requested by filliph)
 - Added a TAG `[signText]`. It will display "increased" when a reputation is gained and "decreased" when it is lost.
 - Added group of TAGs `[standingNext]` (with `[c_...]` and `[...Short]` variants). They will display next standing/renown/paragon standing. They only work for standard  *... -> "Neutral" -> "Friendly" -> "Honored" -> ...* progression or for renown and paragon factions.
