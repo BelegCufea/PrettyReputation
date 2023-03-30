@@ -34,7 +34,9 @@ local AddonDB_Defaults = {
             showParagonCount = true,
             shortCharCount = 1,
             iconHeight = 0,
-            iconStyle = 'default',
+            iconStyle = "default",
+            signTextPositive = "increased",
+            signTextNegative = "decreased",
         },
         Bars = {
             enabled = true,

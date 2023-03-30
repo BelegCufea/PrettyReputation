@@ -525,6 +525,34 @@ local options = {
                                 }
                             },
                         },
+                        SignText = {
+                            type = "group",
+                            order = 30,
+                            name = "[signText]",
+                            desc = "options for [signtext] TAG",
+                            args = {
+                                Positive = {
+                                    type = "input",
+                                    order = 1,
+                                    name = "text for reputation gain",
+                                    width = "full",
+                                    get = function(info) return Addon.db.profile.Reputation.signTextPositive end,
+                                    set = function(info, value)
+                                        Addon.db.profile.Reputation.signTextPositive = value
+                                    end
+                                },
+                                Negative = {
+                                    type = "input",
+                                    order = 1,
+                                    name = "text for reputation loss",
+                                    width = "full",
+                                    get = function(info) return Addon.db.profile.Reputation.signTextNegative end,
+                                    set = function(info, value)
+                                        Addon.db.profile.Reputation.signTextNegative = value
+                                    end
+                                },
+                            },
+                        },
                         ShortTag = {
                             type = "group",
                             order = 50,

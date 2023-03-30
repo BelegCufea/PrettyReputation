@@ -287,9 +287,9 @@ Addon.TAGS.Definition = {
         end
     },
     ["signText"] = {
-        desc = "If a reputation is gained then it will display 'increased' when lost then 'decreased'",
+        desc = "If a reputation is gained then it will display 'increased' when lost then 'decreased' (may be modified on Tags options panel)",
         value = function(info)
-            return combine(info, (info.negative and "decreased") or "increased")
+            return combine(info, (info.negative and Addon.db.profile.Reputation.signTextNegative) or Addon.db.profile.Reputation.signTextPositive)
         end
     },
     ["standingNext"] = {

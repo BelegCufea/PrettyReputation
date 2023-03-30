@@ -1,3 +1,8 @@
+# v1.3.1 ()
+
+## Added
+- Added option to modify texts for `[signText]` (settings on the `Tags options` panel)
+
 # v1.3.0 (30.3.2023)
 
 ## **Conditional prefixes and suffixes for TAGS**
