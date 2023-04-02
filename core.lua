@@ -37,6 +37,7 @@ local AddonDB_Defaults = {
             iconStyle = "default",
             signTextPositive = "increased",
             signTextNegative = "decreased",
+            paragonColorOverride = false,
         },
         Bars = {
             enabled = true,
@@ -187,6 +188,9 @@ function Addon:GetFactionColor(info)
         local _, _, standingId = GetFactionInfoByID(info.factionId)
 
         if (IsMajorFaction(info.factionId)) then
+            if Options.Reputation.paragonColorOverride and IsFactionParagon(info.factionId) then
+                return reputationColors[9]
+            end
             return reputationColors[10]
 		end
 
@@ -252,7 +256,7 @@ function private.getRepInfo(info)
                     return info
                 end
 
-                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
+                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId)
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount and paragonLevel > 0 then
                     info["paragon"] =  info["paragon"] .. paragonLevel

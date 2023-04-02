@@ -527,7 +527,7 @@ local options = {
                         },
                         SignText = {
                             type = "group",
-                            order = 30,
+                            order = 50,
                             name = "[signText]",
                             desc = "options for [signtext] TAG",
                             args = {
@@ -555,7 +555,7 @@ local options = {
                         },
                         ShortTag = {
                             type = "group",
-                            order = 50,
+                            order = 60,
                             name = "[...Short]",
                             desc = "options for TAGs ending with 'Short'",
                             args = {
@@ -573,6 +573,24 @@ local options = {
                                     get = function(info) return Addon.db.profile.Reputation.shortCharCount end,
                                     set = function(info, value)
                                         Addon.db.profile.Reputation.shortCharCount = value
+                                    end
+                                },
+                            },
+                        },
+                        Paragon = {
+                            type = "group",
+                            order = 70,
+                            name = "[c_...]",
+                            desc = "options for TAGs starting with 'c_'",
+                            args = {
+                                ParagonCount = {
+                                    type = "toggle",
+                                    order = 1,
+                                    name = "paragon standing color overrides renown",
+                                    width = "full",
+                                    get = function(info) return Addon.db.profile.Reputation.paragonColorOverride end,
+                                    set = function(info, value)
+                                        Addon.db.profile.Reputation.paragonColorOverride = value
                                     end
                                 },
                             },
