@@ -58,7 +58,7 @@ local function get_bar(info, colorFull, colorEmpty)
     local bar = string.rep(barChar, barLen)
     local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barLen))
     local percentBarText =  colorFull .. string.sub(bar, 0, percentBar * 2) .. "|r" .. colorEmpty .. string.sub(bar, percentBar * 2 + 1) .. "|r"
-    return Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r"
+    return "|W" .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r|w"
 end
 
 local function get_texture(info, colorFull, colorEmpty)
@@ -86,7 +86,7 @@ local function get_texture(info, colorFull, colorEmpty)
     if percentBar < barWidth then
         barEmpty = texture:format(barTexture, barHeight, barWidth - percentBar, barOffset, textureSplit + 1, textureWidth, rE, gE, bE)
     end
-    return barFull .. barEmpty
+    return "|W" .. barFull .. barEmpty .. "|w"
 end
 
 local function combine(info, value)

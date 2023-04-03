@@ -1,7 +1,11 @@
 # v1.3.1 ()
 
 ## Added
-- Added option to modify texts for `[signText]` (settings on the `Tags options` panel)
+- Added option to modify texts for `[signText]` (settings on the `Tags options` panel).
+- Added option to override the renown color with paragon (if available) in [c_...] Tags.
+
+## Fixes
+- Fix for bars (including textured bars) splitting in the middle when displayed.
 
 # v1.3.0 (30.3.2023)
 
