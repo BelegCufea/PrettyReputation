@@ -84,21 +84,17 @@ function private.saveRepHeaders()
         return collapsed
     end
 
+    local lastName
     local i = 1
     while true do
 		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
-        local nextName = GetFactionInfo(i + 1)
-        if name == nextName and nextName ~= "Guild" then break end -- bugfix
-        if (name) then
-            if (factionId == nil) then factionId = name	end
-
-            if isHeader and isCollapsed then
-                ExpandFactionHeader(i)
-                collapsed[factionId] = true
-            end
-        else
-            break
+        if not name or (name == lastName and name ~= GUILD) then break end
+        if (factionId == nil) then factionId = name	end
+        if isHeader and isCollapsed then
+            ExpandFactionHeader(i)
+            collapsed[factionId] = true
         end
+        lastName = name
         i = i + 1
     end
     ExpandAllFactionHeaders() -- to be sure every header is expanded
@@ -132,7 +128,7 @@ function private.setupFactions()
     if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
-        if not name or name == lastName and name ~= GUILD then break end
+        if not name or (name == lastName and name ~= GUILD) then break end
         if not factions[name] then
             factions[name] = { id = factionId, session = 0}
         end
@@ -510,7 +506,11 @@ function private.processFaction(faction, change)
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
                 Addon:UpdateBars()
-                Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
+                if factions[info.faction] then
+                    Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
+                else
+                    Debug:Info(info.faction .. " not initialized", "New Faction")
+                end
             end)
         else
             C_Timer.After(0.5, function()
