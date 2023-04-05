@@ -537,8 +537,7 @@ function private.CombatTextUpdated(_, messagetype)
 	end
 end
 
-function private.UpdateReward(event)
-    if not Options.Enabled or not Options.Bars.enabled then return end
+function private.HideReward()
     local updateBars = false
     for k, v in pairs(factions) do
         if v.info and v.info.reward and v.info.reward ~= "" then
@@ -556,6 +555,12 @@ function private.UpdateReward(event)
         end
     end
     if updateBars then Addon:UpdateBars() end
+end
+
+function private.UpdateReward(event)
+    if Options.Enabled and Options.Bars.enabled then
+        C_Timer.After(0.3, function() private.HideReward() end)
+     end
 end
 
 function Addon:Test()

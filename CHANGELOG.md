@@ -6,7 +6,7 @@
 
 ## Fixes
 - Fix for bars (including textured bars) splitting in the middle when displayed.
-- Fix for `PrettyReputation/core.lua:507: attempt to index field "?" (a nil value)` for `Guild` reputation.
+- Fix for `PrettyReputation/core.lua:507: attempt to index field "?" (a nil value)` for `Guild` reputation (reported by filliph).
 
 # v1.3.0 (30.3.2023)
 
