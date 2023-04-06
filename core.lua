@@ -363,7 +363,11 @@ end
 
 function private.constructMessage(info)
     if info == nil or info.name == nil then
-        return "Faction not found - " .. info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]"
+        if info and info.faction and info.change then
+            Debug:Info(info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]", "Faction not found")
+        end
+        Debug:Info(info, "NotFound", "VDT")
+        return ""
     end
 
     local definitions = Tags.Definition
@@ -386,10 +390,12 @@ end
 function private.printReputation(info)
     if not Options.Enabled then return end
     local message = private.constructMessage(info)
-    Addon:Pour(message, 1, 1, 1)
-    if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
-        for _, v in pairs(Options.sinkChatFrames) do
-            _G[v]:AddMessage(message)
+    if message and message ~= "" then
+        Addon:Pour(message, 1, 1, 1)
+        if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
+            for _, v in pairs(Options.sinkChatFrames) do
+                _G[v]:AddMessage(message)
+            end
         end
     end
 
