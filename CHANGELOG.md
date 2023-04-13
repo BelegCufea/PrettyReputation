@@ -1,4 +1,4 @@
-# v1.3.1 ()
+# v1.3.1 (13.4.2023)
 
 ## Added
 - Added option to modify texts for `[signText]` (settings on the `Tags options` panel).
