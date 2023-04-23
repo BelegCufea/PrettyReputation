@@ -178,7 +178,7 @@ end
 
 local function SetBarsOptions()
     Addon:SetBarsOptions()
-    Addon:UpdateBars(false)
+    Addon:UpdateBars()
 end
 
 local options = {
@@ -614,6 +614,31 @@ local options = {
                                 Addon.db.profile.sinkChat = value
                             end
                         },
+                        PatternOverride = {
+                            type = "toggle",
+                            order = 50,
+                            name = "Override pattern for chat frames",
+                            width = "full",
+                            disabled = function() return (Addon.db.profile.sink20OutputSink == "ChatFrame") or (not Addon.db.profile.sinkChat) end,
+                            get = function(info) return Addon.db.profile.Reputation.patternChatFrameOverride end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.patternChatFrameOverride = value
+                            end
+                        },
+                        Pattern = {
+                            type = "input",
+                            order = 60,
+                            name = "pattern",
+                            desc = "Construct your reputation message",
+                            width = "full",
+                            multiline =true,
+                            hidden = function() return not Addon.db.profile.Reputation.patternChatFrameOverride end,
+                            disabled = function() return (not Addon.db.profile.Reputation.patternChatFrameOverride) or (Addon.db.profile.sink20OutputSink == "ChatFrame") or (not Addon.db.profile.sinkChat) end,
+                            get = function(info) return Addon.db.profile.Reputation.patternChatFrame end,
+                            set = function(info, value)
+                                Addon.db.profile.Reputation.patternChatFrame = value
+                            end
+                        },
                     },
                 },
                 Bars = {
@@ -825,6 +850,27 @@ local options = {
                             set = function(info, value)
                                 Addon.db.profile.Bars.removeAfter = value
                             end,
+                        },
+                        blank1 = { type = "description", order = 600, fontSize = "small",name = "",width = "full", },
+                        PatternLeft = {
+                            type = "input",
+                            order = 610,
+                            name = "pattern for left text",
+                            width = "full",
+                            get = function(info) return Addon.db.profile.Bars.patternLeft end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.patternLeft = value
+                            end
+                        },
+                        PatternRight = {
+                            type = "input",
+                            order = 620,
+                            name = "pattern for right text",
+                            width = "full",
+                            get = function(info) return Addon.db.profile.Bars.patternRight end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.patternRight = value
+                            end
                         },
                     },
                 },

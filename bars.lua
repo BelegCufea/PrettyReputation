@@ -158,22 +158,13 @@ function Bars:Update()
                 v.bar = bar
             end
 
-            local session = ((v.info.session > 0) and (Const.MESSAGE_COLORS.POSITIVE .. "+" .. BreakUpLargeNumbers(v.info.session) .. "|r")) or (Const.MESSAGE_COLORS.NEGATIVE  .. BreakUpLargeNumbers(v.info.session) .. "|r")
-
             bar:SetValue(v.info.current, v.info.maximum)
 
-            local faction = PrepareFactionName(v.info.name)
-            if v.info.renown and v.info.renown ~= "" and v.info.paragon == "" then
-                faction = faction .. " [" .. v.info.renown .. "]"
-            end
-            if v.info.paragon and v.info.paragon ~= "" then
-                faction = faction .. " x" .. v.info.paragon
-            end
+            local labelLeft = Addon:ConstructMessage(v.info, Options.Bars.patternLeft)
+            local labelRight = Addon:ConstructMessage(v.info, Options.Bars.patternRight)
 
-            faction = string.format("%s (%s / %s)", faction, BreakUpLargeNumbers(v.info.current), BreakUpLargeNumbers(v.info.maximum))
-
-            bar:SetLabel(faction)
-            bar:SetTimerLabel(session)
+            bar:SetLabel(labelLeft)
+            bar:SetTimerLabel(labelRight)
         end
         if v.bar and v.info then
             v.bar.sort = BarSort(v.info)

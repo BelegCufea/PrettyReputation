@@ -1,3 +1,16 @@
+# v1.3.2 ()
+
+## Added
+- Added options for composing text using tags on on-screen reputation bars. This allows users to customize the information displayed on the reputation bars by using tags to dynamically insert data such as faction name, reputation level, progress towards next level, etc (setings on the `Reputation bars` panel).
+- Added option to define different pattern for chat frames if `Also display message in following chat frames` on the `Output` panel is enabled.
+- Added tags [nameShort] and [c_nameShort].
+- Added tags [nc_name] and [nc_nameShort] for faction name without the purplish color. The tag [name] was originally created with that color, but to avoid breaking already used patterns, a new tag was added.
+
+## Misc
+- Exposed `Short(text, numberOfCharacters)` and `Combine(info, value)` functions in Addon.TAGS.Functions to be used in [custom TAGs](https://github.com/BelegCufea/PrettyReputation_MoreTags) using `local functions = LibStub("PrettyReputationTags").Functions; functions.Short(...)`.
+    - Short function will return shortened text as [..Short] tags do.
+    - Combine function will combine conditional prefix and/or suffix into tag (introduced in v1.3.0).
+
 # v1.3.1 (13.4.2023)
 
 ## Added

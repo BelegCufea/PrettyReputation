@@ -38,6 +38,8 @@ local AddonDB_Defaults = {
             signTextPositive = "increased",
             signTextNegative = "decreased",
             paragonColorOverride = false,
+            patternChatFrame = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]",
+            patternChatFrameOverride = false,
         },
         Bars = {
             enabled = true,
@@ -55,7 +57,10 @@ local AddonDB_Defaults = {
             sort = "session",
             growUp = false,
             tooltipAnchor = "RIGHT",
-            removeAfter = 0
+            removeAfter = 0,
+            patternLeft = "[nc_name] ([current]/[next]) [{x }paragonLevel]",
+            patternRight = "[c_session]",
+
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -361,7 +366,7 @@ function private.getFactionInfo(info)
     return info
 end
 
-function private.constructMessage(info)
+function Addon:ConstructMessage(info, pattern)
     if info == nil or info.name == nil then
         if info and info.faction and info.change then
             Debug:Info(info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]", "Faction not found")
@@ -371,7 +376,6 @@ function private.constructMessage(info)
     end
 
     local definitions = Tags.Definition
-    local pattern = Options.Reputation.pattern
 
     local message = pattern:gsub("%[([^%[].-)%]", function(text)
         info.prefix = text:match("^%b{}") or ""
@@ -389,10 +393,14 @@ end
 
 function private.printReputation(info)
     if not Options.Enabled then return end
-    local message = private.constructMessage(info)
+    local message = Addon:ConstructMessage(info, Options.Reputation.pattern
+)
     if message and message ~= "" then
         Addon:Pour(message, 1, 1, 1)
         if Options.sinkChat and (Options.sink20OutputSink ~= "ChatFrame") then
+            if  Options.Reputation.patternChatFrameOverride then
+                message = Addon:ConstructMessage(info, Options.Reputation.patternChatFrame)
+            end
             for _, v in pairs(Options.sinkChatFrames) do
                 _G[v]:AddMessage(message)
             end

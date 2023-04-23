@@ -45,7 +45,7 @@ local function first_letters(str, x)
       if tonumber(word) ~= nil then
         result = result .. word
       else
-        result = result .. word:sub(1, x):gsub("^%l", string.upper)
+        result = result .. word:sub(1, x)
       end
     end
     return result
@@ -97,6 +97,15 @@ local function combine(info, value)
     end
 end
 
+Addon.TAGS.Functions = {
+    Short = function(text, characters)
+        return first_letters(text, characters)
+    end,
+    Combine = function(info, value)
+        return combine(info, value)
+    end,
+}
+
 Addon.TAGS.Definition = {
     ["name"] = {
         desc = "Name of the faction",
@@ -105,6 +114,31 @@ Addon.TAGS.Definition = {
     ["c_name"] = {
         desc = "Name of the faction colored by standing",
         value = function(info) return info.standingColor .. combine(info, info.name) .. "|r" end
+    },
+    ["nc_name"] = {
+        desc = "Name of the faction (no accent color)",
+        value = function(info) return combine(info, info.name) end
+    },
+    ["nameShort"] = {
+        desc = "A shortened name of the faction",
+        value = function(info)
+            local nameShort =  first_letters(info.name, Addon.db.profile.Reputation.shortCharCount)
+            return Addon.CONST.MESSAGE_COLORS.NAME .. combine(info, nameShort) .. "|r"
+        end
+    },
+    ["c_nameShort"] = {
+        desc = "A shortened name of the faction colored by standing",
+        value = function(info)
+            local nameShort =  first_letters(info.name, Addon.db.profile.Reputation.shortCharCount)
+            return info.standingColor .. combine(info, nameShort) .. "|r"
+        end
+    },
+    ["nc_nameShort"] = {
+        desc = "A shortened name of the faction (no accent color)",
+        value = function(info)
+            local nameShort =  first_letters(info.name, Addon.db.profile.Reputation.shortCharCount)
+            return combine(info, nameShort)
+        end
     },
     ["standing"] = {
         desc = "Current reputation standing",
