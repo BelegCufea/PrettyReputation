@@ -188,39 +188,39 @@ Addon.TAGS.Definition = {
     },
     ["change"] = {
         desc = "Actual gain/loss of reputation",
-        value = function(info) return combine(info, (info.negative and "-" or "+") .. info.change) end
+        value = function(info) return combine(info, (info.negative and "-" or "+") .. BreakUpLargeNumbers(info.change)) end
     },
     ["c_change"] = {
         desc = "Actual gain/loss of reputation (green for gain, red for loss)",
-        value = function(info) return (info.negative and Addon.CONST.MESSAGE_COLORS.NEGATIVE or Addon.CONST.MESSAGE_COLORS.POSITIVE) .. combine(info, (info.negative and "-" or "+") .. info.change ).. "|r" end
+        value = function(info) return (info.negative and Addon.CONST.MESSAGE_COLORS.NEGATIVE or Addon.CONST.MESSAGE_COLORS.POSITIVE) .. combine(info, (info.negative and "-" or "+") .. BreakUpLargeNumbers(info.change)).. "|r" end
     },
     ["session"] = {
         desc = "Gain of reputation in current session",
-        value = function(info) return combine(info, ((info.session > 0) and "+" or "") .. info.session) end
+        value = function(info) return combine(info, ((info.session > 0) and "+" or "") .. BreakUpLargeNumbers(info.session)) end
     },
     ["c_session"] = {
         desc = "Gain of reputation in current session (green for gain, red for loss)",
-        value = function(info) return ((info.session > 0) and Addon.CONST.MESSAGE_COLORS.POSITIVE or Addon.CONST.MESSAGE_COLORS.NEGATIVE) .. combine(info, ((info.session > 0) and "+" or "") .. info.session) .. "|r" end
+        value = function(info) return ((info.session > 0) and Addon.CONST.MESSAGE_COLORS.POSITIVE or Addon.CONST.MESSAGE_COLORS.NEGATIVE) .. combine(info, ((info.session > 0) and "+" or "") .. BreakUpLargeNumbers(info.session)) .. "|r" end
     },
     ["current"] = {
         desc = "Current reputation value",
-        value = function(info) return combine(info, info.current) end
+        value = function(info) return combine(info, BreakUpLargeNumbers(info.current)) end
     },
     ["next"] = {
         desc = "Reputation boundary for next level",
-        value = function(info) return combine(info, info.maximum) end
+        value = function(info) return combine(info, BreakUpLargeNumbers(info.maximum)) end
     },
     ["bottom"] = {
         desc = "Minimum reputation in current standing",
-        value = function(info) return combine(info, info.bottom) end
+        value = function(info) return combine(info, BreakUpLargeNumbers(info.bottom)) end
     },
     ["top"] = {
         desc = "Maximum reputation in current standing",
-        value = function(info) return combine(info, info.top) end
+        value = function(info) return combine(info, BreakUpLargeNumbers(info.top)) end
     },
     ["toGo"] = {
         desc = "Reputation to gain/loss for next/previous standing",
-        value = function(info) return combine(info, (info.negative and ("-" .. info.current) or (info.maximum - info.current))) end
+        value = function(info) return combine(info, (info.negative and ("-" .. BreakUpLargeNumbers(info.current))) or BreakUpLargeNumbers(info.maximum - info.current)) end
     },
     ["changePercent"] = {
         desc = "Percentual change of reputation",
@@ -250,9 +250,25 @@ Addon.TAGS.Definition = {
         desc = "Renown level",
         value = function(info) return combine(info, info.renown) end
     },
+    ["renownLevelNoParagon"] = {
+        desc = "Renown level",
+        value = function(info)
+            if info.paragon and info.paragon ~= "" then return "" end
+            return combine(info, info.renown)
+        end
+    },
     ["c_renownLevel"] = {
         desc = "Colored renown level",
         value = function(info)
+            local reputationColors = Addon.db.profile.Colors
+            local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
+            return renownColor .. combine(info, info.renown) .. "|r"
+        end
+    },
+    ["c_renownLevelNoParagon"] = {
+        desc = "Colored renown level",
+        value = function(info)
+            if info.paragon and info.paragon ~= "" then return "" end
             local reputationColors = Addon.db.profile.Colors
             local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
             return renownColor .. combine(info, info.renown) .. "|r"

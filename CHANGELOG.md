@@ -5,6 +5,10 @@
 - Added option to define different pattern for chat frames if `Also display message in following chat frames` on the `Output` panel is enabled.
 - Added tags [nameShort] and [c_nameShort].
 - Added tags [nc_name] and [nc_nameShort] for faction name without the purplish color. The tag [name] was originally created with that color, but to avoid breaking already used patterns, a new tag was added.
+- Added tags [renownLevelNoParagon] and [c_renownLevelNoParagon] that display the renown level only if there is no paragon level gained yet.
+
+## Update
+- Updated formating of all numbers. (from 11659 to 11,659)
 
 ## Misc
 - Exposed `Short(text, numberOfCharacters)` and `Combine(info, value)` functions in Addon.TAGS.Functions to be used in [custom TAGs](https://github.com/BelegCufea/PrettyReputation_MoreTags) using `local functions = LibStub("PrettyReputationTags").Functions; functions.Short(...)`.

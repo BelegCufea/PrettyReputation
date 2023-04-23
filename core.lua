@@ -58,7 +58,7 @@ local AddonDB_Defaults = {
             growUp = false,
             tooltipAnchor = "RIGHT",
             removeAfter = 0,
-            patternLeft = "[nc_name] ([current]/[next]) [{x }paragonLevel]",
+            patternLeft = "[nc_name][{ |}renownLevelNoParagon{|}][{ x}paragonLevel] ([current]/[next])",
             patternRight = "[c_session]",
 
         },
