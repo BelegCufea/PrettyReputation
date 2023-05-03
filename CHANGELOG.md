@@ -1,4 +1,4 @@
-# v1.3.2 ()
+# v1.3.2 (3.5.2023)
 
 ## Added
 - Added options for composing text using tags on on-screen reputation bars. This allows users to customize the information displayed on the reputation bars by using tags to dynamically insert data such as faction name, reputation level, progress towards next level, etc (setings on the `Reputation bars` panel).
@@ -8,7 +8,13 @@
 - Added tags [renownLevelNoParagon] and [c_renownLevelNoParagon] that display the renown level only if there is no paragon level gained yet.
 
 ## Update
+- Bump TOC for 10.1 patch
 - Updated formating of all numbers. (from 11659 to 11,659)
+- Chnaged `show paragon count in standing text` to `show paragon level instead of standing text` (so you will get `Paragon 6` instead of `Renown25 (6)`).
+- Slight change generating tooltip for on-screen reputation bars. Added current bar values to tooltip (i.e. 500/6,000)
+
+## Fixes
+- Text from on-screen reputation bars spilling to multiple lines.
 
 ## Misc
 - Exposed `Short(text, numberOfCharacters)` and `Combine(info, value)` functions in Addon.TAGS.Functions to be used in [custom TAGs](https://github.com/BelegCufea/PrettyReputation_MoreTags) using `local functions = LibStub("PrettyReputationTags").Functions; functions.Short(...)`.

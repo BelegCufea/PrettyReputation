@@ -12,6 +12,12 @@ local BarsGroup
 
 local bars = {}
 local expiredTimer
+local tooltipLines = {
+    [1] = {"Standing:", "[c_standing]"},
+    [2] = {"Current:", "[current] / [next]"},
+    [3] = {"Remaining:", "[toGo]"},
+    [4] = {"Session:", "[session]"},
+}
 
 local function BarSortOrder(a, b)
     local growUp = Options.Bars.growUp
@@ -74,15 +80,24 @@ local function ShowFactionTooltip(bar)
     if factions[bar.faction] then
         local faction = factions[bar.faction]
         if faction.info and faction.info.name then
+            local name = Addon:ConstructMessage(faction.info, "[name]")
             local tooltipAnchor, ofsx, ofsy = ConstructTooltipAnchor(Options.Bars.tooltipAnchor)
             GameTooltip:SetOwner(bar, tooltipAnchor, ofsx, ofsy)
-            GameTooltip:AddLine(Const.MESSAGE_COLORS .NAME .. faction.info.name .. "|r")
+            GameTooltip:AddLine(name)
             GameTooltip:AddLine(" ")
-            local standing = faction.info.standingColor .. faction.info.standingText .. "|r"
-            local toGo = (faction.info.negative and ("-" .. BreakUpLargeNumbers(faction.info.current)) or BreakUpLargeNumbers((faction.info.maximum - faction.info.current)))
+
+            local keys = {}
+            for key in pairs(tooltipLines) do
+                table.insert(keys, key)
+            end
+            table.sort(keys)
+            for _, key in ipairs(keys) do
+                local left = tooltipLines[key][1]
+                local right = Addon:ConstructMessage(faction.info, tooltipLines[key][2])
+                GameTooltip:AddDoubleLine(left, right)
+            end
+
             local timeElapsed = time() - faction.info.lastUpdated
-            GameTooltip:AddDoubleLine("Standing:", standing)
-            GameTooltip:AddDoubleLine("To next:", toGo)
             GameTooltip:AddDoubleLine("Last change:", string.format("%d:%02d", math.floor(timeElapsed / 60), timeElapsed % 60))
             GameTooltip:AddLine(" ")
             GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")
@@ -160,8 +175,8 @@ function Bars:Update()
 
             bar:SetValue(v.info.current, v.info.maximum)
 
-            local labelLeft = Addon:ConstructMessage(v.info, Options.Bars.patternLeft)
-            local labelRight = Addon:ConstructMessage(v.info, Options.Bars.patternRight)
+            local labelLeft = "|W" .. Addon:ConstructMessage(v.info, Options.Bars.patternLeft) .. "|w"
+            local labelRight = "|W" .. Addon:ConstructMessage(v.info, Options.Bars.patternRight) .. "|w"
 
             bar:SetLabel(labelLeft)
             bar:SetTimerLabel(labelRight)

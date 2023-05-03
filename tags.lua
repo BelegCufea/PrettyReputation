@@ -143,47 +143,53 @@ Addon.TAGS.Definition = {
     ["standing"] = {
         desc = "Current reputation standing",
         value = function(info)
+            local standingText = info.standingText
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
-                return combine(info, info.standingText .. " (" .. info.paragon .. ")")
-            else
-                return combine(info, info.standingText)
+                standingText = "Paragon " .. info.paragon
             end
+            return combine(info, standingText)
         end
     },
     ["standingShort"] = {
         desc = "A shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
+            local standingTextShort
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
-                return combine(info, standingTextShort .. " (" .. info.paragon .. ")")
+                standingTextShort = first_letters("Paragon", Addon.db.profile.Reputation.shortCharCount)
+                standingTextShort = standingTextShort .. info.paragon
             else
-                return combine(info, standingTextShort)
+                standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
             end
+            return combine(info, standingTextShort)
         end
     },
     ["c_standing"] = {
         desc = "Colored current reputation standing",
         value = function(info)
+            local standingText = info.standingText
+            local standingColor = info.standingColor
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
+                standingText = "Paragon " .. info.paragon
                 local reputationColors = Addon.db.profile.Colors
-                local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
-                return info.standingColor .. combine(info, info.standingText) .. "|r" .. paragonColor .. " (" .. info.paragon .. ")|r"
-            else
-                return info.standingColor .. combine(info, info.standingText) .. "|r"
+                standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
             end
-        end
+            return standingColor .. combine(info, standingText) .. "|r"
+       end
     },
     ["c_standingShort"] = {
         desc = "A colored, shortened expression of the current reputation standing, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            local standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
+            local standingTextShort
+            local standingColor = info.standingColor
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
+                standingTextShort = first_letters("Paragon", Addon.db.profile.Reputation.shortCharCount)
+                standingTextShort = standingTextShort .. info.paragon
                 local reputationColors = Addon.db.profile.Colors
-                local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
-                return info.standingColor .. combine(info, standingTextShort) .. "|r" .. paragonColor .. " (" .. info.paragon .. ")|r"
+                standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
             else
-                return info.standingColor .. combine(info, standingTextShort) .. "|r"
+                standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
             end
+            return standingColor .. combine(info, standingTextShort) .. "|r"
         end
     },
     ["change"] = {
