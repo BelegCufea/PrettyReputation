@@ -1,7 +1,12 @@
+# v1.3.3 ()
+
+## Added
+- Added support for Addon compartment system
+
 # v1.3.2 (3.5.2023)
 
 ## Added
-- Added options for composing text using tags on on-screen reputation bars. This allows users to customize the information displayed on the reputation bars by using tags to dynamically insert data such as faction name, reputation level, progress towards next level, etc (setings on the `Reputation bars` panel).
+- Added options for composing text using tags for on-screen reputation bars. This allows users to customize the information displayed on the reputation bars by using tags to dynamically insert data such as faction name, reputation level, progress towards next level, etc (setings on the `Reputation bars` panel).
 - Added option to define different pattern for chat frames if `Also display message in following chat frames` on the `Output` panel is enabled.
 - Added tags [nameShort] and [c_nameShort].
 - Added tags [nc_name] and [nc_nameShort] for faction name without the purplish color. The tag [name] was originally created with that color, but to avoid breaking already used patterns, a new tag was added.

@@ -193,6 +193,7 @@
         "GetChatWindowInfo",
         "GetAddOnMetadata",
         "RolePollPopup",
-        "RolePollPopupAcceptButton"
+        "RolePollPopupAcceptButton",
+        "AddonCompartmentFrame"
     ]
 }
