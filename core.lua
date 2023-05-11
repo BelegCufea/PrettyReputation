@@ -363,7 +363,7 @@ function private.getFactionInfo(info)
             factions[info.faction].info = private.getRepInfo(info)
         end
     end
-    Debug:Info(factions, "factions", "VDT")
+    Debug:Table(factions, "factions")
     return info
 end
 
@@ -372,7 +372,7 @@ function Addon:ConstructMessage(info, pattern)
         if info and info.faction and info.change then
             Debug:Info(info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]", "Faction not found")
         end
-        Debug:Info(info, "NotFound", "VDT")
+        Debug:Table(info, "NotFound")
         return ""
     end
 
@@ -415,7 +415,7 @@ function private.printReputation(info)
     if Options.Debug then
         info.prefix = ""
         info.suffix = ""
-        Debug:Info(info, "Info", "VDT")
+        Debug:Table(info, "Info")
         local debug = {}
         local tkeys = {}
         for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
@@ -423,7 +423,7 @@ function private.printReputation(info)
         for _, k in ipairs(tkeys) do
             debug[k] = Tags.Definition[k].value(info)
         end
-        Debug:Info(debug, "Tags", "VDT")
+        Debug:Table(debug, "Tags")
     end
 end
 
@@ -493,7 +493,7 @@ function private.processAllFactions(factionInfo)
         end
     end
     if trackFaction then private.trackFaction(trackFaction) end
-    Debug:Info(factions, "factions", "VDT")
+    Debug:Table(factions, "factions")
     --local elapsedTime = debugprofilestop()
     --Debug:Info("Elapsed time: " .. elapsedTime .. " ms", "ellapsedTime")
 end

@@ -1,7 +1,13 @@
-# v1.3.3 ()
+# v1.3.3 (11.5.2023)
 
 ## Added
-- Added support for Addon compartment system
+- Added support for Addon compartment system.
+
+## Update
+- Minimap icon is hidden by default and compartment button is shown by default.  Both can be toogled on the `General` panel.
+
+## Mics
+- Moved debug from [ViragDevTool](https://www.curseforge.com/wow/addons/varrendevtool) to [DevTool](https://www.curseforge.com/wow/addons/devtool).
 
 # v1.3.2 (3.5.2023)
 

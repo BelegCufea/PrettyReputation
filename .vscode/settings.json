@@ -214,6 +214,15 @@
         "UNITNAME_TITLE_GUARDIAN",
         "THREAT_TOOLTIP",
         "UNITNAME_TITLE_PET",
-        "UNITNAME_TITLE_MINION"
+        "UNITNAME_TITLE_MINION",
+        "MerchantRepairText",
+        "MerchantBuyBackItem",
+        "MerchantRepairItemButton",
+        "ITEM_UNSELLABLE",
+        "MerchantRepairAllButton",
+        "MerchantFrame",
+        "OPTIONS",
+        "SHOW_TUTORIALS",
+        "ChatFrame1EditBox"
     ]
 }
