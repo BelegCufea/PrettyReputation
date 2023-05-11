@@ -194,6 +194,26 @@
         "GetAddOnMetadata",
         "RolePollPopup",
         "RolePollPopupAcceptButton",
-        "AddonCompartmentFrame"
+        "AddonCompartmentFrame",
+        "LE_EXPANSION_WRATH_OF_THE_LICH_KING",
+        "NamePlateDriverFrame",
+        "PlayerCastingBarFrame",
+        "CompactUnitFrame_UnregisterEvents",
+        "GetRelativeDifficultyColor",
+        "SetRaidTargetIconTexture",
+        "TextureLoadingGroupMixin",
+        "WorldFrame",
+        "GameMenuFrame",
+        "DefaultCompactNamePlateFrameSetUpOptions",
+        "DefaultCompactNamePlateFriendlyFrameOptions",
+        "DefaultCompactNamePlateEnemyFrameOptions",
+        "LE_PARTY_CATEGORY_HOME",
+        "CLASS_ICON_TCOORDS",
+        "INTERRUPTED",
+        "UNIT_LEVEL_TEMPLATE",
+        "UNITNAME_TITLE_GUARDIAN",
+        "THREAT_TOOLTIP",
+        "UNITNAME_TITLE_PET",
+        "UNITNAME_TITLE_MINION"
     ]
 }

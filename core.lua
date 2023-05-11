@@ -68,7 +68,8 @@ local AddonDB_Defaults = {
         },
         Colors = Const.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
-        minimapIcon = { hide = false, minimapPos = 220, radius = 80, },
+        minimapIcon = { hide = true, minimapPos = 220, radius = 80, },
+        AddonCompartment = { hide = false },
         Track = false,
         TrackPositive = false,
         TrackGuild = false,
@@ -647,31 +648,6 @@ function Addon:OnEnable()
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
-
-    AddonCompartmentFrame:RegisterAddon({
-        text = Const.METADATA.NAME,
-        icon = "Interface\\AddOns\\PrettyReputation\\textures\\icon",
-        registerForAnyClick = true,
-        notCheckable = true,
-        func = function(btn, arg1, arg2, checked, button)
-            if button == "LeftButton" then
-                Addon.db.profile.Enabled = not Addon.db.profile.Enabled
-                Addon:OnToggle()
-            end
-            if button == "RightButton" then
-                InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
-                InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
-            end
-            end,
-            funcOnEnter = function()
-                GameTooltip:SetOwner(AddonCompartmentFrame, "ANCHOR_TOPRIGHT")
-                GameTooltip:AddDoubleLine(Const.METADATA.NAME .. " (v" .. Const.METADATA.VERSION .. ")", (Options.Enabled and (Const.MESSAGE_COLORS.POSITIVE .. "Enabled" .. "|r")) or (Const.MESSAGE_COLORS.NEGATIVE .. "Disabled" .. "|r"), 1, 1, 1)
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to open the options window")
-                GameTooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle message visibility")
-                GameTooltip:Show()
-            end,
-        })
 end
 
 function Addon:OnDisable()

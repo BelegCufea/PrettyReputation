@@ -91,9 +91,18 @@ function Addon:InitializeDataBroker()
     private.SetLabelText()
     Addon.icon = LibStub("LibDBIcon-1.0")
     Addon.icon:Register(Addon.CONST.METADATA.NAME, Addon.BrokerModule, Addon.db.profile.minimapIcon)
-    if Addon.db.profile.minimapIcon.hide == true then
+    if Addon.db.profile.minimapIcon.hide then
         Addon.icon:Hide(Addon.CONST.METADATA.NAME)
     else
         Addon.icon:Show(Addon.CONST.METADATA.NAME)
+    end
+    if Addon.db.profile.AddonCompartment.hide then
+        if Addon.icon:IsButtonInCompartment(Addon.CONST.METADATA.NAME) then
+            Addon.icon:RemoveButtonFromCompartment(Addon.CONST.METADATA.NAME)
+        end
+    else
+        if not Addon.icon:IsButtonInCompartment(Addon.CONST.METADATA.NAME) then
+            Addon.icon:AddButtonToCompartment(Addon.CONST.METADATA.NAME)
+        end
     end
 end

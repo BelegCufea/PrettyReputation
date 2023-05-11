@@ -211,19 +211,38 @@ local options = {
                         MiniMap = {
                             type = "toggle",
                             order = 2,
-                            name = "Show minmap icon",
+                            name = "Show minimap icon",
                             width = "full",
                             get = function(info) return not Addon.db.profile.minimapIcon.hide end,
                             set = function(info, value)
                                 Addon.db.profile.minimapIcon.hide = not value
-                                if Addon.db.profile.minimapIcon.hide == true then
+                                if Addon.db.profile.minimapIcon.hide then
                                     Addon.icon:Hide(Addon.CONST.METADATA.NAME)
                                 else
                                     Addon.icon:Show(Addon.CONST.METADATA.NAME)
                                 end
-                            end
+                             end
                         },
-                        Splash = {
+                        Compartment = {
+                            type = "toggle",
+                            order = 2.1,
+                            name = "Show addon compartment button",
+                            width = "full",
+                            get = function(info) return not Addon.db.profile.AddonCompartment.hide end,
+                            set = function(info, value)
+                                Addon.db.profile.AddonCompartment.hide = not value
+                                if Addon.db.profile.AddonCompartment.hide then
+                                    if Addon.icon:IsButtonInCompartment(Addon.CONST.METADATA.NAME) then
+                                        Addon.icon:RemoveButtonFromCompartment(Addon.CONST.METADATA.NAME)
+                                    end
+                                else
+                                    if not Addon.icon:IsButtonInCompartment(Addon.CONST.METADATA.NAME) then
+                                        Addon.icon:AddButtonToCompartment(Addon.CONST.METADATA.NAME)
+                                    end
+                                end
+                             end
+                        },
+                       Splash = {
                             type = "toggle",
                             order = 3,
                             name = "Show splash reputation (|cnWARNING_FONT_COLOR:May cause lag!|r)",
