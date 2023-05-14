@@ -363,16 +363,16 @@ function private.getFactionInfo(info)
             factions[info.faction].info = private.getRepInfo(info)
         end
     end
-    Debug:Table(factions, "factions")
+    Debug:Table("Factions", factions)
     return info
 end
 
 function Addon:ConstructMessage(info, pattern)
     if info == nil or info.name == nil then
         if info and info.faction and info.change then
-            Debug:Info(info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]", "Faction not found")
+            Debug:Info("Faction not found", info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]")
         end
-        Debug:Table(info, "NotFound")
+        Debug:Table("NotFound", info)
         return ""
     end
 
@@ -415,7 +415,7 @@ function private.printReputation(info)
     if Options.Debug then
         info.prefix = ""
         info.suffix = ""
-        Debug:Table(info, "Info")
+        Debug:Table("Info", info)
         local debug = {}
         local tkeys = {}
         for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
@@ -423,7 +423,7 @@ function private.printReputation(info)
         for _, k in ipairs(tkeys) do
             debug[k] = Tags.Definition[k].value(info)
         end
-        Debug:Table(debug, "Tags")
+        Debug:Table("Tags", debug)
     end
 end
 
@@ -461,19 +461,9 @@ function private.processAllFactions(factionInfo)
     --debugprofilestart()
     local trackFaction
     for k, v in pairs(factions) do
-        --local paragonLevelOld = v.info.paragon:match("^%d+")
-        --if not paragonLevelOld then paragonLevelOld = 0 end
-        --local toGoOld = v.info.maximum - v.info.current
         local currentOld = v.info.current + v.info.bottom
-        --if v.info.renown ~= "" then Debug:Info(v.info.renown, v.info.name .. " renown before:") end
         local info = private.getRepInfo(v.info)
-        --if v.info.renown ~= "" then Debug:Info(v.info.renown, v.info.name .. " renown after:") end
         local change = (info.current + info.bottom) - currentOld
-        --local paragonLevelNew = v.info.paragon:match("^%d+")
-        --if not paragonLevelNew then paragonLevelNew = 0 end
-        --if paragonLevelOld ~= paragonLevelNew then
-        --    change = toGoOld + v.info.current
-        --end
         if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
             change = factionInfo.change * ((factionInfo.negative and -1) or 1)
         end
@@ -493,14 +483,14 @@ function private.processAllFactions(factionInfo)
         end
     end
     if trackFaction then private.trackFaction(trackFaction) end
-    Debug:Table(factions, "factions")
+    Debug:Table("Factions", factions)
     --local elapsedTime = debugprofilestop()
-    --Debug:Info("Elapsed time: " .. elapsedTime .. " ms", "ellapsedTime")
+    --Debug:Info("EllapsedTime", elapsedTime .. " ms")
 end
 
 function private.processFaction(faction, change)
     local info = {}
-    Debug:Info(((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change), "Event")
+    Debug:Info("Event", ((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change))
     info["faction"] = faction
 
     if type(change) == "number" then
@@ -516,27 +506,24 @@ function private.processFaction(faction, change)
     if not Options.Splash then
         if info.new then
             C_Timer.After(0.3, function()
-                --Debug:Info("New faction", "Report type:")
                 private.setupFactions()
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
                 Addon:UpdateBars()
                 if factions[info.faction] then
-                    Debug:Info(info.faction .. ((factions[info.faction].id and " found") or " not found"), "New Faction")
+                    Debug:Info("New Faction", info.faction .. ((factions[info.faction].id and " found") or " not found"))
                 else
-                    Debug:Info(info.faction .. " not initialized", "New Faction")
+                    Debug:Info("New Faction", info.faction .. " not initialized")
                 end
             end)
         else
             C_Timer.After(0.5, function()
-                --Debug:Info("Standard", "Report type:")
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
                 Addon:UpdateBars()
             end)
         end
     else
-        --Debug:Info("Splash reputation", "Report type:")
         C_Timer.After(0.3, function()
             private.setupFactions()
             private.processAllFactions(info)

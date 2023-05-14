@@ -1,3 +1,9 @@
+# v1.3.4 ()
+
+## Misc
+- Revert debug to [ViragDevTool](https://www.curseforge.com/wow/addons/varrendevtool) as [DevTool](https://www.curseforge.com/wow/addons/devtool) is still buggy.
+- Revamped Debug implemntation
+
 # v1.3.3 (11.5.2023)
 
 ## Added
@@ -6,7 +12,7 @@
 ## Update
 - Minimap icon is hidden by default and compartment button is shown by default.  Both can be toogled on the `General` panel.
 
-## Mics
+## Misc
 - Moved debug from [ViragDevTool](https://www.curseforge.com/wow/addons/varrendevtool) to [DevTool](https://www.curseforge.com/wow/addons/devtool).
 
 # v1.3.2 (3.5.2023)
