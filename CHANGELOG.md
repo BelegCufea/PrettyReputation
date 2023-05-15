@@ -1,5 +1,8 @@
 # v1.3.4 ()
 
+## Fix
+- Profile changing
+
 ## Misc
 - Revert debug to [ViragDevTool](https://www.curseforge.com/wow/addons/varrendevtool) as [DevTool](https://www.curseforge.com/wow/addons/devtool) is still buggy.
 - Revamped Debug implemntation

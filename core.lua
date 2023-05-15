@@ -609,9 +609,6 @@ function private.chatCmdShowConfig(input)
     end
 end
 
-function Addon:OnProfileChanged(event, database, newProfileKey)
-
-end
 
 function Addon:OnToggle()
     Addon:UpdateDataBrokerText()
@@ -627,6 +624,10 @@ function Addon:OnInitialize()
     Addon:RegisterChatCommand("pr", private.chatCmdShowConfig)
 end
 
+function Addon:RefreshConfig()
+    Options = self.db.profile
+end
+
 function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
     Options = Addon.db.profile
@@ -635,6 +636,10 @@ function Addon:OnEnable()
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
+
+    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 function Addon:OnDisable()
