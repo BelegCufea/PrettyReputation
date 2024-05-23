@@ -243,6 +243,7 @@ function private.getRepInfo(info)
             info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionId)
 			local isCapped = HasMaximumRenown(info.factionId)
+            local isParagon = IsFactionParagon(info.factionId)
             if data then
                 info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
                 info["top"] = data.renownLevel * data.renownLevelThreshold
@@ -254,7 +255,7 @@ function private.getRepInfo(info)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
                 info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
-                if not isCapped then
+                if not isCapped or not isParagon then
                     return info
                 end
 
