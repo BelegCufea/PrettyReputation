@@ -1,7 +1,8 @@
-# v1.3.4 ()
+# v1.3.4 (23.5.2024)
 
 ## Fix
 - Profile changing
+- Fix Plunderstorm faction issue ([filliph](https://github.com/filliph))
 
 ## Misc
 - Revert debug to [ViragDevTool](https://www.curseforge.com/wow/addons/varrendevtool) as [DevTool](https://www.curseforge.com/wow/addons/devtool) is still buggy.
