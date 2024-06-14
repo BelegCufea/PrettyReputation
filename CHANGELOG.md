@@ -1,3 +1,14 @@
+# v1.3.5 (14.6.2024)
+
+#### <u>Note</u>
+Since I am not plaing WoW right now, I am not be able to fully test if everything's working smoothly. If you run into any issues, please feel free to report them on [GitHub](https://github.com/BelegCufea/PrettyReputation/issues).
+
+## Added
+- <b>Pin Your Favorite Factions:</b>
+Choose the factions you care most about from the "<code>Favorites</code>" list. These will become "pinned" bars that always show up, even if there are no current gains for those factions.  This way, you can easily keep an eye on your progress without having to navigate through the full list.
+![Favorite factions](https://i.imgur.com/jjzgkpq.png)
+
+
 # v1.3.4 (23.5.2024)
 
 ## Fix

@@ -129,6 +129,10 @@ local function Expired(info)
         expired = info and ((now - (info.lastUpdated or 0)) >= Options.Bars.removeAfter)
     end
 
+    if Options.FavoriteFactions[info.name] then
+        expired = false
+    end
+
     return expired
 end
 
@@ -160,7 +164,7 @@ function Bars:Update()
             if Bars:IsEnabled() then Bars:Disable() end
     end
     for k,v in pairs(factions) do
-        if v.info and v.info.name and v.info.session and v.info.session ~= 0 and not Expired(v.info) then
+        if v.info and v.info.name and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
             local bar = v.bar
             if not bar then
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionId, nil, 0, 100)

@@ -1,7 +1,7 @@
 ## Interface: 100100
 ## Title: Pretty Reputation
 ## Notes: Shows more info about your reputation gain
-## Version: 1.3.4
+## Version: 1.3.5
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled

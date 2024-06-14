@@ -1111,6 +1111,30 @@ local options = {
                 },
             },
         },
+        Favorites = {
+            type = "group",
+            order = 70,
+            name = "Favorites",
+              args = {
+                description = {
+                    type = "description",
+                    name = "Choose favorite factions",
+                    order = 10,
+                },
+                list1 = {
+                    type = "multiselect",
+                    name = "Factions",
+                    values = function() return getFactions() end,
+                    get = function(info, key)
+                        return Addon.db.profile.FavoriteFactions[key] or false
+                    end,
+                    set = function(info, key, value)
+                        Addon.db.profile.FavoriteFactions[key] = value
+                    end,
+                    order = 20,
+                },
+            },
+        },
         About = {
             type = "group",
             order = 90,
@@ -1195,6 +1219,7 @@ function Config:OnEnable()
     Addon:SetSinkStorage(Addon.db.profile)
 	ConfigRegistry:RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
+    ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Favorites", Addon.CONST.METADATA.NAME, "Favorites")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "About", Addon.CONST.METADATA.NAME, "About")
     if options.args.FAQ then

@@ -79,6 +79,7 @@ local AddonDB_Defaults = {
         sinkChatFrames = {"ChatFrame1"},
         Splash = false,
         Debug = false,
+        FavoriteFactions = {},
     }
 }
 
@@ -633,6 +634,8 @@ function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
     Options = Addon.db.profile
     private.setupFactions()
+    -- Hope it will update :-)
+    C_Timer.After(1, function() Addon:UpdateBars() end)
 
     Addon:InitializeDataBroker()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
