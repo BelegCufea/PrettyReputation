@@ -13,6 +13,7 @@ Or
 - Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
 - Track session reputation gains or losses on the minimap icon/databroker.
 - Show on-screen bars with session reputation changes.
+- Favorite a faction to be always shown as on-screen bar.
 - Set the faction with the latest reputation change as watched.
 - Add your own tags or modify existing ones. (See [Example with instructions here](https://github.com/BelegCufea/PrettyReputation_MoreTags))
 
@@ -47,6 +48,9 @@ Locate the 'Pretty Reputation' section within the 'Options -> Addon' section, or
 > Pick color scheme or define your own colors
 
 ![Choose your colors](https://i.imgur.com/EJWI8lp.png)
+
+> Favorite a faction
+![Favorite factions](https://i.imgur.com/jjzgkpq.png)
 
 ## Issues
 

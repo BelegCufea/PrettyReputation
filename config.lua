@@ -1130,6 +1130,7 @@ local options = {
                     end,
                     set = function(info, key, value)
                         Addon.db.profile.FavoriteFactions[key] = value
+                        SetBarsOptions()
                     end,
                     order = 20,
                 },
