@@ -1,4 +1,4 @@
-# v1.3.5a
+# v1.3.5a (15.6.2024)
 
 ## Fix
 - On-screen bars for favorite factions not updating correctly when selected in options.

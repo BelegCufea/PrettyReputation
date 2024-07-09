@@ -161,7 +161,7 @@ end
 function private.trackFaction(info)
     if not info then return end
     if info.faction == GetWatchedFactionInfo() then return end
-    if info.faction ==  GUILD and not Options.TrackGuild then return end
+    if info.faction == GUILD and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
     local collapsedHeaders = private.saveRepHeaders()
     for i = 1, GetNumFactions() do
@@ -491,6 +491,9 @@ function private.processAllFactions(factionInfo)
 end
 
 function private.processFaction(faction, change)
+    if faction == GUILD and IsInGuild() then
+        faction = GetGuildInfo("player")
+    end
     local info = {}
     Debug:Info("Event", ((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change))
     info["faction"] = faction
