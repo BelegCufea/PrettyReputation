@@ -15,6 +15,7 @@ local Tags = Addon.TAGS
 local Bars = Addon.Bars
 local Options
 
+local guildname
 local private = {}
 local icons = {}
 local factions = {}
@@ -91,17 +92,15 @@ function private.saveRepHeaders()
         return collapsed
     end
 
-    local lastName
     local i = 1
     while true do
 		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
-        if not name or (name == lastName and name ~= GUILD) then break end
+        if not name then break end
         if (factionId == nil) then factionId = name	end
         if isHeader and isCollapsed then
             ExpandFactionHeader(i)
             collapsed[factionId] = true
         end
-        lastName = name
         i = i + 1
     end
     ExpandAllFactionHeaders() -- to be sure every header is expanded
@@ -130,12 +129,14 @@ function private.setupIcons() -- FactionAddict
 end
 
 function private.setupFactions()
-    local lastName
+    if IsInGuild() then
+        guildname = GetGuildInfo("player")
+    end
     local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
     if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
-        if not name or (name == lastName and name ~= GUILD) then break end
+        if not name then break end
         if not factions[name] then
             factions[name] = { id = factionId, session = 0}
         end
@@ -153,7 +154,6 @@ function private.setupFactions()
             info["session"] = factions[name].session
             factions[name].info = private.getRepInfo(info)
         end
-        lastName = name
     end
     private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
 end
@@ -161,7 +161,7 @@ end
 function private.trackFaction(info)
     if not info then return end
     if info.faction == GetWatchedFactionInfo() then return end
-    if info.faction == GUILD and not Options.TrackGuild then return end
+    if ((info.faction == GUILD) or (info.faction == guildname)) and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
     local collapsedHeaders = private.saveRepHeaders()
     for i = 1, GetNumFactions() do
@@ -491,8 +491,8 @@ function private.processAllFactions(factionInfo)
 end
 
 function private.processFaction(faction, change)
-    if faction == GUILD and IsInGuild() then
-        faction = GetGuildInfo("player")
+    if faction == GUILD then
+        faction = guildname
     end
     local info = {}
     Debug:Info("Event", ((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change))
