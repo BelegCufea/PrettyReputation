@@ -1,7 +1,7 @@
-# v1.3.5b ()
+# v1.3.5b (14.7.2024)
 
 ## Fix
-- Guild reputation was not displayed correctly ([Hyphie24](https://github.com/Hyphie24))
+- Guild reputation was not displayed correctly (thanks [Hyphie24](https://github.com/Hyphie24))
 
 # v1.3.5a (15.6.2024)
 
