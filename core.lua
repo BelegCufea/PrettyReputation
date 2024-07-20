@@ -92,15 +92,17 @@ function private.saveRepHeaders()
         return collapsed
     end
 
+    local lastName
     local i = 1
     while true do
 		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
-        if not name then break end
+        if not name or (name == lastName and name ~= GUILD) then break end
         if (factionId == nil) then factionId = name	end
         if isHeader and isCollapsed then
             ExpandFactionHeader(i)
             collapsed[factionId] = true
         end
+        lastName = name
         i = i + 1
     end
     ExpandAllFactionHeaders() -- to be sure every header is expanded

@@ -2,7 +2,7 @@
 ## Title: Pretty Reputation
 ## IconTexture: Interface\AddOns\PrettyReputation\textures\icon
 ## Notes: Shows more info about your reputation gain
-## Version: 1.3.5b
+## Version: 1.3.5c
 ## Author: Cufea
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled

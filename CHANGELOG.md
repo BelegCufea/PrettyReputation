@@ -1,3 +1,8 @@
+# v1.3.5c (20.7.2024)
+
+## Fix
+- Fix for "script ran too long" error- (thanks [filliph](https://github.com/filliph))
+
 # v1.3.5b (14.7.2024)
 
 ## Fix
