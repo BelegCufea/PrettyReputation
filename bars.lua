@@ -167,7 +167,7 @@ function Bars:Update()
         if v.info and v.info.name and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
             local bar = v.bar
             if not bar then
-                bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionId, nil, 0, 100)
+                bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionID, nil, 0, 100)
                 UIFrameFadeIn(bar, 0.5, 0, Options.Bars.alpha)
                 bar.faction = v.info.faction
                 bar:SetScript("OnEnter", function(self) ShowFactionTooltip(self) end)

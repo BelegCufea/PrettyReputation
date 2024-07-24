@@ -1,12 +1,20 @@
 local ADDON_NAME = ...;
 local Addon = LibStub("AceAddon-3.0"):NewAddon(select(2, ...), ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "LibSink-2.0")
 
-local GetFactionInfoByID = GetFactionInfoByID
-local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
+local GetNumFactions = C_Reputation.GetNumFactions
+local GetFactionDataByIndex = C_Reputation.GetFactionDataByIndex
+local GetFactionDataByID = C_Reputation.GetFactionDataByID
+local ExpandAllFactionHeaders = C_Reputation.ExpandAllFactionHeaders
+local ExpandFactionHeader = C_Reputation.ExpandFactionHeader
+local CollapseFactionHeader = C_Reputation.CollapseFactionHeader
+local GetWatchedFactionData = C_Reputation.GetWatchedFactionData
+local SetWatchedFactionByIndex = C_Reputation.SetWatchedFactionByIndex
+local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
+local IsFactionParagon = C_Reputation.IsFactionParagon
+local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
-local IsFactionParagon = C_Reputation.IsFactionParagon
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
 
 local Debug = Addon.DEBUG
@@ -95,14 +103,14 @@ function private.saveRepHeaders()
     local lastName
     local i = 1
     while true do
-		local name, _, _, _, _, _, _, _, isHeader, isCollapsed, _, _, _, factionId = GetFactionInfo(i)
-        if not name or (name == lastName and name ~= GUILD) then break end
-        if (factionId == nil) then factionId = name	end
-        if isHeader and isCollapsed then
+        local factionData = GetFactionDataByIndex(i)
+        if not factionData or not factionData.name or (factionData.name == lastName and factionData.name ~= GUILD) then break end
+        if (factionData.factionID == nil) then factionData.factionID = factionData.name	end
+        if factionData.isHeader and factionData.isCollapsed then
             ExpandFactionHeader(i)
-            collapsed[factionId] = true
+            collapsed[factionData.factionID] = true
         end
-        lastName = name
+        lastName = factionData.name
         i = i + 1
     end
     ExpandAllFactionHeaders() -- to be sure every header is expanded
@@ -114,10 +122,10 @@ function private.restoreRepHeaders(collapsed)
         return
     end
 	for i = GetNumFactions(), 1, -1 do
-		local name, _, _, _, _, _, _, _, isHeader, _, _, _, _, factionId = GetFactionInfo(i)
-		if (factionId == nil) then factionId = name	end
+        local factionData = GetFactionDataByIndex(i)
+		if (factionData.factionID == nil) then factionData.factionID = factionData.name	end
 
-		if isHeader and collapsed[factionId] then
+		if factionData.isHeader and collapsed[factionData.factionID] then
             CollapseFactionHeader(i)
 		end
 	end
@@ -137,38 +145,41 @@ function private.setupFactions()
     local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
     if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
-        local name, _, _, _, _, _, _, _, _, _, _, _, _, factionId = GetFactionInfo(i)
-        if not name then break end
+        local factionData = GetFactionDataByIndex(i)
+        if not factionData.name then break end
         if not factions[name] then
-            factions[name] = { id = factionId, session = 0}
+            factions[factionData.name] = { id = factionData.factionID, session = 0}
         end
-        if not factions[name].id then
-            factions[name].id = factionId
+        if not factions[factionData.name].id then
+            factions[factionData.name].id = factionData.factionID
         end
-        if not factions[name].session then
-            factions[name].session = 0
+        if not factions[factionData.name].session then
+            factions[factionData.name].session = 0
         end
-        if not factions[name].info then
+        if not factions[factionData.name].info then
             local info = {}
-            info["faction"] = name
-            info["factionId"] = factionId
+            info["faction"] = factionData.name
+            info["factionID"] = factionData.factionID
             info["change"] = 0
-            info["session"] = factions[name].session
-            factions[name].info = private.getRepInfo(info)
+            info["session"] = factions[factionData.name].session
+            factions[factionData.name].info = private.getRepInfo(info)
         end
     end
     private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+    Debug:Table("Factions", factions)
 end
 
 function private.trackFaction(info)
     if not info then return end
-    if info.faction == GetWatchedFactionInfo() then return end
+    local watchedFactionData = GetWatchedFactionData()
+    if info.faction == watchedFactionData.name then return end
     if ((info.faction == GUILD) or (info.faction == guildname)) and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
     local collapsedHeaders = private.saveRepHeaders()
     for i = 1, GetNumFactions() do
-        if info.faction == GetFactionInfo(i) then
-            SetWatchedFactionIndex(i)
+        local factionData = GetFactionDataByIndex(i)
+        if info.faction == factionData.name then
+            SetWatchedFactionByIndex(i)
             break
         end
     end
@@ -189,50 +200,47 @@ end
 function Addon:GetFactionColor(info)
     local reputationColors = Options.Colors
 
-    if (info.factionId and info.factionId ~= 0) then
-        local _, _, standingId = GetFactionInfoByID(info.factionId)
-
-        if (IsMajorFaction(info.factionId)) then
-            if Options.Reputation.paragonColorOverride and IsFactionParagon(info.factionId) then
+    if (info.factionID and info.factionID ~= 0) then
+        local factionData = GetFactionDataByID(info.factionID)
+        if (IsMajorFaction(info.factionID)) then
+            if Options.Reputation.paragonColorOverride and IsFactionParagon(info.factionID) then
                 return reputationColors[9]
             end
             return reputationColors[10]
 		end
 
-		if (standingId == nil) then
+		if (factionData.reaction == nil) then
             return {r = 1, b = 0, g = 0}
 		end
 
-		if (IsFactionParagon(info.factionId)) then
+		if (IsFactionParagon(info.factionID)) then
 			return reputationColors[9]
 		end
 
-		local friendInfo = GetFriendshipReputation(info.factionId)
+		local friendInfo = GetFriendshipReputation(info.factionID)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
-			return reputationColors[standingId] or reputationColors[5]
+			return reputationColors[friendInfo.standing] or reputationColors[5]
 
 		end
-        return reputationColors[standingId] or reputationColors[5]
+        return reputationColors[factionData.reaction] or reputationColors[5]
 	end
     return nil
 end
 
 function private.getRepInfo(info)
     local showParagonCount = Options.Reputation.showParagonCount
-    local name, standingId, bottomValue, topValue, barValue
-
-    if (info.factionId and info.factionId ~= 0) then
-        name, _, standingId, bottomValue, topValue, barValue = GetFactionInfoByID(info.factionId)
-        info["standingId"] = standingId
-        info["name"] = name
-        info["bottom"] = bottomValue
-        info["top"] = topValue
+    if (info.factionID and info.factionID ~= 0) then
+        local factionData = GetFactionDataByID(info.factionID)
+        info["standingId"] = factionData.reaction
+        info["name"] = factionData.name
+        info["bottom"] = factionData.currentReactionThreshold
+        info["top"] = factionData.nextReactionThreshold
         info["paragon"] = ""
         info["renown"] = ""
         info["standingTextNext"] = ""
         info["reward"] = ""
-        if icons and icons[info.factionId] then
-            info["icon"] = icons[info.factionId]
+        if icons and icons[info.factionID] then
+            info["icon"] = icons[info.factionID]
         end
 
         info["color"] = Addon:GetFactionColor(info)
@@ -242,11 +250,11 @@ function private.getRepInfo(info)
             info["standingColor"] = ""
         end
 
-        if (IsMajorFaction(info.factionId)) then
+        if (IsMajorFaction(info.factionID)) then
             info["isRenown"] = true
-			local data = GetMajorFactionData(info.factionId)
-			local isCapped = HasMaximumRenown(info.factionId)
-            local isParagon = IsFactionParagon(info.factionId)
+			local data = GetMajorFactionData(info.factionID)
+			local isCapped = HasMaximumRenown(info.factionID)
+            local isParagon = IsFactionParagon(info.factionID)
             if data then
                 info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
                 info["top"] = data.renownLevel * data.renownLevelThreshold
@@ -262,7 +270,7 @@ function private.getRepInfo(info)
                     return info
                 end
 
-                local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId)
+                local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID)
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 if showParagonCount and paragonLevel > 0 then
                     info["paragon"] =  info["paragon"] .. paragonLevel
@@ -291,18 +299,18 @@ function private.getRepInfo(info)
             end
 		end
 
-		if (standingId == nil) then
+		if (factionData.reaction == nil) then
             info["current"] = 0
             info["maximum"] = 0
             info["color"] = {r = 1, b = 0, g = 0}
-            info["standingText"] = "??? - " .. (info.factionId .. "?")
+            info["standingText"] = "??? - " .. (info.factionID .. "?")
             info["bottom"] = 0
             info["top"] = 0
 			return info
 		end
 
-		if (IsFactionParagon(info.factionId)) then
-			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(info.factionId);
+		if (IsFactionParagon(info.factionID)) then
+			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
 			if showParagonCount and paragonLevel > 0 then
@@ -326,7 +334,7 @@ function private.getRepInfo(info)
         return info
 		end
 
-		local friendInfo = GetFriendshipReputation(info.factionId)
+		local friendInfo = GetFriendshipReputation(info.factionID)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
@@ -341,11 +349,11 @@ function private.getRepInfo(info)
 			return info
 		end
 
-        info["current"] = barValue - bottomValue
-        info["maximum"] = topValue - bottomValue
-        info["standingText"] = private.getFactionLabel(standingId)
-        info["standingTextNext"] = (info.negative and standingId > 1 and _G["FACTION_STANDING_LABEL".. standingId - 1]) or (not info.negative and standingId < 8 and _G["FACTION_STANDING_LABEL".. standingId + 1]) or ""
-        info["standingIdNext"] = (info.negative and standingId > 1 and (standingId - 1)) or (not info.negative and standingId < 8 and (standingId + 1))
+        info["current"] = factionData.currentStanding - info.bottom
+        info["maximum"] = info.top - info.bottom
+        info["standingText"] = private.getFactionLabel(factionData.reaction)
+        info["standingTextNext"] = (info.negative and factionData.reaction > 1 and _G["FACTION_STANDING_LABEL".. factionData.reaction - 1]) or (not info.negative and factionData.reaction < 8 and _G["FACTION_STANDING_LABEL".. factionData.reaction + 1]) or ""
+        info["standingIdNext"] = (info.negative and factionData.reaction > 1 and (factionData.reaction - 1)) or (not info.negative and factionData.reaction < 8 and (factionData.reaction + 1))
         return info
 	end
     return info
@@ -357,8 +365,8 @@ end
 
 function private.getFactionInfo(info)
     if factions[info.faction] then
-        local factionId = factions[info.faction].id
-        info["factionId"] = factionId
+        local factionID = factions[info.faction].id
+        info["factionID"] = factionID
         local session = private.getFactionSession(info)
         factions[info.faction].session = session
         info["lastUpdated"] = time()
@@ -554,7 +562,7 @@ function private.HideReward()
             if v.info.paragon then
                 paragonLevel = v.info.paragon:match("^%d+")
             end
-            local _, _, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(v.info.factionId)
+            local _, _, _, hasRewardPending = GetFactionParagonInfo(v.info.factionID)
             if not hasRewardPending then
                 v.info.reward = ""
                 v.info.paragon = ((not paragonLevel) and "") or paragonLevel

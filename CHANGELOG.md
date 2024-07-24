@@ -1,3 +1,8 @@
+# v1.4.0-beta (24.7.2024)
+
+## Fix
+- First attempt to adujst for 11.0 (The War Within) expansion reputation changes
+
 # v1.3.5c (20.7.2024)
 
 ## Fix
