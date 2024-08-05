@@ -33,8 +33,9 @@ local settings = {
             Addon:OnToggle()
         end
         if button == "RightButton" then
-            InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
-            InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
+            Settings.OpenToCategory(Addon.Config.categoryID)
+            --InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
+            --InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
         end
     end,
 };

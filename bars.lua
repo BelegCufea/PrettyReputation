@@ -97,7 +97,7 @@ local function ShowFactionTooltip(bar)
                 GameTooltip:AddDoubleLine(left, right)
             end
 
-            local timeElapsed = time() - faction.info.lastUpdated
+            local timeElapsed = time() - (faction.info.lastUpdated or 0)
             GameTooltip:AddDoubleLine("Last change:", string.format("%d:%02d", math.floor(timeElapsed / 60), timeElapsed % 60))
             GameTooltip:AddLine(" ")
             GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")

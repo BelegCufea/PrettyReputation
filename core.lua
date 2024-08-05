@@ -172,7 +172,7 @@ end
 function private.trackFaction(info)
     if not info then return end
     local watchedFactionData = GetWatchedFactionData()
-    if info.faction == watchedFactionData.name then return end
+    if watchedFactionData and info.faction == watchedFactionData.name then return end
     if ((info.faction == GUILD) or (info.faction == guildname)) and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
     local collapsedHeaders = private.saveRepHeaders()
