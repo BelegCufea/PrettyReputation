@@ -8,7 +8,7 @@ local ExpandAllFactionHeaders = C_Reputation.ExpandAllFactionHeaders
 local ExpandFactionHeader = C_Reputation.ExpandFactionHeader
 local CollapseFactionHeader = C_Reputation.CollapseFactionHeader
 local GetWatchedFactionData = C_Reputation.GetWatchedFactionData
-local SetWatchedFactionByIndex = C_Reputation.SetWatchedFactionByIndex
+local SetWatchedFactionByID = C_Reputation.SetWatchedFactionByID
 local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
 local IsFactionParagon = C_Reputation.IsFactionParagon
@@ -147,7 +147,7 @@ function private.setupFactions()
     for i=1, GetNumFactions() do
         local factionData = GetFactionDataByIndex(i)
         if not factionData.name then break end
-        if not factions[name] then
+        if not factions[factionData.name] then
             factions[factionData.name] = { id = factionData.factionID, session = 0}
         end
         if not factions[factionData.name].id then
@@ -175,15 +175,9 @@ function private.trackFaction(info)
     if watchedFactionData and info.faction == watchedFactionData.name then return end
     if ((info.faction == GUILD) or (info.faction == guildname)) and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
-    local collapsedHeaders = private.saveRepHeaders()
-    for i = 1, GetNumFactions() do
-        local factionData = GetFactionDataByIndex(i)
-        if info.faction == factionData.name then
-            SetWatchedFactionByIndex(i)
-            break
-        end
+    if factions[info.faction] and factions[info.faction].id then
+        SetWatchedFactionByID(factions[info.faction].id)
     end
-    private.restoreRepHeaders(collapsedHeaders)
 end
 
 local SEX = UnitSex("player")
@@ -266,6 +260,8 @@ function private.getRepInfo(info)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
                 info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
+                -- fix for Dream Wardens icon (and possibly more in the future)
+                info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
                 if not isCapped or not isParagon then
                     return info
                 end
@@ -574,10 +570,18 @@ function private.HideReward()
     if updateBars then Addon:UpdateBars() end
 end
 
-function private.UpdateReward(event)
+function private.UpdateReward()
     if Options.Enabled and Options.Bars.enabled then
         C_Timer.After(0.3, function() private.HideReward() end)
      end
+end
+
+function private.Initialize(event, isInitialLogin, isReloadingUi)
+    if isInitialLogin or isReloadingUi then
+        private.setupFactions()
+        C_Timer.After(1, function() Addon:UpdateBars() end)
+        Addon:InitializeDataBroker()
+    end
 end
 
 function Addon:Test()
@@ -624,7 +628,6 @@ function private.chatCmdShowConfig(input)
     end
 end
 
-
 function Addon:OnToggle()
     Addon:UpdateDataBrokerText()
     Addon:SetBarsOptions()
@@ -646,11 +649,8 @@ end
 function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
     Options = Addon.db.profile
-    private.setupFactions()
-    -- Hope it will update :-)
-    C_Timer.After(1, function() Addon:UpdateBars() end)
 
-    Addon:InitializeDataBroker()
+    Addon:RegisterEvent("PLAYER_ENTERING_WORLD", private.Initialize)
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
 

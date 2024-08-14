@@ -1,3 +1,14 @@
+# v1.4.0 ()
+
+## Fix
+- Adjustment for 11.0 (The War Within) expansion reputation changes
+- Error when opening options through broker
+- Fix for tracking faction
+- Fix for Dream Wardens icon
+
+## Misc
+- There seems to be a problem with Warbound reputations not loading into the reputation panel until some reputation change occurs. Either Blizzard will fix it, or I will try to.
+
 # v1.4.0-beta (24.7.2024)
 
 ## Fix

@@ -4,8 +4,8 @@ local CONST = {}
 Addon.CONST = CONST
 
 CONST.METADATA = {
-    NAME = GetAddOnMetadata(..., "Title"),
-    VERSION = GetAddOnMetadata(..., "Version")
+    NAME = C_AddOns.GetAddOnMetadata(..., "Title"),
+    VERSION = C_AddOns.GetAddOnMetadata(..., "Version")
 }
 
 CONST.PATTERN = "[name] ([c_standing]): [c_change]/[c_session] ([currentPercent]) [bar]"
@@ -102,4 +102,8 @@ CONST.REP_STANDING = {
     FACTION_STANDING_LABEL8, -- Exalted
     "Paragon", -- Paragon
     RENOWN_LEVEL_LABEL, -- Renown
+}
+
+CONST.MAJOR_FACTON_ICONS_OVERRIDE = {
+    [2574] = "Denizens",
 }
