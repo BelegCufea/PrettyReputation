@@ -13,6 +13,7 @@ local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
 local IsFactionParagon = C_Reputation.IsFactionParagon
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
+local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
@@ -138,35 +139,47 @@ function private.setupIcons() -- FactionAddict
 	end
 end
 
+function private.setupFaction(factionData)
+    if factionData and factionData.name and factionData.factionID then
+        if not factions[factionData.name] then
+            factions[factionData.name] = { id = factionData.factionID, session = 0}
+        end
+        if not factions[factionData.name].id then
+            factions[factionData.name].id = factionData.factionID
+        end
+        if not factions[factionData.name].session then
+            factions[factionData.name].session = 0
+        end
+        if not factions[factionData.name].info then
+            local info = {}
+            info["faction"] = factionData.name
+            info["factionID"] = factionData.factionID
+            info["change"] = 0
+            info["session"] = factions[factionData.name].session
+            info["expansionID"] = factionData.expansionID
+            factions[factionData.name].info = private.getRepInfo(info)
+        end
+    end
+end
+
 function private.setupFactions()
     if IsInGuild() then
         guildname = GetGuildInfo("player")
     end
-    local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
-    if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
-    for i=1, GetNumFactions() do
-        local factionData = GetFactionDataByIndex(i)
-        if factionData and factionData.name and factionData.factionID then
-            if not factions[factionData.name] then
-                factions[factionData.name] = { id = factionData.factionID, session = 0}
-            end
-            if not factions[factionData.name].id then
-                factions[factionData.name].id = factionData.factionID
-            end
-            if not factions[factionData.name].session then
-                factions[factionData.name].session = 0
-            end
-            if not factions[factionData.name].info then
-                local info = {}
-                info["faction"] = factionData.name
-                info["factionID"] = factionData.factionID
-                info["change"] = 0
-                info["session"] = factions[factionData.name].session
-                factions[factionData.name].info = private.getRepInfo(info)
-            end
-        end
+    -- load FactionAddict Icons
+    if next(icons) == nil then private.setupIcons() end
+    do -- itterate major factions reputations
+        for _, factionId in ipairs(GetMajorFactionIDs()) do
+            private.setupFaction(GetMajorFactionData(factionId))
+          end
     end
-    private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+    do -- itterate Reputation panel reputations
+        local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
+        for i=1, GetNumFactions() do
+            private.setupFaction(GetFactionDataByIndex(i))
+        end
+        private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+    end
     Debug:Table("Factions", factions)
 end
 
@@ -372,7 +385,6 @@ function private.getFactionInfo(info)
             factions[info.faction].info = private.getRepInfo(info)
         end
     end
-    Debug:Table("Factions", factions)
     return info
 end
 
@@ -424,7 +436,7 @@ function private.printReputation(info)
     if Options.Debug then
         info.prefix = ""
         info.suffix = ""
-        Debug:Table("Info", info)
+        Debug:Table("Info_"..info.faction, info)
         local debug = {}
         local tkeys = {}
         for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
@@ -432,7 +444,7 @@ function private.printReputation(info)
         for _, k in ipairs(tkeys) do
             debug[k] = Tags.Definition[k].value(info)
         end
-        Debug:Table("Tags", debug)
+        Debug:Table("Tags_"..info.faction, debug)
     end
 end
 

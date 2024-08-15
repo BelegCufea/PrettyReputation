@@ -1,7 +1,12 @@
+# v1.4.0b (15.8.2024)
+
+## Fix
+- Get all major factions even if they are not in reputation panel
+
 # v1.4.0a (15.8.2024)
 
 ## Fix
-    - No faction in Blizz list of factions (WTF Blizz)
+- No faction in Blizz list of factions (WTF Blizz)
 
 # v1.4.0 (14.8.2024)
 
