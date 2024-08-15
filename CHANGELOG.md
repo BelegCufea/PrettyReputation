@@ -1,4 +1,9 @@
-# v1.4.0 ()
+# v1.4.0a (15.8.2024)
+
+## Fix
+    - No faction in Blizz list of factions (WTF Blizz)
+
+# v1.4.0 (14.8.2024)
 
 ## Fix
 - Adjustment for 11.0 (The War Within) expansion reputation changes

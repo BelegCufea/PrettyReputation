@@ -146,23 +146,24 @@ function private.setupFactions()
     if next(icons) == nil then private.setupIcons() end -- load FactionAddict Icons
     for i=1, GetNumFactions() do
         local factionData = GetFactionDataByIndex(i)
-        if not factionData.name then break end
-        if not factions[factionData.name] then
-            factions[factionData.name] = { id = factionData.factionID, session = 0}
-        end
-        if not factions[factionData.name].id then
-            factions[factionData.name].id = factionData.factionID
-        end
-        if not factions[factionData.name].session then
-            factions[factionData.name].session = 0
-        end
-        if not factions[factionData.name].info then
-            local info = {}
-            info["faction"] = factionData.name
-            info["factionID"] = factionData.factionID
-            info["change"] = 0
-            info["session"] = factions[factionData.name].session
-            factions[factionData.name].info = private.getRepInfo(info)
+        if factionData and factionData.name and factionData.factionID then
+            if not factions[factionData.name] then
+                factions[factionData.name] = { id = factionData.factionID, session = 0}
+            end
+            if not factions[factionData.name].id then
+                factions[factionData.name].id = factionData.factionID
+            end
+            if not factions[factionData.name].session then
+                factions[factionData.name].session = 0
+            end
+            if not factions[factionData.name].info then
+                local info = {}
+                info["faction"] = factionData.name
+                info["factionID"] = factionData.factionID
+                info["change"] = 0
+                info["session"] = factions[factionData.name].session
+                factions[factionData.name].info = private.getRepInfo(info)
+            end
         end
     end
     private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
