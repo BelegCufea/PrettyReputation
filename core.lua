@@ -24,6 +24,7 @@ local Tags = Addon.TAGS
 local Bars = Addon.Bars
 local Options
 
+local factionPanelFix = true
 local guildname
 local private = {}
 local icons = {}
@@ -171,7 +172,7 @@ function private.setupFactions()
     do -- itterate major factions reputations
         for _, factionId in ipairs(GetMajorFactionIDs()) do
             private.setupFaction(GetMajorFactionData(factionId))
-          end
+        end
     end
     do -- itterate Reputation panel reputations
         local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
@@ -179,6 +180,20 @@ function private.setupFactions()
             private.setupFaction(GetFactionDataByIndex(i))
         end
         private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+    end
+    do -- "WTF why is Blizz not listing all factions in Reputation panel" temporary onetime FIX
+        if factionPanelFix then
+            factionPanelFix = false
+            for factionID=1, 5000 do
+                local factionData = GetFactionDataByID(factionID)
+                if factionData and factionData.name and not factions[factionData.name]  then
+                    private.setupFaction(factionData)
+                    if factions[factionData.name] then
+                        factions[factionData.name].blizzFix = true
+                    end
+                end
+            end
+        end
     end
     Debug:Table("Factions", factions)
 end

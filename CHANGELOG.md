@@ -1,3 +1,20 @@
+# v1.4.0c (16.8.2024)
+
+## Fix
+- Blizz messing with Reputation panel again
+
+**Overview:**
+This is a (let's hope temporary) fix for the issue where Blizzard isn't listing all valid reputations in the Reputation panel. **WTF Blizz... AGAIN!**
+
+**Changes:**
+All unlisted reputations, some of which are quite weird, now appear in red within the "Favorites" section and the "Test" drop-down box. This is a temporary workaround to ensure you can still see and track those reputations until Blizzard resolves the issue.
+
+**Note:**
+Please be aware that the "Show splash reputation" feature now has to parse over 600 reputations each time any reputation changes. This might cause a slight performance impact, potentially reaching tens of milliseconds.
+
+**Clean-up:**
+If I find the time, I promise I'll clean up the favorite reputations picking process!
+
 # v1.4.0b (15.8.2024)
 
 ## Fix

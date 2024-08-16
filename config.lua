@@ -163,10 +163,14 @@ local function getFactions()
 
     local found
 
-    for k,_ in pairs(factions) do
+    for k,v in pairs(factions) do
         if not found then found = k end
         if k == Addon.db.profile.Test.faction then found = k end
-        list[k] = k
+        if v and v.blizzFix then
+            list[k] = "|cffff0000"..k.."|r"
+        else
+            list[k] = k
+        end
     end
 
     Addon.db.profile.Test.faction = found
