@@ -1,3 +1,8 @@
+# v1.4.0d (17.8.2024)
+
+## Fix
+- The Inactive faction was accidentally pulled from the Reputation panel in some niche cases (thanks [jon-ault](https://github.com/jon-ault))
+
 # v1.4.0c (16.8.2024)
 
 ## Fix
