@@ -141,7 +141,7 @@ function private.setupIcons() -- FactionAddict
 end
 
 function private.setupFaction(factionData)
-    if factionData and factionData.name and factionData.factionID then
+    if factionData and factionData.name and factionData.factionID and factionData.factionID ~= 0 then
         if not factions[factionData.name] then
             factions[factionData.name] = { id = factionData.factionID, session = 0}
         end
@@ -186,7 +186,7 @@ function private.setupFactions()
             factionPanelFix = false
             for factionID=1, 5000 do
                 local factionData = GetFactionDataByID(factionID)
-                if factionData and factionData.name and not factions[factionData.name]  then
+                if factionData and factionData.name and not factions[factionData.name] then
                     private.setupFaction(factionData)
                     if factions[factionData.name] then
                         factions[factionData.name].blizzFix = true
