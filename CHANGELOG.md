@@ -1,3 +1,9 @@
+# v1.4.0e ()
+
+## Fix
+- Faction icon from [FactionAddict](https://www.curseforge.com/wow/addons/faction-addict) was rewriten even if in-game icon was not available
+  - This is temporary fix for The War Within missing icons
+
 # v1.4.0d (17.8.2024)
 
 ## Fix

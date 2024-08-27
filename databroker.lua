@@ -34,8 +34,6 @@ local settings = {
         end
         if button == "RightButton" then
             Settings.OpenToCategory(Addon.Config.categoryID)
-            --InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
-            --InterfaceOptionsFrame_OpenToCategory(Addon.CONST.METADATA.NAME)
         end
     end,
 };

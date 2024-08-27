@@ -288,9 +288,11 @@ function private.getRepInfo(info)
                 info["standingTextNext"] = RENOWN_LEVEL_LABEL .. (data.renownLevel + 1)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
-                info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
-                -- fix for Dream Wardens icon (and possibly more in the future)
-                info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
+                if not info["icon"] then
+                    info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
+                    -- fix for Dream Wardens icon (and possibly more in the future)
+                    info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
+                end
                 if not isCapped or not isParagon then
                     return info
                 end
