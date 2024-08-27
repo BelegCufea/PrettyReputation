@@ -1,4 +1,4 @@
-# v1.4.0e ()
+# v1.4.0e (27.8.2024)
 
 ## Fix
 - Faction icon from [FactionAddict](https://www.curseforge.com/wow/addons/faction-addict) was rewriten even if in-game icon was not available
