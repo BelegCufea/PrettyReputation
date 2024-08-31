@@ -527,6 +527,7 @@ function private.processAllFactions(factionInfo)
 end
 
 function private.processFaction(faction, change)
+    if not faction then return end
     if faction == GUILD then
         faction = guildname
     end
