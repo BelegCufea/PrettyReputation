@@ -13,6 +13,7 @@ local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
 local IsFactionParagon = C_Reputation.IsFactionParagon
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
+local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks
 local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
@@ -362,6 +363,7 @@ function private.getRepInfo(info)
 		end
 
 		local friendInfo = GetFriendshipReputation(info.factionID)
+        local rankInfo = GetFriendshipReputationRanks(info.factionID)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
@@ -372,6 +374,8 @@ function private.getRepInfo(info)
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
                 info["top"] = friendInfo.nextThreshold
+                info["level"] = rankInfo.currentLevel
+                info["maxLevel"] = rankInfo.maxLevel
 			end
 			return info
 		end

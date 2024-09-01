@@ -1,3 +1,11 @@
+# v1.4.1 (1.9.2024)
+
+## New
+- Added [level] and [maxLevel] tags that shows levels of friendship reputations. Can be used for example like so `[{ |}level][{/}maxLevel{|}]` to show `" |5/9|"` if your reputation level with said faction is 5 and maximum level is 9. It will display nothing if faction does not belong to friendship category.
+
+## Fix
+- fix for nil faction
+
 # v1.4.0e (27.8.2024)
 
 ## Fix
