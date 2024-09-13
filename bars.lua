@@ -189,7 +189,7 @@ function Bars:Update()
             v.bar.sort = BarSort(v.info)
             v.bar:SetIcon(v.info.icon)
             v.bar:UnsetAllColors()
-            local color = Addon:GetFactionColor(v.info)
+            local color = Addon:GetFactionColors(v.info, true)
             v.bar:SetColorAt(0, color.r, color.g, color.b, 1)
         end
     end

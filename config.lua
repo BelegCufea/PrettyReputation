@@ -7,6 +7,7 @@ local ConfigDialog = LibStub("AceConfigDialog-3.0")
 
 local factions = Addon.Factions
 local Debug = Addon.DEBUG
+local Const = Addon.CONST
 
 
 local function tags()
@@ -96,6 +97,15 @@ local function standingColorsSet(value)
     if value == "tiptac" then Addon.db.profile.Colors = REP_COLORS.tiptacColors end
     if value == "elvui" then Addon.db.profile.Colors = REP_COLORS.elvuiColors end
     Addon.db.profile.ColorsPreset = value
+
+    local colorIndexLow     = Const.REP_COLOR_INDEX_LOW
+    local colorIndexHigh    = Const.REP_COLOR_INDEX_HIGH
+    local colorIndexParagon = Const.REP_COLOR_INDEX_PARAGON
+    Addon.db.profile.ColorRenownLow  = Addon.db.profile.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
+    Addon.db.profile.ColorRenownHigh = Addon.db.profile.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
+    Addon.db.profile.ColorFriendLow  = Addon.db.profile.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
+    Addon.db.profile.ColorFriendHigh = Addon.db.profile.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
+    Addon.db.profile.ColorParagon    = Addon.db.profile.Colors[colorIndexParagon] or Const.REP_COLORS.wowproColors[colorIndexParagon]
 end
 
 local function contains_item(t, item)
@@ -883,6 +893,7 @@ local options = {
                             get = function(info) return Addon.db.profile.Bars.patternLeft end,
                             set = function(info, value)
                                 Addon.db.profile.Bars.patternLeft = value
+                                SetBarsOptions()
                             end
                         },
                         PatternRight = {
@@ -893,6 +904,18 @@ local options = {
                             get = function(info) return Addon.db.profile.Bars.patternRight end,
                             set = function(info, value)
                                 Addon.db.profile.Bars.patternRight = value
+                                SetBarsOptions()
+                            end
+                        },
+                        ParagonOverride = {
+                            type = "toggle",
+                            order = 630,
+                            name = "paragon standing color overrides renown",
+                            width = "full",
+                            get = function(info) return Addon.db.profile.Bars.paragonColorOverride end,
+                            set = function(info, value)
+                                Addon.db.profile.Bars.paragonColorOverride = value
+                                SetBarsOptions()
                             end
                         },
                     },
@@ -904,7 +927,7 @@ local options = {
                     args = {
                         ReputationColors = {
                             type = "group",
-                            order = 21,
+                            order = 10,
                             name = "Reputation standing colors",
                             inline = true,
                             args = {
@@ -914,11 +937,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[1],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[1]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[1]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -929,11 +952,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[2],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[2]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[2]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -944,11 +967,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[3],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[3]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[3]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -959,11 +982,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[4],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[4]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[4]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -974,11 +997,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[5],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[5]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[5]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -989,11 +1012,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[6],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[6]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[6]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -1004,11 +1027,11 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[7],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[7]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[7]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
@@ -1019,50 +1042,111 @@ local options = {
                                     name = Addon.CONST.REP_STANDING[8],
                                     get = function(info)
                                         local color = Addon.db.profile.Colors[8]
-                                        return color.r, color.g, color.b, color.a
+                                        return color.r, color.g, color.b
                                     end,
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[8]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
-                                        Addon.db.profile.ColorsPreset = "custom"
-                                        SetBarsOptions()
-                                    end
-                                },
-                                Paragon = {
-                                    type = "color",
-                                    order = 9,
-                                    name = Addon.CONST.REP_STANDING[9],
-                                    get = function(info)
-                                        local color = Addon.db.profile.Colors[9]
-                                        return color.r, color.g, color.b, color.a
-                                    end,
-                                    set = function(info, r, g, b, a)
-                                        local color = Addon.db.profile.Colors[9]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
-                                        Addon.db.profile.ColorsPreset = "custom"
-                                        SetBarsOptions()
-                                    end
-                                },
-                                Renown = {
-                                    type = "color",
-                                    order = 10,
-                                    name = Addon.CONST.REP_STANDING[10],
-                                    get = function(info)
-                                        local color = Addon.db.profile.Colors[10]
-                                        return color.r, color.g, color.b, color.a
-                                    end,
-                                    set = function(info, r, g, b, a)
-                                        local color = Addon.db.profile.Colors[10]
-                                        color.r, color.g, color.b, color.a = r, g, b, a
+                                        color.r, color.g, color.b = r, g, b
                                         Addon.db.profile.ColorsPreset = "custom"
                                         SetBarsOptions()
                                     end
                                 },
                             }
                         },
+                        RenownColors = {
+                            type = "group",
+                            name = "Renown faction colors",
+                            order = 20,
+                            inline = true,
+                            args = {
+                                ColorLow = {
+                                    type = "color",
+                                    order = 10,
+                                    name = "From",
+                                    get = function(info)
+                                        local color = Addon.db.profile.ColorRenownLow
+                                        return color.r, color.g, color.b
+                                    end,
+                                    set = function(info, r, g, b, a)
+                                        local color = Addon.db.profile.ColorRenownLow
+                                        color.r, color.g, color.b = r, g, b
+                                        Addon.db.profile.ColorsPreset = "custom"
+                                        SetBarsOptions()
+                                    end
+                                },
+                                ColorHigh = {
+                                    type = "color",
+                                    order = 20,
+                                    name = "To",
+                                    get = function(info)
+                                        local color = Addon.db.profile.ColorRenownHigh
+                                        return color.r, color.g, color.b
+                                    end,
+                                    set = function(info, r, g, b, a)
+                                        local color = Addon.db.profile.ColorRenownHigh
+                                        color.r, color.g, color.b = r, g, b
+                                        Addon.db.profile.ColorsPreset = "custom"
+                                        SetBarsOptions()
+                                    end
+                                },
+                                ColorParagon = {
+                                    type = "color",
+                                    order = 30,
+                                    name = "Paragon",
+                                    get = function(info)
+                                        local color = Addon.db.profile.ColorParagon
+                                        return color.r, color.g, color.b
+                                    end,
+                                    set = function(info, r, g, b, a)
+                                        local color = Addon.db.profile.ColorParagon
+                                        color.r, color.g, color.b = r, g, b
+                                        Addon.db.profile.ColorsPreset = "custom"
+                                        SetBarsOptions()
+                                    end
+                                },
+                            },
+                        },
+                        FriendColors = {
+                            type = "group",
+                            name = "Friendship faction colors",
+                            order = 30,
+                            inline = true,
+                            args = {
+                                ColorLow = {
+                                    type = "color",
+                                    order = 10,
+                                    name = "From",
+                                    get = function(info)
+                                        local color = Addon.db.profile.ColorFriendLow
+                                        return color.r, color.g, color.b
+                                    end,
+                                    set = function(info, r, g, b, a)
+                                        local color = Addon.db.profile.ColorFriendLow
+                                        color.r, color.g, color.b = r, g, b
+                                        Addon.db.profile.ColorsPreset = "custom"
+                                        SetBarsOptions()
+                                    end
+                                },
+                                ColorHigh = {
+                                    type = "color",
+                                    order = 20,
+                                    name = "To",
+                                    get = function(info)
+                                        local color = Addon.db.profile.ColorFriendHigh
+                                        return color.r, color.g, color.b
+                                    end,
+                                    set = function(info, r, g, b, a)
+                                        local color = Addon.db.profile.ColorFriendHigh
+                                        color.r, color.g, color.b = r, g, b
+                                        Addon.db.profile.ColorsPreset = "custom"
+                                        SetBarsOptions()
+                                    end
+                                },
+                            },
+                        },
                         ReputationColorsPresets = {
                             type = "select",
-                            order = 22,
+                            order = 90,
                             name = "Standing colors presets",
                             values = standingColorsPresets(),
                             style = "dropdown",

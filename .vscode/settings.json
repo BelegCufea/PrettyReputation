@@ -175,7 +175,8 @@
         "MerchantFrame",
         "OPTIONS",
         "SHOW_TUTORIALS",
-        "ChatFrame1EditBox"
+        "ChatFrame1EditBox",
+        "xx"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
@@ -190,6 +191,6 @@
         "utf8": "disable"
     },
     "Lua.workspace.library": [
-        "~\\.vscode\\extensions\\ketho.wow-api-0.17.5\\Annotations"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.6\\Annotations"
     ]
 }

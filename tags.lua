@@ -170,8 +170,8 @@ Addon.TAGS.Definition = {
             local standingColor = info.standingColor
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 standingText = "Paragon " .. info.paragon
-                local reputationColors = Addon.db.profile.Colors
-                standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
+                local colorParagon = Addon.db.profile.ColorParagon
+                standingColor = ("|cff%.2x%.2x%.2x"):format(colorParagon.r*255, colorParagon.g*255, colorParagon.b*255)
             end
             return standingColor .. combine(info, standingText) .. "|r"
        end
@@ -184,8 +184,8 @@ Addon.TAGS.Definition = {
             if Addon.db.profile.Reputation.showParagonCount and info.paragon ~= "" then
                 standingTextShort = first_letters("Paragon", Addon.db.profile.Reputation.shortCharCount)
                 standingTextShort = standingTextShort .. info.paragon
-                local reputationColors = Addon.db.profile.Colors
-                standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
+                local colorParagon = Addon.db.profile.ColorParagon
+                standingColor = ("|cff%.2x%.2x%.2x"):format(colorParagon.r*255, colorParagon.g*255, colorParagon.b*255)
             else
                 standingTextShort = first_letters(info.standingText, Addon.db.profile.Reputation.shortCharCount)
             end
@@ -247,8 +247,8 @@ Addon.TAGS.Definition = {
     ["c_paragonLevel"] = {
         desc = "Colored paragon level (with reward icon if available)",
         value = function(info)
-            local reputationColors = Addon.db.profile.Colors
-            local paragonColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[9].r*255, reputationColors[9].g*255, reputationColors[9].b*255)
+            local colorParagon = Addon.db.profile.ColorParagon
+            local paragonColor = ("|cff%.2x%.2x%.2x"):format(colorParagon.r*255, colorParagon.g*255, colorParagon.b*255)
             return paragonColor .. combine(info, info.paragon) .. "|r"
         end
     },
@@ -265,19 +265,13 @@ Addon.TAGS.Definition = {
     },
     ["c_renownLevel"] = {
         desc = "Colored renown level",
-        value = function(info)
-            local reputationColors = Addon.db.profile.Colors
-            local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
-            return renownColor .. combine(info, info.renown) .. "|r"
-        end
+        value = function(info) return info.standingColor .. combine(info, info.renown) .. "|r" end
     },
     ["c_renownLevelNoParagon"] = {
         desc = "Colored renown level",
         value = function(info)
             if info.paragon and info.paragon ~= "" then return "" end
-            local reputationColors = Addon.db.profile.Colors
-            local renownColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[10].r*255, reputationColors[10].g*255, reputationColors[10].b*255)
-            return renownColor .. combine(info, info.renown) .. "|r"
+            return info.standingColor .. combine(info, info.renown) .. "|r"
         end
     },
     ["bar"] = {
@@ -357,10 +351,8 @@ Addon.TAGS.Definition = {
     ["c_standingNext"] = {
         desc = "Shows next/previous (depending on gain or loss) standing/renown/paragon in that standing color",
         value = function(info)
-            if info.standingIdNext then
-                local reputationColors = Addon.db.profile.Colors
-                local standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[info.standingIdNext].r*255, reputationColors[info.standingIdNext].g*255, reputationColors[info.standingIdNext].b*255)
-                return standingColor .. combine(info, info.standingTextNext) .. "|r"
+            if info.standingColorNext then
+                return info.standingColorNext .. combine(info, info.standingTextNext) .. "|r"
             else
                 return combine(info, info.standingtextNext)
             end
@@ -375,10 +367,8 @@ Addon.TAGS.Definition = {
     ["c_standingNextShort"] = {
         desc = "Shows next/previous (depending on gain or loss) standing/renown/paragon in that standing color, with a maximum of 'x' characters per word, can be set in the options (1 is the default value for x).",
         value = function(info)
-            if info.standingIdNext then
-                local reputationColors = Addon.db.profile.Colors
-                local standingColor = ("|cff%.2x%.2x%.2x"):format(reputationColors[info.standingIdNext].r*255, reputationColors[info.standingIdNext].g*255, reputationColors[info.standingIdNext].b*255)
-                return standingColor .. combine(info, first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount)) .. "|r"
+            if info.standingColorNext then
+                return info.standingColorNext .. combine(info, first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount)) .. "|r"
             else
                 return combine(info, first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount))
             end

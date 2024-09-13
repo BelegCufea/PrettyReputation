@@ -1,3 +1,8 @@
+# v1.4.2 ()
+
+## New
+- You can now define starting and endig color for renown progress. The same can be done for friendship reputations.
+
 # v1.4.1 (1.9.2024)
 
 ## New

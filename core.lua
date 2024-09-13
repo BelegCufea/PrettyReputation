@@ -17,6 +17,7 @@ local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks
 local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
+local GetRenownLevels = C_MajorFactions.GetRenownLevels
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
 
 local Debug = Addon.DEBUG
@@ -70,9 +71,9 @@ local AddonDB_Defaults = {
             growUp = false,
             tooltipAnchor = "RIGHT",
             removeAfter = 0,
+            paragonColorOverride = true,
             patternLeft = "[nc_name][{ |}renownLevelNoParagon{|}][{ x}paragonLevel] ([current] / [next])",
             patternRight = "[c_session]",
-
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -80,6 +81,11 @@ local AddonDB_Defaults = {
         },
         Colors = Const.REP_COLORS.wowproColors,
         ColorsPreset = "wowpro",
+        ColorRenownLow  = {},
+        ColorRenownHigh = {},
+        ColorFriendLow  = {},
+        ColorFriendHigh = {},
+        ColorParagon    = {},
         minimapIcon = { hide = true, minimapPos = 220, radius = 80, },
         AddonCompartment = { hide = false },
         Track = false,
@@ -221,40 +227,129 @@ function private.getFactionLabel(standingId)
 	return GetText("FACTION_STANDING_LABEL" .. standingId, SEX)
 end
 
-function Addon:GetFactionColor(info)
-    local reputationColors = Options.Colors
+function private.rgbToHsv(colRGB)
+    local max, min = math.max(colRGB.r, colRGB.g, colRGB.b), math.min(colRGB.r, colRGB.g, colRGB.b)
+    local h, s, v = 0, 0, max
+    local d = max - min
+    s = max == 0 and 0 or d / max
 
+    if max ~= min then
+        if max == colRGB.r then
+            h = (colRGB.g - colRGB.b) / d + (colRGB.g < colRGB.b and 6 or 0)
+        elseif max == colRGB.g then
+            h = (colRGB.b - colRGB.r) / d + 2
+        elseif max == colRGB.b then
+            h = (colRGB.r - colRGB.g) / d + 4
+        end
+        h = h / 6
+    end
+
+    return {h = h * 360, s = s, v = v}
+end
+
+function private.hsvToRgb(colHSV)
+    local r, g, b
+
+    local i = math.floor(colHSV.h / 60) % 6
+    local f = (colHSV.h / 60) - math.floor(colHSV.h / 60)
+    local p = colHSV.v * (1 - colHSV.s)
+    local q = colHSV.v * (1 - f * colHSV.s)
+    local t = colHSV.v * (1 - (1 - f) * colHSV.s)
+
+    if i == 0 then r, g, b = colHSV.v, t, p
+    elseif i == 1 then r, g, b = q, colHSV.v, p
+    elseif i == 2 then r, g, b = p, colHSV.v, t
+    elseif i == 3 then r, g, b = p, q, colHSV.v
+    elseif i == 4 then r, g, b = t, p, colHSV.v
+    elseif i == 5 then r, g, b = colHSV.v, p, q
+    end
+
+    return {r = r, g = g, b = b }
+end
+
+function private.interpolateColors(colRGB1, colRGB2, factor)
+    local colHSV1 = private.rgbToHsv(colRGB1)
+    local colHSV2 = private.rgbToHsv(colRGB2)
+    local h
+    if math.abs(colHSV1.h - colHSV2.h) > 180 then
+        if colHSV1.h > colHSV2.h then
+            h = colHSV1.h + factor * ((colHSV2.h + 360) - colHSV1.h)
+        else
+            h = colHSV1.h - factor * ((colHSV1.h + 360) - colHSV2.h)
+        end
+    else
+        h = colHSV1.h + factor * (colHSV2.h - colHSV1.h)
+    end
+    h = h % 360
+
+    local s = colHSV1.s + factor * (colHSV2.s - colHSV1.s)
+    local v = colHSV1.v + factor * (colHSV2.v - colHSV1.v)
+
+    return private.hsvToRgb({ h = h, s = s, v = v})
+end
+
+function Addon:GetFactionColors(info, bar)
+    local reputationColors = Options.Colors
     if (info.factionID and info.factionID ~= 0) then
         local factionData = GetFactionDataByID(info.factionID)
+        if not factionData then return reputationColors[5], reputationColors[5] end
+        local level = info.level and info.level > 0 and info.level or 1
+        local maxLevel = info.maxLevel and info.maxLevel > level and info.maxLevel or level
         if (IsMajorFaction(info.factionID)) then
-            if Options.Reputation.paragonColorOverride and IsFactionParagon(info.factionID) then
-                return reputationColors[9]
+            local colorLow = Options.ColorRenownLow
+            local colorHigh = Options.ColorRenownHigh
+            local colorParagon = Options.ColorParagon
+            local paragonOverride = bar and Options.Bars.paragonColorOverride or Options.Reputation.paragonColorOverride
+            if paragonOverride and IsFactionParagon(info.factionID) then
+                return colorParagon, colorParagon
             end
-            return reputationColors[10]
+            if level and maxLevel and maxLevel > 1 then
+                local color = private.interpolateColors(colorLow, colorHigh, (level-1)/(maxLevel-1))
+                local colorNext = color
+                if level < maxLevel then
+                    colorNext = private.interpolateColors(colorLow, colorHigh, (level)/(maxLevel-1))
+                end
+                return color, colorNext
+            end
+            return colorLow, colorLow
 		end
 
 		if (factionData.reaction == nil) then
-            return {r = 1, b = 0, g = 0}
+            return {r = 1, b = 0, g = 0}, {r = 1, b = 0, g = 0}
 		end
 
 		if (IsFactionParagon(info.factionID)) then
-			return reputationColors[9]
+            local colorParagon = Options.ColorParagon
+			return colorParagon, colorParagon
 		end
 
 		local friendInfo = GetFriendshipReputation(info.factionID)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
-			return reputationColors[friendInfo.standing] or reputationColors[5]
-
+            if level and maxLevel then
+                local colorLow = Options.ColorFriendLow
+                local colorHigh = Options.ColorFriendHigh
+                local color = private.interpolateColors(colorLow, colorHigh, (level-1)/(maxLevel-1))
+                local colorNext = color
+                if level < maxLevel then
+                    colorNext = private.interpolateColors(colorLow, colorHigh, (level)/(maxLevel-1))
+                end
+                return color, colorNext
+            end
+			return reputationColors[5], reputationColors[5]
 		end
-        return reputationColors[factionData.reaction] or reputationColors[5]
+        local color = reputationColors[factionData.reaction] or reputationColors[5]
+        local colorNext = factionData.reaction == 8 and color or reputationColors[factionData.reaction + 1] or reputationColors[5]
+        return color, colorNext
 	end
     return nil
 end
 
 function private.getRepInfo(info)
     local showParagonCount = Options.Reputation.showParagonCount
+    local processed = false
     if (info.factionID and info.factionID ~= 0) then
         local factionData = GetFactionDataByID(info.factionID)
+        if not factionData then return info end
         info["standingId"] = factionData.reaction
         info["name"] = factionData.name
         info["bottom"] = factionData.currentReactionThreshold
@@ -267,18 +362,20 @@ function private.getRepInfo(info)
             info["icon"] = icons[info.factionID]
         end
 
-        info["color"] = Addon:GetFactionColor(info)
-        if info.color then
-            info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
-        else
-            info["standingColor"] = ""
-        end
-
-        if (IsMajorFaction(info.factionID)) then
+        if (IsMajorFaction(info.factionID)) and not processed then
             info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionID)
 			local isCapped = HasMaximumRenown(info.factionID)
             local isParagon = IsFactionParagon(info.factionID)
+            local levels = GetRenownLevels(info.factionID)
+            info["maxLevel"] = 0
+            if levels then
+                for _, levelInfo in ipairs(levels) do
+                    if levelInfo.level > info["maxLevel"] then
+                        info["maxLevel"] = levelInfo.level
+                    end
+                end
+            end
             if data then
                 info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
                 info["top"] = data.renownLevel * data.renownLevelThreshold
@@ -286,6 +383,7 @@ function private.getRepInfo(info)
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
                 info["renown"] = data.renownLevel
+                info["level"] = data.renownLevel
                 info["standingTextNext"] = RENOWN_LEVEL_LABEL .. (data.renownLevel + 1)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
@@ -294,50 +392,47 @@ function private.getRepInfo(info)
                     -- fix for Dream Wardens icon (and possibly more in the future)
                     info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
                 end
-                if not isCapped or not isParagon then
-                    return info
-                end
-
-                local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID)
-                local paragonLevel = (currentValue - (currentValue % threshold))/threshold
-                if showParagonCount and paragonLevel > 0 then
-                    info["paragon"] =  info["paragon"] .. paragonLevel
-                end
-                info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
-                info["standingId"] = 9
-                info["standingIdNext"] = 9
-                if hasRewardPending then
-                    local reward = "|A:ParagonReputation_Bag:0:0|a"
-                    info["reward"] = reward
-                    info["paragon"] = info["paragon"] .. reward
-                    if not showParagonCount then
-                        info["standingText"] = info["standingText"] .. " " .. reward
+                if isCapped and isParagon then
+                    local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID)
+                    local paragonLevel = (currentValue - (currentValue % threshold))/threshold
+                    if showParagonCount and paragonLevel > 0 then
+                        info["paragon"] =  info["paragon"] .. paragonLevel
                     end
+                    info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                    info["standingId"] = 9
+                    info["standingIdNext"] = 9
+                    if hasRewardPending then
+                        local reward = "|A:ParagonReputation_Bag:0:0|a"
+                        info["reward"] = reward
+                        info["paragon"] = info["paragon"] .. reward
+                        if not showParagonCount then
+                            info["standingText"] = info["standingText"] .. " " .. reward
+                        end
+                    end
+                    info["current"] = mod(currentValue, threshold)
+                    info["maximum"] = threshold
+                    info["bottom"] = info["bottom"] + paragonLevel * threshold
+                    info["top"] = info["bottom"] + threshold
                 end
-                info["current"] = mod(currentValue, threshold)
-                info["maximum"] = threshold
-                info["bottom"] = info["bottom"] + paragonLevel * threshold
-                info["top"] = info["bottom"] + threshold
-                return info
             else
                 info["current"] = 0
                 info["maximum"] = 0
                 info["standingText"] = RENOWN_LEVEL_LABEL
-                return info
             end
+            processed = true
 		end
 
-		if (factionData.reaction == nil) then
+		if (factionData.reaction == nil) and not processed then
             info["current"] = 0
             info["maximum"] = 0
             info["color"] = {r = 1, b = 0, g = 0}
             info["standingText"] = "??? - " .. (info.factionID .. "?")
             info["bottom"] = 0
             info["top"] = 0
-			return info
-		end
+            processed = true
+        end
 
-		if (IsFactionParagon(info.factionID)) then
+		if (IsFactionParagon(info.factionID)) and not processed then
 			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
@@ -359,12 +454,12 @@ function private.getRepInfo(info)
             info["maximum"] = threshold
             info["bottom"] = info["top"] + paragonLevel * threshold
             info["top"] = info["bottom"] + threshold
-        return info
+            processed = true
 		end
 
 		local friendInfo = GetFriendshipReputation(info.factionID)
         local rankInfo = GetFriendshipReputationRanks(info.factionID)
-		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
+		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) and not processed then
             info["current"] = 1
 			info["maximum"] = 1
             info["bottom"] = friendInfo.reactionThreshold
@@ -377,15 +472,29 @@ function private.getRepInfo(info)
                 info["level"] = rankInfo.currentLevel
                 info["maxLevel"] = rankInfo.maxLevel
 			end
-			return info
+            processed = true
 		end
 
-        info["current"] = factionData.currentStanding - info.bottom
-        info["maximum"] = info.top - info.bottom
-        info["standingText"] = private.getFactionLabel(factionData.reaction)
-        info["standingTextNext"] = (info.negative and factionData.reaction > 1 and _G["FACTION_STANDING_LABEL".. factionData.reaction - 1]) or (not info.negative and factionData.reaction < 8 and _G["FACTION_STANDING_LABEL".. factionData.reaction + 1]) or ""
-        info["standingIdNext"] = (info.negative and factionData.reaction > 1 and (factionData.reaction - 1)) or (not info.negative and factionData.reaction < 8 and (factionData.reaction + 1))
-        return info
+        if not processed then
+            info["current"] = factionData.currentStanding - info.bottom
+            info["maximum"] = info.top - info.bottom
+            info["standingText"] = private.getFactionLabel(factionData.reaction)
+            info["standingTextNext"] = (info.negative and factionData.reaction > 1 and _G["FACTION_STANDING_LABEL".. factionData.reaction - 1]) or (not info.negative and factionData.reaction < 8 and _G["FACTION_STANDING_LABEL".. factionData.reaction + 1]) or ""
+            info["standingIdNext"] = (info.negative and factionData.reaction > 1 and (factionData.reaction - 1)) or (not info.negative and factionData.reaction < 8 and (factionData.reaction + 1))
+            processed = true
+        end
+
+        info["color"], info["colorNext"] = Addon:GetFactionColors(info)
+        if info.color then
+            info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
+        else
+            info["standingColor"] = ""
+        end
+        if info.colorNext then
+            info["standingColorNext"] = ("|cff%.2x%.2x%.2x"):format(info.colorNext.r*255, info.colorNext.g*255, info.colorNext.b*255)
+        else
+            info["standingColorNext"] = ""
+        end
 	end
     return info
 end
@@ -663,6 +772,17 @@ function private.chatCmdShowConfig(input)
     end
 end
 
+function private.setInterpolateColors()
+    local colorIndexLow     = Const.REP_COLOR_INDEX_LOW
+    local colorIndexHigh    = Const.REP_COLOR_INDEX_HIGH
+    local colorIndexParagon = Const.REP_COLOR_INDEX_PARAGON
+    Options.ColorRenownLow  = Options.ColorRenownLow  and next( Options.ColorRenownLow)  and Options.ColorRenownLow  or Options.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
+    Options.ColorRenownHigh = Options.ColorRenownHigh and next( Options.ColorRenownHigh) and Options.ColorRenownHigh or Options.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
+    Options.ColorFriendLow  = Options.ColorFriendLow  and next( Options.ColorFriendLow)  and Options.ColorFriendLow  or Options.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
+    Options.ColorFriendHigh = Options.ColorFriendHigh and next( Options.ColorFriendHigh) and Options.ColorFriendHigh or Options.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
+    Options.ColorParagon    = Options.ColorParagon    and next( Options.ColorParagon)    and Options.ColorParagon    or Options.Colors[colorIndexParagon] or Const.REP_COLORS.wowproColors[colorIndexParagon]
+end
+
 function Addon:OnToggle()
     Addon:UpdateDataBrokerText()
     Addon:SetBarsOptions()
@@ -679,11 +799,13 @@ end
 
 function Addon:RefreshConfig()
     Options = self.db.profile
+    private.setInterpolateColors()
 end
 
 function Addon:OnEnable()
     Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
     Options = Addon.db.profile
+    private.setInterpolateColors()
 
     Addon:RegisterEvent("PLAYER_ENTERING_WORLD", private.Initialize)
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
