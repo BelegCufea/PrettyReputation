@@ -9,6 +9,7 @@ local factions = Addon.Factions
 local Debug = Addon.DEBUG
 local Const = Addon.CONST
 
+local searchQuery = ""
 
 local function tags()
     local result = ""
@@ -168,7 +169,7 @@ local function getChatFrames()
     return options
 end
 
-local function getFactions()
+local function getFactions(type)
     local list = {}
 
     local found
@@ -176,16 +177,21 @@ local function getFactions()
     for k,v in pairs(factions) do
         if not found then found = k end
         if k == Addon.db.profile.Test.faction then found = k end
-        if v and v.blizzFix then
-            list[k] = "|cffff0000"..k.."|r"
-        else
-            list[k] = k
+        if type == "all" or searchQuery == "" or string.find(string.lower(k), string.lower(searchQuery)) then
+            if v and v.blizzFix then
+                if type == "all" or type == "blizzFix" then
+                    list[k] = "|cffff0000"..k.."|r"
+                end
+            elseif type == "all" or type == "standard" then
+                list[k] = k
+            end
         end
     end
 
+    if type == "all" and not list["Darkmoon Faire"] then
+        list["Darkmoon Faire"] = "Darkmoon Faire"
+    end
     Addon.db.profile.Test.faction = found
-
-    list["Darkmoon Faire"] = "Darkmoon Faire"
     table.sort(list)
     return list
 end
@@ -1170,7 +1176,7 @@ local options = {
                     order = 920,
                     name = "faction",
                     width = 1.2,
-                    values = function() return getFactions() end,
+                    values = function() return getFactions("all") end,
                     get = function(info) return Addon.db.profile.Test.faction end,
                     set = function(info, value)
                         Addon.db.profile.Test.faction = value
@@ -1209,10 +1215,20 @@ local options = {
                     name = "Choose favorite factions",
                     order = 10,
                 },
+                search = {
+                    type = "input",
+                    name = "Search",
+                    desc = "Type to filter the factions list.",
+                    get = function() return searchQuery end,
+                    set = function(_, value)
+                        searchQuery = value
+                    end,
+                    order = 20,
+                },
                 list1 = {
                     type = "multiselect",
-                    name = "Factions",
-                    values = function() return getFactions() end,
+                    name = "Visible Factions",
+                    values = function() return getFactions("standard") end,
                     get = function(info, key)
                         return Addon.db.profile.FavoriteFactions[key] or false
                     end,
@@ -1220,7 +1236,20 @@ local options = {
                         Addon.db.profile.FavoriteFactions[key] = value
                         SetBarsOptions()
                     end,
-                    order = 20,
+                    order = 30,
+                },
+                list2 = {
+                    type = "multiselect",
+                    name = "Hiden Factions",
+                    values = function() return getFactions("blizzFix") end,
+                    get = function(info, key)
+                        return Addon.db.profile.FavoriteFactions[key] or false
+                    end,
+                    set = function(info, key, value)
+                        Addon.db.profile.FavoriteFactions[key] = value
+                        SetBarsOptions()
+                    end,
+                    order = 40,
                 },
             },
         },

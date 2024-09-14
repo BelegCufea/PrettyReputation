@@ -1,7 +1,18 @@
-# v1.4.2 ()
+# v1.4.2 (14.9.2024)
 
 ## New
-- You can now define starting and endig color for renown progress. The same can be done for friendship reputations.
+- Left-clicking the on-screen reputation bar now allows you to toggle a faction as a favorite. The tooltip will display `(F)` after the faction name to signify it's a favorite. To clarify, favorite factions will automatically be visible upon login.
+
+![Favorite by click](https://i.imgur.com/DnrblPL.png)
+
+- Faction searches are now available within the favorites option section. Also factions from Reputation panel are separated from hidden ones.
+
+![Favorite by click](https://i.imgur.com/ROiY58D.png)
+
+- A new option allows the on-screen bar to prioritize Paragon colors over Renown colors if the faction has Paragon levels. You can find the `paragon standing color overrides renown` option under the `Reputation Bars` tab.
+- Custom starting and ending colors for both renown and friendship faction level spans are now available. The color will begin at the `From` color for level 1 and  gradually transition to the `To` color as levels increase, using HSV interpolation.
+
+![Renown colors](https://i.imgur.com/eSnG9Xn.png)
 
 # v1.4.1 (1.9.2024)
 

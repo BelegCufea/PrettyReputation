@@ -81,6 +81,9 @@ local function ShowFactionTooltip(bar)
         local faction = factions[bar.faction]
         if faction.info and faction.info.name then
             local name = Addon:ConstructMessage(faction.info, "[name]")
+            if Options.FavoriteFactions[faction.info.name] then
+                name = name .. " |cnPURE_GREEN_COLOR:(F)|r"
+            end
             local tooltipAnchor, ofsx, ofsy = ConstructTooltipAnchor(Options.Bars.tooltipAnchor)
             GameTooltip:SetOwner(bar, tooltipAnchor, ofsx, ofsy)
             GameTooltip:AddLine(name)
@@ -100,6 +103,7 @@ local function ShowFactionTooltip(bar)
             local timeElapsed = time() - (faction.info.lastUpdated or 0)
             GameTooltip:AddDoubleLine("Last change:", string.format("%d:%02d", math.floor(timeElapsed / 60), timeElapsed % 60))
             GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle favorite")
             GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")
             GameTooltip:Show()
         end
@@ -136,6 +140,20 @@ local function Expired(info)
     return expired
 end
 
+local function OnClick(bar, button)
+    if button == "RightButton" then
+        RemoveBar(bar)
+    end
+    if button == "LeftButton" then
+        local faction = bar.faction
+        if Options.FavoriteFactions[faction] then
+            Options.FavoriteFactions[faction] = false
+        else
+            Options.FavoriteFactions[faction] = true
+        end
+    end
+end
+
 function Bars:RemoveExpired()
     local needsUpdate = false
     for i = #bars, 1, -1 do
@@ -159,6 +177,7 @@ function Bars:RemoveExpired()
     end
 end
 
+
 function Bars:Update()
     if (not Options.Bars.enabled) or (not Options.Enabled) then
             if Bars:IsEnabled() then Bars:Disable() end
@@ -172,7 +191,7 @@ function Bars:Update()
                 bar.faction = v.info.faction
                 bar:SetScript("OnEnter", function(self) ShowFactionTooltip(self) end)
                 bar:SetScript("OnLeave", function(self) HideFactionTooltip(self) end)
-                bar:SetScript("OnMouseUp", function(self, button) if button == "RightButton" then RemoveBar(self) end end)
+                bar:SetScript("OnMouseUp", function(self, button) OnClick(self, button) end)
                 table.insert(bars, v.info.faction)
                 v.bar = bar
             end
