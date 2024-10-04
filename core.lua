@@ -18,6 +18,10 @@ local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
 local GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local HasMaximumRenown = C_MajorFactions.HasMaximumRenown
 local GetRenownLevels = C_MajorFactions.GetRenownLevels
+local GetMajorFactionRenownInfo = C_MajorFactions.GetMajorFactionRenownInfo
+local GetDelvesFactionForSeason = C_DelvesUI.GetDelvesFactionForSeason
+local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
 
 local Debug = Addon.DEBUG
@@ -31,6 +35,7 @@ local guildname
 local private = {}
 local icons = {}
 local factions = {}
+local delveFaction = {currencyID = 3068}
 Addon.Factions = factions
 
 local AddonDB_Defaults = {
@@ -188,6 +193,15 @@ function private.setupFactions()
         end
         private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
     end
+    do -- delves
+        local info = GetCurrencyInfo(delveFaction.currencyID)
+        if info then
+            local factionId = C_DelvesUI.GetDelvesFactionForSeason()
+            delveFaction.factionID = factionId
+            delveFaction.name = info.name
+            private.setupFaction(delveFaction)
+        end
+    end
     do -- "WTF why is Blizz not listing all factions in Reputation panel" temporary onetime FIX
         if factionPanelFix then
             factionPanelFix = false
@@ -211,7 +225,7 @@ function private.trackFaction(info)
     if watchedFactionData and info.faction == watchedFactionData.name then return end
     if ((info.faction == GUILD) or (info.faction == guildname)) and not Options.TrackGuild then return end
     if info.negative and Options.TrackPositive then return end
-    if factions[info.faction] and factions[info.faction].id then
+    if factions[info.faction] and factions[info.faction].id and factions[info.faction].id ~= delveFaction.factionID then
         SetWatchedFactionByID(factions[info.faction].id)
     end
 end
@@ -292,7 +306,7 @@ function Addon:GetFactionColors(info, bar)
     local reputationColors = Options.Colors
     if (info.factionID and info.factionID ~= 0) then
         local factionData = GetFactionDataByID(info.factionID)
-        if not factionData then return reputationColors[5], reputationColors[5] end
+        if not factionData and info.factionID ~= delveFaction.factionID then return reputationColors[5], reputationColors[5] end
         local level = info.level and info.level > 0 and info.level or 1
         local maxLevel = info.maxLevel and info.maxLevel > level and info.maxLevel or level
         if (IsMajorFaction(info.factionID)) then
@@ -314,10 +328,6 @@ function Addon:GetFactionColors(info, bar)
             return colorLow, colorLow
 		end
 
-		if (factionData.reaction == nil) then
-            return {r = 1, b = 0, g = 0}, {r = 1, b = 0, g = 0}
-		end
-
 		if (IsFactionParagon(info.factionID)) then
             local colorParagon = Options.ColorParagon
 			return colorParagon, colorParagon
@@ -337,6 +347,11 @@ function Addon:GetFactionColors(info, bar)
             end
 			return reputationColors[5], reputationColors[5]
 		end
+
+        if not factionData or (factionData.reaction == nil) then
+            return {r = 1, b = 0, g = 0}, {r = 1, b = 0, g = 0}
+		end
+
         local color = reputationColors[factionData.reaction] or reputationColors[5]
         local colorNext = factionData.reaction == 8 and color or reputationColors[factionData.reaction + 1] or reputationColors[5]
         return color, colorNext
@@ -348,21 +363,50 @@ function private.getRepInfo(info)
     local showParagonCount = Options.Reputation.showParagonCount
     local processed = false
     if (info.factionID and info.factionID ~= 0) then
+        if info.factionID == delveFaction.factionID then
+            local data = GetMajorFactionRenownInfo(info.factionID)
+            if not data then return info end
+            local levels = GetRenownLevels(info.factionID)
+            info["maxLevel"] = 0
+            if levels then
+                for _, levelInfo in ipairs(levels) do
+                    if levelInfo.level > info["maxLevel"] then
+                        info["maxLevel"] = levelInfo.level
+                    end
+                end
+            end
+            info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
+            info["top"] = data.renownLevel * data.renownLevelThreshold
+            info["current"] = data.renownReputationEarned or 0
+            info["maximum"] = data.renownLevelThreshold
+            info["standingText"] = ("Stage " .. data.renownLevel)
+            info["renown"] = data.renownLevel
+            info["level"] = data.renownLevel
+            info["standingTextNext"] = "Stage " .. (data.renownLevel + 1)
+            info["standingId"] = 10
+            info["standingIdNext"] = 10
+            info["name"] = delveFaction.name
+            info["paragon"] = ""
+            info["reward"] = ""
+            processed = true
+        end
         local factionData = GetFactionDataByID(info.factionID)
-        if not factionData then return info end
-        info["standingId"] = factionData.reaction
-        info["name"] = factionData.name
-        info["bottom"] = factionData.currentReactionThreshold
-        info["top"] = factionData.nextReactionThreshold
-        info["paragon"] = ""
-        info["renown"] = ""
-        info["standingTextNext"] = ""
-        info["reward"] = ""
+        if not processed then
+            if not factionData then return info end
+            info["standingId"] = factionData.reaction
+            info["name"] = factionData.name
+            info["bottom"] = factionData.currentReactionThreshold
+            info["top"] = factionData.nextReactionThreshold
+            info["paragon"] = ""
+            info["renown"] = ""
+            info["standingTextNext"] = ""
+            info["reward"] = ""
+        end
         if icons and icons[info.factionID] then
             info["icon"] = icons[info.factionID]
         end
 
-        if (IsMajorFaction(info.factionID)) and not processed then
+        if not processed and (IsMajorFaction(info.factionID)) then
             info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionID)
 			local isCapped = HasMaximumRenown(info.factionID)
@@ -422,7 +466,7 @@ function private.getRepInfo(info)
             processed = true
 		end
 
-		if (factionData.reaction == nil) and not processed then
+		if not processed and (factionData.reaction == nil) then
             info["current"] = 0
             info["maximum"] = 0
             info["color"] = {r = 1, b = 0, g = 0}
@@ -432,7 +476,7 @@ function private.getRepInfo(info)
             processed = true
         end
 
-		if (IsFactionParagon(info.factionID)) and not processed then
+		if not processed and (IsFactionParagon(info.factionID)) then
 			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
 			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
 			info["standingText"] = private.getFactionLabel("paragon")
@@ -459,7 +503,7 @@ function private.getRepInfo(info)
 
 		local friendInfo = GetFriendshipReputation(info.factionID)
         local rankInfo = GetFriendshipReputationRanks(info.factionID)
-		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) and not processed then
+		if not processed and (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
 			info["maximum"] = 1
             info["bottom"] = friendInfo.reactionThreshold
@@ -694,6 +738,35 @@ function private.CombatTextUpdated(_, messagetype)
 	end
 end
 
+function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, personalLootToast, toastMethod, lessAwesome, upgraded, corrupted)
+    if typeIdentifier == "currency" then
+        local currencyInfo = GetCurrencyInfoFromLink(itemLink)
+        Debug:Info("Currency", itemLink, quantity)
+        Debug:Table("Currency", currencyInfo)
+        if currencyInfo and currencyInfo.currencyID == delveFaction.currencyID then
+            local info = factions[delveFaction.name].info
+            Debug:Table("DelveInfo", info)
+            if info then
+                local change = quantity
+                local current = info.current
+                local maximum = info.maximum
+                local level = info.level
+                Debug:Info("DelveInfo", current, maximum, level)
+
+                C_Timer.After(0.5, function()
+                    local data = GetMajorFactionRenownInfo(delveFaction.factionID)
+                    Debug:Table("DelveData", data)
+                    if data then
+                        change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
+                        change = (change > 0) and change or quantity
+                    end
+                    private.processFaction(delveFaction.name, change)
+                end)
+            end
+        end
+    end
+end
+
 function private.HideReward()
     local updateBars = false
     for k, v in pairs(factions) do
@@ -809,6 +882,7 @@ function Addon:OnEnable()
 
     Addon:RegisterEvent("PLAYER_ENTERING_WORLD", private.Initialize)
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
+    Addon:RegisterEvent("SHOW_LOOT_TOAST", private.LootToast)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
 
     self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")

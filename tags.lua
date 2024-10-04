@@ -377,6 +377,7 @@ Addon.TAGS.Definition = {
     ["level"] = {
         desc = "Shows current level of friendship reputation",
         value = function(info)
+            if info.level and info.maxLevel and info.level == info.maxLevel then return "" end
             if info.level then
                 return combine(info, info.level)
             else
@@ -387,6 +388,7 @@ Addon.TAGS.Definition = {
     ["maxLevel"] = {
         desc = "Shows maximum level of friendship reputation",
         value = function(info)
+            if info.level and info.maxLevel and info.level == info.maxLevel then return "" end
             if info.maxLevel then
                 return combine(info, info.maxLevel)
             else
