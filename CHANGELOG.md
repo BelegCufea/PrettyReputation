@@ -1,4 +1,9 @@
-# v1.4.2 (4.10.2024)
+# v1.4.3a (4.10.2024)
+
+## Fix
+- Fix for `Delver's Journey` not increasing when looting Restored coffer key chest
+
+# v1.4.3 (4.10.2024)
 
 ## New
 - Added `Delver's Journey` season stages (Delve progression)

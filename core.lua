@@ -35,7 +35,7 @@ local guildname
 local private = {}
 local icons = {}
 local factions = {}
-local delveFaction = {currencyID = 3068}
+local delveFaction = {currencyID = 3068, currencyAltID = 2803}
 Addon.Factions = factions
 
 local AddonDB_Defaults = {
@@ -743,11 +743,10 @@ function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, p
         local currencyInfo = GetCurrencyInfoFromLink(itemLink)
         Debug:Info("Currency", itemLink, quantity)
         Debug:Table("Currency", currencyInfo)
-        if currencyInfo and currencyInfo.currencyID == delveFaction.currencyID then
+        if currencyInfo and (currencyInfo.currencyID == delveFaction.currencyID or currencyInfo.currencyID == delveFaction.currencyAltID) then
             local info = factions[delveFaction.name].info
             Debug:Table("DelveInfo", info)
             if info then
-                local change = quantity
                 local current = info.current
                 local maximum = info.maximum
                 local level = info.level
@@ -757,10 +756,11 @@ function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, p
                     local data = GetMajorFactionRenownInfo(delveFaction.factionID)
                     Debug:Table("DelveData", data)
                     if data then
-                        change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
-                        change = (change > 0) and change or quantity
+                        local change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
+                        if change > 0 then
+                            private.processFaction(delveFaction.name, change)
+                        end
                     end
-                    private.processFaction(delveFaction.name, change)
                 end)
             end
         end
