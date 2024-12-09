@@ -684,10 +684,10 @@ function private.processAllFactions(factionInfo)
 end
 
 function private.processFaction(faction, change)
-    if not faction then return end
-    if faction == GUILD then
-        faction = guildname
+    if faction == GUILD and IsInGuild() then
+        faction = guildname or GetGuildInfo("player")
     end
+    if not faction then return end
     local info = {}
     Debug:Info("Event", ((faction == nil and "N/A") or faction) .. ": " .. ((change == nil and "N/A") or change))
     info["faction"] = faction

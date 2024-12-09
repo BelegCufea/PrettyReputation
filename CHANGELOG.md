@@ -1,3 +1,8 @@
+# v1.4.3b ()
+
+## Fix
+- Fix for guild reputation
+
 # v1.4.3a (4.10.2024)
 
 ## Fix
