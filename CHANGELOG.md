@@ -1,7 +1,10 @@
-# v1.4.3b ()
+# v1.4.3b (18.12.2024)
 
 ## Fix
-- Fix for guild reputation
+- Fix for guild reputation (maybe?)
+
+## Misc
+- TOC update (11.0.7)
 
 # v1.4.3a (4.10.2024)
 
