@@ -509,12 +509,13 @@ function private.getRepInfo(info)
             info["bottom"] = friendInfo.reactionThreshold
             info["top"] = friendInfo.reactionThreshold
 			info["standingText"] = friendInfo.reaction
-			if (friendInfo.nextThreshold) then
+            info["level"] = rankInfo.currentLevel
+            info["maxLevel"] = rankInfo.maxLevel
+            if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
                 info["top"] = friendInfo.nextThreshold
-                info["level"] = rankInfo.currentLevel
-                info["maxLevel"] = rankInfo.maxLevel
+
 			end
             processed = true
 		end

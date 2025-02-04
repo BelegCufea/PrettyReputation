@@ -1,3 +1,8 @@
+# v1.4.3c ()
+
+## Fix
+- Fix for friendship reputation error (reported by [gryphon63](https://www.curseforge.com/members/gryphon63/projects))
+
 # v1.4.3b (18.12.2024)
 
 ## Fix
