@@ -515,7 +515,6 @@ function private.getRepInfo(info)
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
                 info["top"] = friendInfo.nextThreshold
-
 			end
             processed = true
 		end
