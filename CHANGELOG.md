@@ -1,3 +1,8 @@
+# v1.4.3d (26.2.2025)
+
+## Fix
+- Fix for renown level standing text displaying %d
+
 # v1.4.3c (5.2.2025)
 
 ## Fix

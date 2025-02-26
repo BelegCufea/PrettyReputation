@@ -176,7 +176,19 @@
         "OPTIONS",
         "SHOW_TUTORIALS",
         "ChatFrame1EditBox",
-        "xx"
+        "xx",
+        "PLAYER_V_PLAYER",
+        "MISCELLANEOUS",
+        "FAVORITES",
+        "PROFESSIONS_CRAFTING_ORDERS_TAB_NAME",
+        "CURRENCY",
+        "PROFESSIONS_ARCHAEOLOGY",
+        "PLAYER_DIFFICULTY_TIMEWALKER",
+        "DELVES_LABEL",
+        "TRADE_SKILLS",
+        "PVP",
+        "COMMUNITIES_SETTINGS_NAME_LABEL",
+        "PAGE_NUMBER"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {

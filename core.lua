@@ -425,10 +425,10 @@ function private.getRepInfo(info)
                 info["top"] = data.renownLevel * data.renownLevelThreshold
                 info["current"] = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
                 info["maximum"] = data.renownLevelThreshold
-                info["standingText"] = (RENOWN_LEVEL_LABEL .. data.renownLevel)
+                info["standingText"] = RENOWN_LEVEL_LABEL:format(data.renownLevel)
                 info["renown"] = data.renownLevel
                 info["level"] = data.renownLevel
-                info["standingTextNext"] = RENOWN_LEVEL_LABEL .. (data.renownLevel + 1)
+                info["standingTextNext"] =  RENOWN_LEVEL_LABEL:format(data.renownLevel+1)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
                 if not info["icon"] then
