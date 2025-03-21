@@ -22,6 +22,7 @@ local GetMajorFactionRenownInfo = C_MajorFactions.GetMajorFactionRenownInfo
 local GetDelvesFactionForSeason = C_DelvesUI.GetDelvesFactionForSeason
 local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink
+local HasActiveDelve = C_DelvesUI.HasActiveDelve
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
 
 local Debug = Addon.DEBUG
@@ -36,6 +37,8 @@ local private = {}
 local icons = {}
 local factions = {}
 local delveFaction = {currencyID = 3068, currencyAltID = 2803}
+local MAPID_DORNOGAL = 2339
+
 Addon.Factions = factions
 
 local AddonDB_Defaults = {
@@ -196,7 +199,7 @@ function private.setupFactions()
     do -- delves
         local info = GetCurrencyInfo(delveFaction.currencyID)
         if info then
-            local factionId = C_DelvesUI.GetDelvesFactionForSeason()
+            local factionId = GetDelvesFactionForSeason()
             delveFaction.factionID = factionId
             delveFaction.name = info.name
             private.setupFaction(delveFaction)
@@ -767,6 +770,37 @@ function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, p
     end
 end
 
+-- more Delver's Journey processing
+function private.UpdateFaction()
+    -- only trigger if in Delve or in Dornogal (for weekly)
+    local function IsInDelves()
+        local _, _, _, mapID = UnitPosition("player")
+        return HasActiveDelve(mapID) or mapID == MAPID_DORNOGAL
+    end
+    if not IsInDelves() then return end
+
+    if delveFaction and factions and factions[delveFaction.name] then
+        local info = factions[delveFaction.name].info
+        if info then
+            local current = info.current
+            local maximum = info.maximum
+            local level = info.level
+
+            C_Timer.After(0.5, function()
+                local data = GetMajorFactionRenownInfo(delveFaction.factionID)
+                if data then
+                    local change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
+                    if change > 0 then
+                        Debug:Table("DelveData", data)
+                        private.processFaction(delveFaction.name, change)
+                    end
+                end
+            end)
+        end
+    end
+
+end
+
 function private.HideReward()
     local updateBars = false
     for k, v in pairs(factions) do
@@ -884,6 +918,7 @@ function Addon:OnEnable()
     Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon:RegisterEvent("SHOW_LOOT_TOAST", private.LootToast)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
+    Addon:RegisterEvent("UPDATE_FACTION", private.UpdateFaction)
 
     self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
     self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
@@ -893,4 +928,5 @@ end
 function Addon:OnDisable()
     Addon:UnregisterEvent("QUEST_TURNED_IN")
     Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
+    Addon:UnregisterEvent("UPDATE_FACTION")
 end

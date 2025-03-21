@@ -2,8 +2,20 @@
 ## Title: Pretty Reputation
 ## IconTexture: Interface\AddOns\PrettyReputation\textures\icon
 ## Notes: Shows more info about your reputation gain
-## Version: 1.4.3d
+## Version: 1.4.4
 ## Author: Cufea
+## Category: Other
+## Category-enUS: Other
+## Category-deDE: Anderes
+## Category-esES: Otros
+## Category-esMX: Otros
+## Category-frFR: Autre
+## Category-itIT: Altro
+## Category-koKR: 기타
+## Category-ptBR: Outro
+## Category-ruRU: Другое
+## Category-zhCN: 其它
+## Category-zhTW: 其他
 ## SavedVariables: PrettyReputationDB
 ## DefaultState: enabled
 ## OptionalDeps: FactionAddict

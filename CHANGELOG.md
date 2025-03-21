@@ -1,3 +1,11 @@
+# v1.4.4 (21.3.2025)
+
+## New
+- New hook for Delver's Journey (for weekly quest and after finishing Delves)
+
+## Misc
+- Added category (Other) to TOC
+
 # v1.4.3d (26.2.2025)
 
 ## Fix
