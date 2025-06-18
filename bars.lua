@@ -32,15 +32,14 @@ end
 
 local function BarSort(info)
     if Options.Bars.sort == "session" then
-        return -info.session
+        return -(info.session or 0)
      elseif Options.Bars.sort == "overall" then
-        return -(info.bottom + info.current)
+        return -((info.bottom or 0) + (info.current or 0))
      elseif Options.Bars.sort == "recent" then
-        return -info.lastUpdated
+        return -(info.lastUpdated or 0)
      else
-        return info.faction
+        return 0
      end
-     return nil
 end
 
 local function PrepareFactionName(name)

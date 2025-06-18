@@ -188,7 +188,21 @@
         "TRADE_SKILLS",
         "PVP",
         "COMMUNITIES_SETTINGS_NAME_LABEL",
-        "PAGE_NUMBER"
+        "PAGE_NUMBER",
+        "FACTION_ALLIANCE",
+        "EXPANSION_NAME3",
+        "EXPANSION_NAME0",
+        "FACTION_HORDE",
+        "FACTION_OTHER",
+        "EXPANSION_NAME1",
+        "EXPANSION_NAME2",
+        "EXPANSION_NAME4",
+        "EXPANSION_NAME5",
+        "EXPANSION_NAME6",
+        "EXPANSION_NAME7",
+        "EXPANSION_NAME8",
+        "EXPANSION_NAME9",
+        "EXPANSION_NAME10"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
@@ -203,6 +217,6 @@
         "utf8": "disable"
     },
     "Lua.workspace.library": [
-        "~\\.vscode\\extensions\\ketho.wow-api-0.18.2\\Annotations"
+        "~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\Core"
     ]
 }

@@ -23,7 +23,10 @@ local GetDelvesFactionForSeason = C_DelvesUI.GetDelvesFactionForSeason
 local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink
 local HasActiveDelve = C_DelvesUI.HasActiveDelve
-local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = [[Interface\Icons\UI_MajorFaction_%s]]
+local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = {
+    [9] = [[Interface\Icons\UI_MajorFaction_%s]],
+    [10] = [[Interface\Icons\UI_MajorFactions_%s]],
+}
 
 local Debug = Addon.DEBUG
 local Const = Addon.CONST
@@ -150,9 +153,9 @@ end
 
 function private.setupIcons() -- FactionAddict
     if not faFactionData then return end
-	for maintableRow in ipairs(faFactionData) do
-        icons[faFactionData[maintableRow][1]] = faFactionData[maintableRow][2]
-	end
+    for factionID, data in pairs(faFactionData) do
+        icons[factionID] = data.icon
+    end
 end
 
 function private.setupFaction(factionData)
@@ -434,10 +437,10 @@ function private.getRepInfo(info)
                 info["standingTextNext"] =  RENOWN_LEVEL_LABEL:format(data.renownLevel+1)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
-                if not info["icon"] then
-                    info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(data.textureKit)
+                if not info["icon"] and data.expansionID then
+                    info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[data.expansionID]:format(data.textureKit)
                     -- fix for Dream Wardens icon (and possibly more in the future)
-                    info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
+                    info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[data.expansionID]:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
                 end
                 if isCapped and isParagon then
                     local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID)
