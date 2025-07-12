@@ -1,3 +1,8 @@
+# v1.4.5a (12.7.2025)
+
+## Fix
+- [Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) icon integration is updated to new structure introduced in version 1.102
+
 # v1.4.5 (18.6.2025)
 
 ## Fix

@@ -152,8 +152,8 @@ function private.restoreRepHeaders(collapsed)
 end
 
 function private.setupIcons() -- FactionAddict
-    if not faFactionData then return end
-    for factionID, data in pairs(faFactionData) do
+    if not FactionAddictGT or not FactionAddictGT.FactionData then return end
+    for factionID, data in pairs(FactionAddictGT.FactionData) do
         icons[factionID] = data.icon
     end
 end
