@@ -4,7 +4,7 @@
 -- Sink-2.0
 
 local SINK20 = "LibSink-2.0"
-local SINK20_MINOR = 100002
+local SINK20_MINOR = 110002
 
 local sink = LibStub:NewLibrary(SINK20, SINK20_MINOR)
 if not sink then return end
@@ -29,9 +29,9 @@ local format, gsub, wipe, next, select = string.format, string.gsub, table.wipe,
 local IsInRaid, IsInGroup, SendChatMessage = IsInRaid, IsInGroup, SendChatMessage
 
 -- Make sure FCT is loaded
-local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
-local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn
+local EnableAddOn = C_AddOns.EnableAddOn
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local LoadAddOn = C_AddOns.LoadAddOn
 EnableAddOn("Blizzard_CombatText")
 local loadFCT = nil
 if not IsAddOnLoaded("Blizzard_CombatText") then
