@@ -22,7 +22,8 @@ local GetMajorFactionRenownInfo = C_MajorFactions.GetMajorFactionRenownInfo
 local GetDelvesFactionForSeason = C_DelvesUI.GetDelvesFactionForSeason
 local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink
-local HasActiveDelve = C_DelvesUI.HasActiveDelve
+local IsDelveInProgress = C_PartyInfo.IsDelveInProgress
+local GetBestMapForUnit = C_Map.GetBestMapForUnit
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = {
     [9] = [[Interface\Icons\UI_MajorFaction_%s]],
     [10] = [[Interface\Icons\UI_MajorFactions_%s]],
@@ -39,7 +40,13 @@ local guildname
 local private = {}
 local icons = {}
 local factions = {}
-local delveFaction = {currencyID = 3068, currencyAltID = 2803}
+local delveFaction = {
+    currencyID = 3068,
+    currencyAltID = 2803,
+    maps = {
+        [2339] = true -- Dornogal
+    }
+}
 local MAPID_DORNOGAL = 2339
 
 Addon.Factions = factions
@@ -721,6 +728,26 @@ function private.processFaction(faction, change)
                     Debug:Info("New Faction", info.faction .. " not initialized")
                 end
             end)
+        elseif (info.faction == delveFaction.name) and factions[delveFaction.name].info then
+            C_Timer.After(0.5, function()
+                local delveInfo = factions[delveFaction.name].info
+                if delveInfo then
+                    local current = delveInfo.current
+                    local maximum = delveInfo.maximum
+                    local level = delveInfo.level
+                    Debug:Info("DelveInfo", current, maximum, level)
+                    local data = GetMajorFactionRenownInfo(delveFaction.factionID)
+                    if data then
+                        change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
+                        if change > 0 then
+                            info.change = change
+                            info = private.getFactionInfo(info)
+                            private.printReputation(info)
+                            Addon:UpdateBars()
+                        end
+                    end
+                end
+            end)
         else
             C_Timer.After(0.5, function()
                 info = private.getFactionInfo(info)
@@ -776,11 +803,11 @@ end
 -- more Delver's Journey processing
 function private.UpdateFaction()
     -- only trigger if in Delve or in Dornogal (for weekly)
-    local function IsInDelves()
-        local _, _, _, mapID = UnitPosition("player")
-        return HasActiveDelve(mapID) or mapID == MAPID_DORNOGAL
+    local function IsInDelve()
+        local mapID = GetBestMapForUnit("player")
+        return IsDelveInProgress() or delveFaction.maps[mapID]
     end
-    if not IsInDelves() then return end
+    if not IsInDelve() then return end
 
     if delveFaction and factions and factions[delveFaction.name] then
         local info = factions[delveFaction.name].info

@@ -1,3 +1,11 @@
+# v1.4.5b ()
+
+## Fix
+- Improved logic for tracking **Delver's Journey** progress
+
+## Misc
+- Bumped TOC (11.2.0)
+
 # v1.4.5a (12.7.2025)
 
 ## Fix
