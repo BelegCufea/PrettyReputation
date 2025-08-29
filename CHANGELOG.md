@@ -5,6 +5,7 @@
 
 ## Misc
 - Bumped TOC (11.2.0)
+- Cleaned up FAQ/Help section
 
 # v1.4.5a (12.7.2025)
 

@@ -64,6 +64,17 @@ local function faq()
         }
         result.args["blank" .. order] = { type = "description", order = order * 10 + 2, fontSize = "large",name = " ",width = "full", }
     end
+    result.args["footerSpacer"] = {
+        type = "header",
+        order = 9990,
+        name = " ",
+    }
+    result.args["footer"] = {
+        type = "description",
+        order = 9991,
+        name = "|cffffd200" .. FAQ.Footer .. "|r", -- gold/yellow highlight
+        fontSize = "large",
+    }
     return result
 end
 
