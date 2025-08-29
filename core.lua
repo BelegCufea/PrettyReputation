@@ -23,6 +23,7 @@ local GetDelvesFactionForSeason = C_DelvesUI.GetDelvesFactionForSeason
 local GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local GetCurrencyInfoFromLink = C_CurrencyInfo.GetCurrencyInfoFromLink
 local IsDelveInProgress = C_PartyInfo.IsDelveInProgress
+local IsDelveComplete = C_PartyInfo.IsDelveComplete
 local GetBestMapForUnit = C_Map.GetBestMapForUnit
 local MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT = {
     [9] = [[Interface\Icons\UI_MajorFaction_%s]],
@@ -47,7 +48,6 @@ local delveFaction = {
         [2339] = true -- Dornogal
     }
 }
-local MAPID_DORNOGAL = 2339
 
 Addon.Factions = factions
 
@@ -568,6 +568,7 @@ function private.getFactionInfo(info)
         factions[info.faction].session = session
         info["lastUpdated"] = time()
         info["session"] = session
+        Debug:Table("Info_BeforeUpdate_"..info.faction, info)
         if Options.Enabled then
             factions[info.faction].info = private.getRepInfo(info)
         end
@@ -730,23 +731,8 @@ function private.processFaction(faction, change)
             end)
         elseif (info.faction == delveFaction.name) and factions[delveFaction.name].info then
             C_Timer.After(0.5, function()
-                local delveInfo = factions[delveFaction.name].info
-                if delveInfo then
-                    local current = delveInfo.current
-                    local maximum = delveInfo.maximum
-                    local level = delveInfo.level
-                    Debug:Info("DelveInfo", current, maximum, level)
-                    local data = GetMajorFactionRenownInfo(delveFaction.factionID)
-                    if data then
-                        change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
-                        if change > 0 then
-                            info.change = change
-                            info = private.getFactionInfo(info)
-                            private.printReputation(info)
-                            Addon:UpdateBars()
-                        end
-                    end
-                end
+                Debug:Info("ProcessFaction", "Processing Delve's Journey changes")
+                private.precessDelveFaction()
             end)
         else
             C_Timer.After(0.5, function()
@@ -764,6 +750,33 @@ function private.processFaction(faction, change)
     end
 end
 
+function private.precessDelveFaction()
+    Debug:Info("PrecessDelveFaction", "Processing Delve's Journey changes")
+    Debug:Table("DelveFaction", delveFaction or {})
+    Debug:Table("Faction_BeforeDelveUpdate", factions[delveFaction.name] or {})
+    if not factions[delveFaction.name] then return end
+    local delveInfo = factions[delveFaction.name].info
+    local info = {faction = delveFaction.name}
+    Debug:Table("DelveInfo_BeforeUpdate", delveInfo or {})
+    if delveInfo then
+        local current = delveInfo.current
+        local maximum = delveInfo.maximum
+        local level = delveInfo.level
+        Debug:Info("DelveInfo", current, maximum, level)
+        local data = GetMajorFactionRenownInfo(delveFaction.factionID)
+        Debug:Table("DelveData", data or {})
+        if data then
+            info.change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
+            Debug:Table("DelveInfo_AfterUpdate", info or {})
+            if info.change and info.change > 0 then
+                info = private.getFactionInfo(info)
+                private.printReputation(info)
+                Addon:UpdateBars()
+            end
+        end
+    end
+end
+
 function private.CombatTextUpdated(_, messagetype)
 	if messagetype == 'FACTION' then
 		local faction, change = GetCurrentCombatTextEventInfo()
@@ -771,64 +784,31 @@ function private.CombatTextUpdated(_, messagetype)
 	end
 end
 
+-- process Delve's Journey currency looted
 function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, personalLootToast, toastMethod, lessAwesome, upgraded, corrupted)
     if typeIdentifier == "currency" then
         local currencyInfo = GetCurrencyInfoFromLink(itemLink)
         Debug:Info("Currency", itemLink, quantity)
         Debug:Table("Currency", currencyInfo)
-        if currencyInfo and (currencyInfo.currencyID == delveFaction.currencyID or currencyInfo.currencyID == delveFaction.currencyAltID) then
-            local info = factions[delveFaction.name].info
-            Debug:Table("DelveInfo", info)
-            if info then
-                local current = info.current
-                local maximum = info.maximum
-                local level = info.level
-                Debug:Info("DelveInfo", current, maximum, level)
-
-                C_Timer.After(0.5, function()
-                    local data = GetMajorFactionRenownInfo(delveFaction.factionID)
-                    Debug:Table("DelveData", data)
-                    if data then
-                        local change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
-                        if change > 0 then
-                            private.processFaction(delveFaction.name, change)
-                        end
-                    end
-                end)
-            end
+        if currencyInfo and ((currencyInfo.currencyID == delveFaction.currencyID) or (currencyInfo.currencyID == delveFaction.currencyAltID)) then
+            C_Timer.After(0.5, function()
+                Debug:Info("LoadToast", "Processing Delve's Journey changes")
+                private.precessDelveFaction()
+            end)
         end
     end
 end
 
 -- more Delver's Journey processing
 function private.UpdateFaction()
-    -- only trigger if in Delve or in Dornogal (for weekly)
-    local function IsInDelve()
-        local mapID = GetBestMapForUnit("player")
-        return IsDelveInProgress() or delveFaction.maps[mapID]
-    end
-    if not IsInDelve() then return end
-
-    if delveFaction and factions and factions[delveFaction.name] then
-        local info = factions[delveFaction.name].info
-        if info then
-            local current = info.current
-            local maximum = info.maximum
-            local level = info.level
-
-            C_Timer.After(0.5, function()
-                local data = GetMajorFactionRenownInfo(delveFaction.factionID)
-                if data then
-                    local change = data.renownReputationEarned - current + maximum * (data.renownLevel - level)
-                    if change > 0 then
-                        Debug:Table("DelveData", data)
-                        private.processFaction(delveFaction.name, change)
-                    end
-                end
-            end)
-        end
-    end
-
+    Debug:Info("UpdateFactions", "UpdateFaction event triggered")
+    local uiMapID = GetBestMapForUnit("player")
+    Debug:Info("UpdateFactions", IsDelveInProgress(), IsDelveComplete(), delveFaction.maps[uiMapID])
+    if not IsDelveInProgress() and not IsDelveComplete() and not delveFaction.maps[uiMapID] then return end
+    C_Timer.After(0.5, function()
+        Debug:Info("UpdateFactions", "Processing Delve's Journey changes")
+        private.precessDelveFaction()
+    end)
 end
 
 function private.HideReward()
