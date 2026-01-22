@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 120000
 ## Title: Pretty Reputation
 ## IconTexture: Interface\AddOns\PrettyReputation\textures\icon
 ## Notes: Shows more info about your reputation gain

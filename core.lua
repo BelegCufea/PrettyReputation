@@ -445,9 +445,10 @@ function private.getRepInfo(info)
                 info["standingId"] = 10
                 info["standingIdNext"] = 10
                 if not info["icon"] and data.expansionID then
-                    info["icon"] = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[data.expansionID]:format(data.textureKit)
+                    local mf_string = MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[data.expansionID] or MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[10]
+                    info["icon"] = mf_string:format(data.textureKit)
                     -- fix for Dream Wardens icon (and possibly more in the future)
-                    info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and MAJOR_FACTION_REPUTATION_REWARD_ICON_FORMAT[data.expansionID]:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
+                    info["icon"] = Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID] and mf_string:format(Const.MAJOR_FACTON_ICONS_OVERRIDE[info.factionID]) or info["icon"]
                 end
                 if isCapped and isParagon then
                     local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID)
@@ -491,27 +492,29 @@ function private.getRepInfo(info)
 
 		if not processed and (IsFactionParagon(info.factionID)) then
 			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
-			local paragonLevel = (currentValue - (currentValue % threshold))/threshold
-			info["standingText"] = private.getFactionLabel("paragon")
-			if showParagonCount and paragonLevel > 0 then
-                info["paragon"] =  info["paragon"] .. paragonLevel
-            end
-            info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
-            info["standingId"] = 9
-            info["standingIdNext"] = 9
-			if hasRewardPending then
-                local reward = "|A:ParagonReputation_Bag:0:0|a"
-                info["reward"] = reward
-                info["paragon"] =  info["paragon"] .. reward
-                if not showParagonCount then
-                    info["standingText"] = info["standingText"] .. " " .. reward
+            if currentValue then
+                local paragonLevel = (currentValue - (currentValue % threshold))/threshold
+                info["standingText"] = private.getFactionLabel("paragon")
+                if showParagonCount and paragonLevel > 0 then
+                    info["paragon"] =  info["paragon"] .. paragonLevel
                 end
-			end
-            info["current"] = mod(currentValue, threshold)
-            info["maximum"] = threshold
-            info["bottom"] = info["top"] + paragonLevel * threshold
-            info["top"] = info["bottom"] + threshold
-            processed = true
+                info["standingTextNext"] = private.getFactionLabel("paragon") .. " " .. (paragonLevel + 1)
+                info["standingId"] = 9
+                info["standingIdNext"] = 9
+                if hasRewardPending then
+                    local reward = "|A:ParagonReputation_Bag:0:0|a"
+                    info["reward"] = reward
+                    info["paragon"] =  info["paragon"] .. reward
+                    if not showParagonCount then
+                        info["standingText"] = info["standingText"] .. " " .. reward
+                    end
+                end
+                info["current"] = mod(currentValue, threshold)
+                info["maximum"] = threshold
+                info["bottom"] = info["top"] + paragonLevel * threshold
+                info["top"] = info["bottom"] + threshold
+                processed = true
+            end
 		end
 
 		local friendInfo = GetFriendshipReputation(info.factionID)

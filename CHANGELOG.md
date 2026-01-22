@@ -1,4 +1,9 @@
-# v1.4.5b ()
+# v1.4.5c (22.1.2026)
+
+## Fix
+- Midnight lua errors on login
+
+# v1.4.5b (29.8.2025)
 
 ## Fix
 - Improved logic for tracking **Delver's Journey** progress

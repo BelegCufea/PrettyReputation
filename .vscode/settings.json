@@ -221,5 +221,6 @@
     ],
     "Lua.diagnostics.disable": [
         "assign-type-mismatch"
-    ]
+    ],
+    "Lua.type.weakUnionCheck": true
 }
