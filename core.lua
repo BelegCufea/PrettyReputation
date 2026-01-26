@@ -234,6 +234,7 @@ function private.setupFactions()
         end
     end
     Debug:Table("Factions", factions)
+    Debug:Table("FactionsIDMap", factionsIDMap)
 end
 
 function private.trackFaction(info)
@@ -677,24 +678,27 @@ function private.processAllFactions(factionInfo)
     --debugprofilestart()
     local trackFaction
     for k, v in pairs(factions) do
-        local currentOld = v.info.current + v.info.bottom
-        local info = private.getRepInfo(v.info)
-        local change = (info.current + info.bottom) - currentOld
-        if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
-            change = factionInfo.change * ((factionInfo.negative and -1) or 1)
-        end
-        if change ~= 0 then
-            info.change = math.abs(change)
-            info.negative = change < 0
-            local session = private.getFactionSession(info)
-            factions[info.faction].session = session
-            info.session = session
-            info.lastUpdated = time()
-            private.printReputation(info)
-            if not trackFaction then
-                trackFaction = info
-            elseif trackFaction.change < info.change then
-                trackFaction = info
+        if v.id ~= delveFaction.factionID then
+            local currentOld = (v.info.current or 0) + (v.info.bottom or 0)
+            local info = private.getRepInfo(v.info)
+            local change = (info.current or 0) + (info.bottom or 0) - currentOld
+            if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
+                change = factionInfo.change * ((factionInfo.negative and -1) or 1)
+            end
+            if change ~= 0 then
+                Debug:Info("ProcessAllFactions", v.id .. " name: " .. v.info.faction .. " change: " .. change)
+                info.change = math.abs(change)
+                info.negative = change < 0
+                local session = private.getFactionSession(info)
+                factions[info.faction].session = session
+                info.session = session
+                info.lastUpdated = time()
+                private.printReputation(info)
+                if not trackFaction then
+                    trackFaction = info
+                elseif trackFaction.change < info.change then
+                    trackFaction = info
+                end
             end
         end
     end
@@ -837,9 +841,7 @@ end
 
 -- more Delver's Journey processing
 function private.UpdateFaction()
-    Debug:Info("UpdateFactions", "UpdateFaction event triggered")
     local uiMapID = GetBestMapForUnit("player")
-    Debug:Info("UpdateFactions", IsDelveInProgress(), IsDelveComplete(), delveFaction.maps[uiMapID])
     if not IsDelveInProgress() and not IsDelveComplete() and not delveFaction.maps[uiMapID] then return end
     C_Timer.After(0.5, function()
         Debug:Info("UpdateFactions", "Processing Delve's Journey changes")
