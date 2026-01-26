@@ -1,3 +1,8 @@
+# v1.5-alpha (26.1.2026)
+
+## Fix (possible)
+- Midnight lua errors on reputation change
+
 # v1.4.5c (22.1.2026)
 
 ## Fix

@@ -41,6 +41,7 @@ local guildname
 local private = {}
 local icons = {}
 local factions = {}
+local factionsIDMap = {}
 local delveFaction = {
     currencyID = 3068,
     currencyAltID = 2803,
@@ -167,6 +168,9 @@ end
 
 function private.setupFaction(factionData)
     if factionData and factionData.name and factionData.factionID and factionData.factionID ~= 0 then
+        if not factionsIDMap[factionData.factionID] then
+            factionsIDMap[factionData.factionID] = factionData.name
+        end
         if not factions[factionData.name] then
             factions[factionData.name] = { id = factionData.factionID, session = 0}
         end
@@ -739,6 +743,20 @@ function private.processFaction(faction, change)
             end)
         else
             C_Timer.After(0.5, function()
+                if info["change"] == 0 then
+                    local currentInfo = factions[info.faction] and factions[info.faction].info
+                    if currentInfo == nil then
+                        Debug:Info("Faction Info Missing", "No reputation info found for " .. info.faction)
+                        return
+                    end
+                    local currentOld = currentInfo.current + currentInfo.bottom
+                    info = private.getRepInfo(currentInfo)
+                    change = (info.current + info.bottom) - currentOld
+                    info["change"] = math.abs(change)
+                    if change < 0 then
+                        info["negative"] = true
+                    end
+                end
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
                 Addon:UpdateBars()
@@ -784,6 +802,21 @@ function private.CombatTextUpdated(_, messagetype)
 	if messagetype == 'FACTION' then
 		local faction, change = GetCurrentCombatTextEventInfo()
         private.processFaction(faction, change)
+	end
+end
+
+function private.StandingUpdated(_, factionID, updatedStanding)
+    Debug:Info("StandingUpdated", factionID, updatedStanding)
+    if not factionID then return end
+    local faction = factionsIDMap[factionID]
+    if not faction then
+        local factionData = GetFactionDataByID(factionID)
+        if factionData then
+            faction = factionData.name
+        end
+    end
+    if faction then
+        private.processFaction(faction, 0)
 	end
 end
 
@@ -928,7 +961,8 @@ function Addon:OnEnable()
     private.setInterpolateColors()
 
     Addon:RegisterEvent("PLAYER_ENTERING_WORLD", private.Initialize)
-    Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
+    --Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
+    Addon:RegisterEvent("FACTION_STANDING_CHANGED", private.StandingUpdated)
     Addon:RegisterEvent("SHOW_LOOT_TOAST", private.LootToast)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
     Addon:RegisterEvent("UPDATE_FACTION", private.UpdateFaction)
@@ -940,6 +974,7 @@ end
 
 function Addon:OnDisable()
     Addon:UnregisterEvent("QUEST_TURNED_IN")
-    Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
+    --Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
+    Addon:UnregisterEvent("FACTION_STANDING_CHANGED")
     Addon:UnregisterEvent("UPDATE_FACTION")
 end
