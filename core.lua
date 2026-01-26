@@ -820,7 +820,12 @@ function private.StandingUpdated(_, factionID, updatedStanding)
         end
     end
     if faction then
-        private.processFaction(faction, 0)
+        local info = factions[faction] and factions[faction].info
+        local change = 0
+        if info and info.current and info.bottom then
+            change = updatedStanding - info.current - info.bottom
+        end
+        private.processFaction(faction, change)
 	end
 end
 
