@@ -496,7 +496,8 @@ function private.getRepInfo(info)
         end
 
 		if not processed and (IsFactionParagon(info.factionID)) then
-			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
+            local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon, paragonStorageLevel = GetFactionParagonInfo(info.factionID)
+            Debug:Info("ParagonInfo", "factionID: " .. info.factionID .. " currentValue: " .. (currentValue or "N/A") .. " threshold: " .. (threshold or "N/A") .. " rewardQuestID: " .. (rewardQuestID or "N/A") .. " hasRewardPending: " .. tostring(hasRewardPending) .. " tooLowLevelForParagon: " .. tostring(tooLowLevelForParagon) .. " paragonStorageLevel: " .. (paragonStorageLevel or "N/A"))
             if currentValue then
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
                 info["standingText"] = private.getFactionLabel("paragon")
