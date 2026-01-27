@@ -396,6 +396,7 @@ function private.getRepInfo(info)
             info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
             info["top"] = data.renownLevel * data.renownLevelThreshold
             info["current"] = data.renownReputationEarned or 0
+            info["currentValue"] = info.bottom + info.current
             info["maximum"] = data.renownLevelThreshold
             info["standingText"] = ("Stage " .. data.renownLevel)
             info["renown"] = data.renownLevel
@@ -442,6 +443,7 @@ function private.getRepInfo(info)
                 info["bottom"] = (data.renownLevel - 1) * data.renownLevelThreshold
                 info["top"] = data.renownLevel * data.renownLevelThreshold
                 info["current"] = isCapped and data.renownLevelThreshold or data.renownReputationEarned or 0
+                info["currentValue"] = info.bottom + info.current
                 info["maximum"] = data.renownLevelThreshold
                 info["standingText"] = RENOWN_LEVEL_LABEL:format(data.renownLevel)
                 info["renown"] = data.renownLevel
@@ -473,12 +475,14 @@ function private.getRepInfo(info)
                         end
                     end
                     info["current"] = mod(currentValue, threshold)
+                    info["currentValue"] = currentValue
                     info["maximum"] = threshold
                     info["bottom"] = info["bottom"] + paragonLevel * threshold
                     info["top"] = info["bottom"] + threshold
                 end
             else
                 info["current"] = 0
+                info["currentValue"] = 0
                 info["maximum"] = 0
                 info["standingText"] = RENOWN_LEVEL_LABEL
             end
@@ -487,6 +491,7 @@ function private.getRepInfo(info)
 
 		if not processed and (factionData.reaction == nil) then
             info["current"] = 0
+            info["currentValue"] = 0
             info["maximum"] = 0
             info["color"] = {r = 1, b = 0, g = 0}
             info["standingText"] = "??? - " .. (info.factionID .. "?")
@@ -516,6 +521,7 @@ function private.getRepInfo(info)
                     end
                 end
                 info["current"] = mod(currentValue, threshold)
+                info["currentValue"] = currentValue
                 info["maximum"] = threshold
                 info["bottom"] = info["top"] + paragonLevel * threshold
                 info["top"] = info["bottom"] + threshold
@@ -527,6 +533,7 @@ function private.getRepInfo(info)
         local rankInfo = GetFriendshipReputationRanks(info.factionID)
 		if not processed and (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
             info["current"] = 1
+            info["currentValue"] = 1
 			info["maximum"] = 1
             info["bottom"] = friendInfo.reactionThreshold
             info["top"] = friendInfo.reactionThreshold
@@ -535,14 +542,16 @@ function private.getRepInfo(info)
             info["maxLevel"] = rankInfo.maxLevel
             if (friendInfo.nextThreshold) then
                 info["current"] = friendInfo.standing - friendInfo.reactionThreshold
+                info["currentValue"] = friendInfo.standing
 				info["maximum"] = friendInfo.nextThreshold - friendInfo.reactionThreshold
                 info["top"] = friendInfo.nextThreshold
 			end
             processed = true
 		end
 
-        if not processed then
+        if not processed and factionData then
             info["current"] = factionData.currentStanding - info.bottom
+            info["currentValue"] = factionData.currentStanding
             info["maximum"] = info.top - info.bottom
             info["standingText"] = private.getFactionLabel(factionData.reaction)
             info["standingTextNext"] = (info.negative and factionData.reaction > 1 and _G["FACTION_STANDING_LABEL".. factionData.reaction - 1]) or (not info.negative and factionData.reaction < 8 and _G["FACTION_STANDING_LABEL".. factionData.reaction + 1]) or ""
@@ -680,9 +689,9 @@ function private.processAllFactions(factionInfo)
     local trackFaction
     for k, v in pairs(factions) do
         if v.id ~= delveFaction.factionID then
-            local currentOld = (v.info.current or 0) + (v.info.bottom or 0)
+            local currentOld = v.info.currentValue or 0
             local info = private.getRepInfo(v.info)
-            local change = (info.current or 0) + (info.bottom or 0) - currentOld
+            local change = (info.currentValue or 0) - currentOld
             if factionInfo.new and (change == 0) and (v.info.faction == factionInfo.faction) and (factionInfo.change ~= 0) then
                 change = factionInfo.change * ((factionInfo.negative and -1) or 1)
             end
@@ -754,9 +763,9 @@ function private.processFaction(faction, change)
                         Debug:Info("Faction Info Missing", "No reputation info found for " .. info.faction)
                         return
                     end
-                    local currentOld = currentInfo.current + currentInfo.bottom
+                    local currentOld = currentInfo.currentValue
                     info = private.getRepInfo(currentInfo)
-                    change = (info.current + info.bottom) - currentOld
+                    change = info.currentValue - currentOld
                     info["change"] = math.abs(change)
                     if change < 0 then
                         info["negative"] = true
@@ -823,8 +832,8 @@ function private.StandingUpdated(_, factionID, updatedStanding)
     if faction then
         local info = factions[faction] and factions[faction].info
         local change = 0
-        if info and info.current and info.bottom then
-            change = updatedStanding - info.current - info.bottom
+        if info and info.currentValue then
+            change = updatedStanding - info.currentValue
         end
         private.processFaction(faction, change)
 	end
