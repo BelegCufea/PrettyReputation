@@ -1,3 +1,8 @@
+# v1.5-alpha2 (28.1.2026)
+
+## Fix (possible)
+- Midnight lua errors when using `Show splash reputation`
+
 # v1.5-alpha (26.1.2026)
 
 ## Fix (possible)
