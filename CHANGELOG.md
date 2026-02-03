@@ -1,3 +1,8 @@
+# v1.5-alpha3 (3.2.2026)
+
+## Fix (possible)
+- Attempt to fix paragon reputation on alts
+
 # v1.5-alpha2 (28.1.2026)
 
 ## Fix (possible)

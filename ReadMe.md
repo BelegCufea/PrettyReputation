@@ -19,7 +19,9 @@ PS: If anyone is interested in taking over this addon (or using the code for ano
 - **Use at your own risk**: This is untested in live gameplay.
 - **Feedback**: Please report any further errors and I will try to squash them Soon™.
 
-<span style="color:#e03e2d">UPDATE: Jan 28, 2026</span> ⚠️ Alpha Release (v1.5-alpha2) I have fixed "Show splash reputation" Lua errors. Still this is an experimental release. Although it works fine on classic reputations, it is untesed on Renown and Paragon reputations.
+<span style="color:#e03e2d">UPDATE: Jan 28, 2026</span> ⚠️ Alpha Release (v1.5-alpha2) I have fixed "Show splash reputation" Lua errors. This is still an experimental release. Although it works fine on classic reputations, it is untested on Renown and Paragon reputations.
+
+<span style="color:#e03e2d">UPDATE: Feb 3, 2026</span> ⚠️ Alpha Release (v1.5-alpha3) Attempting to fix reputation gains for Paragon factions where the character has not yet reached Paragon level.
 
 
 ***

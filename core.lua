@@ -12,6 +12,7 @@ local SetWatchedFactionByID = C_Reputation.SetWatchedFactionByID
 local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
 local IsFactionParagon = C_Reputation.IsFactionParagon
+local IsFactionParagonForCurrentPlayer = C_Reputation.IsFactionParagonForCurrentPlayer
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
 local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks
 local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
@@ -332,7 +333,7 @@ function Addon:GetFactionColors(info, bar)
             local colorHigh = Options.ColorRenownHigh
             local colorParagon = Options.ColorParagon
             local paragonOverride = bar and Options.Bars.paragonColorOverride or Options.Reputation.paragonColorOverride
-            if paragonOverride and IsFactionParagon(info.factionID) then
+            if paragonOverride and IsFactionParagon(info.factionID) and IsFactionParagonForCurrentPlayer(info.factionID) then
                 return colorParagon, colorParagon
             end
             if level and maxLevel and maxLevel > 1 then
@@ -346,7 +347,7 @@ function Addon:GetFactionColors(info, bar)
             return colorLow, colorLow
 		end
 
-		if (IsFactionParagon(info.factionID)) then
+		if (IsFactionParagon(info.factionID) and IsFactionParagonForCurrentPlayer(info.factionID)) then
             local colorParagon = Options.ColorParagon
 			return colorParagon, colorParagon
 		end
@@ -428,7 +429,7 @@ function private.getRepInfo(info)
             info["isRenown"] = true
 			local data = GetMajorFactionData(info.factionID)
 			local isCapped = HasMaximumRenown(info.factionID)
-            local isParagon = IsFactionParagon(info.factionID)
+            local isParagon = IsFactionParagon(info.factionID) and IsFactionParagonForCurrentPlayer(info.factionID)
             local levels = GetRenownLevels(info.factionID)
             info["maxLevel"] = 0
             if levels then
@@ -495,7 +496,7 @@ function private.getRepInfo(info)
             processed = true
         end
 
-		if not processed and (IsFactionParagon(info.factionID)) then
+		if not processed and (IsFactionParagon(info.factionID) and IsFactionParagonForCurrentPlayer(info.factionID)) then
 			local currentValue, threshold, _, hasRewardPending = GetFactionParagonInfo(info.factionID);
             if currentValue then
                 local paragonLevel = (currentValue - (currentValue % threshold))/threshold
