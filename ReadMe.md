@@ -1,28 +1,11 @@
 # Pretty Reputation
 
 ***
+### <span style="color:#e03e2d">State of the addon for Midnight expansion</span>
 
-## <span style="color:#e03e2d">State of the addon for Midnight expansion</span>
+I’m not active in-game at the moment, but thanks to the help of [Lokir](https://legacy.curseforge.com/members/lokir), we’ve been able to test and prepare for the Midnight expansion.
 
-I am sorry to inform you that I am not currently playing WoW due to personal reasons.
-
-Unfortunately, Blizzard has restricted access to the specific values I use to monitor reputation changes, effectively making them "secret". Because the process I rely on to read this data is now broken, I won't be able to fix the addon for the foreseeable future.
-
-That said, if I find some free time, I may try to log in on a trial account to investigate potential workarounds. I would also need to find a reliable reputation farming spot to test any changes.
-
-I apologize for the inconvenience!
-
-PS: If anyone is interested in taking over this addon (or using the code for another project), you have my full permission and I will offer my full cooperation to help you understand the codebase (which is a mess).
-
-<span style="color:#e03e2d">UPDATE: Jan 26, 2026</span> ⚠️ Alpha Release (v1.5-alpha) I’m apparently too stubborn to let this go! I’ve released v1.5-alpha to address the Midnight Lua errors.
-
-- **Use at your own risk**: This is untested in live gameplay.
-- **Feedback**: Please report any further errors and I will try to squash them Soon™.
-
-<span style="color:#e03e2d">UPDATE: Jan 28, 2026</span> ⚠️ Alpha Release (v1.5-alpha2) I have fixed "Show splash reputation" Lua errors. This is still an experimental release. Although it works fine on classic reputations, it is untested on Renown and Paragon reputations.
-
-<span style="color:#e03e2d">UPDATE: Feb 3, 2026</span> ⚠️ Alpha Release (v1.5-alpha3) Attempting to fix reputation gains for Paragon factions where the character has not yet reached Paragon level.
-
+If you encounter any issues, please report them and I will try to fix them as soon as I can.
 
 ***
 

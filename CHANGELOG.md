@@ -1,3 +1,8 @@
+# v1.5 ()
+
+## Fix
+- Added support for Midnight (Big thanks to [Lokir](https://legacy.curseforge.com/members/lokir))
+
 # v1.5-alpha3 (3.2.2026)
 
 ## Fix (possible)
