@@ -1,3 +1,8 @@
+# v1.5.1 (8.7.2026)
+
+## Fix
+- Added delay on login to hopefully fix not loading propperly (reported and fix provided by [mermelmadness](https://github.com/mermelmadness))
+
 # v1.5 (7.2.2026)
 
 ## Fix

@@ -878,9 +878,14 @@ end
 
 function private.Initialize(event, isInitialLogin, isReloadingUi)
     if isInitialLogin or isReloadingUi then
-        private.setupFactions()
-        C_Timer.After(1, function() Addon:UpdateBars() end)
-        Addon:InitializeDataBroker()
+        local delay = isInitialLogin and 3 or 1
+        C_Timer.After(
+            delay,
+            function()
+                private.setupFactions()
+                Addon:UpdateBars()
+                Addon:InitializeDataBroker()
+            end)
     end
 end
 
