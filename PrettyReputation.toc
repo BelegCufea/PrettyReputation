@@ -1,8 +1,8 @@
-## Interface: 120007
+## Interface: 120105, 16001
 ## Title: Pretty Reputation
 ## IconTexture: Interface\AddOns\PrettyReputation\textures\icon
 ## Notes: Shows more info about your reputation gain
-## Version: 1.5.1
+## Version: 1.5.2
 ## Author: Cufea
 ## Category: Other
 ## Category-enUS: Other

@@ -1,7 +1,12 @@
+# v1.5.2 (6.11.2026)
+
+## Misc
+- Bumped TOC (12.1.5, 1.60.1)
+
 # v1.5.1 (8.7.2026)
 
 ## Fix
-- Added delay on login to hopefully fix not loading propperly (reported and fix provided by [mermelmadness](https://github.com/mermelmadness))
+- Added delay on login to hopefully fix not loading properly (reported and fix provided by [mermelmadness](https://github.com/mermelmadness))
 
 # v1.5 (7.2.2026)
 

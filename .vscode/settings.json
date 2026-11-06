@@ -222,5 +222,6 @@
     "Lua.diagnostics.disable": [
         "assign-type-mismatch"
     ],
-    "Lua.type.weakUnionCheck": true
+    "Lua.type.weakUnionCheck": true,
+    "stylua.targetReleaseVersion": "latest"
 }
