@@ -1,3 +1,8 @@
+# v1.5.3
+
+## Fix
+- Lua error in colour calculation (`bad argument #2 to 'max'`, `attempt to perform arithmetic on field 'r'`) for friendship factions with a single rank or at max rank (reported by [akgis32](https://github.com/akgis32) and [gryphon63](https://www.curseforge.com/members/gryphon63), #18)
+
 # v1.5.2 (6.11.2026)
 
 ## Misc

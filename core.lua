@@ -261,18 +261,20 @@ function private.getFactionLabel(standingId)
 end
 
 function private.rgbToHsv(colRGB)
-    local max, min = math.max(colRGB.r, colRGB.g, colRGB.b), math.min(colRGB.r, colRGB.g, colRGB.b)
+    -- missing components (empty or broken colour setting) count as 0
+    local r, g, b = colRGB and colRGB.r or 0, colRGB and colRGB.g or 0, colRGB and colRGB.b or 0
+    local max, min = math.max(r, g, b), math.min(r, g, b)
     local h, s, v = 0, 0, max
     local d = max - min
     s = max == 0 and 0 or d / max
 
     if max ~= min then
-        if max == colRGB.r then
-            h = (colRGB.g - colRGB.b) / d + (colRGB.g < colRGB.b and 6 or 0)
-        elseif max == colRGB.g then
-            h = (colRGB.b - colRGB.r) / d + 2
-        elseif max == colRGB.b then
-            h = (colRGB.r - colRGB.g) / d + 4
+        if max == r then
+            h = (g - b) / d + (g < b and 6 or 0)
+        elseif max == g then
+            h = (b - r) / d + 2
+        elseif max == b then
+            h = (r - g) / d + 4
         end
         h = h / 6
     end
@@ -281,7 +283,8 @@ function private.rgbToHsv(colRGB)
 end
 
 function private.hsvToRgb(colHSV)
-    local r, g, b
+    -- grey fallback when h is not a number (NaN from a 0/0 factor), so r/g/b are never nil
+    local r, g, b = colHSV.v, colHSV.v, colHSV.v
 
     local i = math.floor(colHSV.h / 60) % 6
     local f = (colHSV.h / 60) - math.floor(colHSV.h / 60)
@@ -301,6 +304,7 @@ function private.hsvToRgb(colHSV)
 end
 
 function private.interpolateColors(colRGB1, colRGB2, factor)
+    if factor ~= factor or factor == math.huge or factor == -math.huge then factor = 0 end -- NaN/inf (0/0, x/0)
     local colHSV1 = private.rgbToHsv(colRGB1)
     local colHSV2 = private.rgbToHsv(colRGB2)
     local h
@@ -354,9 +358,9 @@ function Addon:GetFactionColors(info, bar)
 
 		local friendInfo = GetFriendshipReputation(info.factionID)
 		if (friendInfo.friendshipFactionID and friendInfo.friendshipFactionID ~= 0) then
-            if level and maxLevel then
-                local colorLow = Options.ColorFriendLow
-                local colorHigh = Options.ColorFriendHigh
+            local colorLow = Options.ColorFriendLow
+            local colorHigh = Options.ColorFriendHigh
+            if level and maxLevel and maxLevel > 1 then
                 local color = private.interpolateColors(colorLow, colorHigh, (level-1)/(maxLevel-1))
                 local colorNext = color
                 if level < maxLevel then
@@ -364,7 +368,7 @@ function Addon:GetFactionColors(info, bar)
                 end
                 return color, colorNext
             end
-			return reputationColors[5], reputationColors[5]
+            return colorLow, colorLow
 		end
 
         if not factionData or (factionData.reaction == nil) then
