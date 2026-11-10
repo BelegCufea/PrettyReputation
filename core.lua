@@ -934,15 +934,23 @@ function private.chatCmdShowConfig(input)
     end
 end
 
+-- Default colour for a renown/friendship/paragon setting: a copy of the standing colour at index,
+-- never the same table (colour pickers edit r/g/b in place, so a shared table changed several colours at once)
+function Addon:CopyStandingColor(index)
+    local color = Options.Colors[index] or Const.REP_COLORS.wowproColors[index]
+    return { r = color.r, g = color.g, b = color.b }
+end
+
 function private.setInterpolateColors()
     local colorIndexLow     = Const.REP_COLOR_INDEX_LOW
     local colorIndexHigh    = Const.REP_COLOR_INDEX_HIGH
     local colorIndexParagon = Const.REP_COLOR_INDEX_PARAGON
-    Options.ColorRenownLow  = Options.ColorRenownLow  and next( Options.ColorRenownLow)  and Options.ColorRenownLow  or Options.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
-    Options.ColorRenownHigh = Options.ColorRenownHigh and next( Options.ColorRenownHigh) and Options.ColorRenownHigh or Options.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
-    Options.ColorFriendLow  = Options.ColorFriendLow  and next( Options.ColorFriendLow)  and Options.ColorFriendLow  or Options.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
-    Options.ColorFriendHigh = Options.ColorFriendHigh and next( Options.ColorFriendHigh) and Options.ColorFriendHigh or Options.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
-    Options.ColorParagon    = Options.ColorParagon    and next( Options.ColorParagon)    and Options.ColorParagon    or Options.Colors[colorIndexParagon] or Const.REP_COLORS.wowproColors[colorIndexParagon]
+    local function isSet(color) return color and color.r and color.g and color.b end
+    if not isSet(Options.ColorRenownLow)  then Options.ColorRenownLow  = Addon:CopyStandingColor(colorIndexLow)     end
+    if not isSet(Options.ColorRenownHigh) then Options.ColorRenownHigh = Addon:CopyStandingColor(colorIndexHigh)    end
+    if not isSet(Options.ColorFriendLow)  then Options.ColorFriendLow  = Addon:CopyStandingColor(colorIndexLow)     end
+    if not isSet(Options.ColorFriendHigh) then Options.ColorFriendHigh = Addon:CopyStandingColor(colorIndexHigh)    end
+    if not isSet(Options.ColorParagon)    then Options.ColorParagon    = Addon:CopyStandingColor(colorIndexParagon) end
 end
 
 function Addon:OpenOptions()

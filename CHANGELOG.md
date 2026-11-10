@@ -5,6 +5,7 @@
 - Lua error `attempt to concatenate field 'faction' (a nil value)`, which could happen even with Debug turned off (reported by Mermel, TheAngryIntern and Rhindle on CurseForge)
 - After losing reputation with a faction, later gains with it were shown as losses and subtracted from the session total until `/reload`
 - `/pr config` used a removed function to open the options; it now opens them like the minimap button does
+- Changing a renown, friendship or paragon colour also changed the matching standing colour (and the other way round), because they shared one colour table
 
 ## Misc
 - Zore's Scrolling Battle Text (ZSBT 2.4.0+) registers itself as a LibSink output, so it can be selected in Output. Mentioned in the FAQ and ReadMe (requested by evrithiki)

@@ -113,11 +113,11 @@ local function standingColorsSet(value)
     local colorIndexLow     = Const.REP_COLOR_INDEX_LOW
     local colorIndexHigh    = Const.REP_COLOR_INDEX_HIGH
     local colorIndexParagon = Const.REP_COLOR_INDEX_PARAGON
-    Addon.db.profile.ColorRenownLow  = Addon.db.profile.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
-    Addon.db.profile.ColorRenownHigh = Addon.db.profile.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
-    Addon.db.profile.ColorFriendLow  = Addon.db.profile.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
-    Addon.db.profile.ColorFriendHigh = Addon.db.profile.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
-    Addon.db.profile.ColorParagon    = Addon.db.profile.Colors[colorIndexParagon] or Const.REP_COLORS.wowproColors[colorIndexParagon]
+    Addon.db.profile.ColorRenownLow  = Addon:CopyStandingColor(colorIndexLow)
+    Addon.db.profile.ColorRenownHigh = Addon:CopyStandingColor(colorIndexHigh)
+    Addon.db.profile.ColorFriendLow  = Addon:CopyStandingColor(colorIndexLow)
+    Addon.db.profile.ColorFriendHigh = Addon:CopyStandingColor(colorIndexHigh)
+    Addon.db.profile.ColorParagon    = Addon:CopyStandingColor(colorIndexParagon)
 end
 
 local function contains_item(t, item)
