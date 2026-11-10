@@ -352,11 +352,7 @@ Addon.TAGS.Definition = {
     ["c_standingNext"] = {
         desc = "Shows next/previous (depending on gain or loss) standing/renown/paragon in that standing color",
         value = function(info)
-            if info.standingColorNext then
-                return info.standingColorNext .. combine(info, info.standingTextNext) .. "|r"
-            else
-                return combine(info, info.standingtextNext)
-            end
+            return (info.standingColorNext or "") .. combine(info, info.standingTextNext) .. "|r"
         end
     },
     ["standingNextShort"] = {
