@@ -592,7 +592,7 @@ end
 function Addon:ConstructMessage(info, pattern)
     if info == nil or info.name == nil then
         if info and info.faction and info.change then
-            Debug:Info("Faction not found", info.faction .. " [change: " .. (info.negative and "-" or "+") .. info.change .. "]")
+            Debug:Info("Faction not found", tostring(info.faction) .. " [change: " .. (info.negative and "-" or "+") .. tostring(info.change) .. "]")
         end
         Debug:Table("NotFound", info)
         return ""
@@ -637,7 +637,7 @@ function private.printReputation(info)
     if Options.Debug then
         info.prefix = ""
         info.suffix = ""
-        Debug:Table("Info_"..info.faction, info)
+        Debug:Table("Info_"..tostring(info.faction), info)
         local debug = {}
         local tkeys = {}
         for k in pairs(Tags.Definition) do table.insert(tkeys, k) end
@@ -645,7 +645,7 @@ function private.printReputation(info)
         for _, k in ipairs(tkeys) do
             debug[k] = Tags.Definition[k].value(info)
         end
-        Debug:Table("Tags_"..info.faction, debug)
+        Debug:Table("Tags_"..tostring(info.faction), debug)
     end
 end
 
@@ -691,7 +691,7 @@ function private.processAllFactions(factionInfo)
                 change = factionInfo.change * ((factionInfo.negative and -1) or 1)
             end
             if change ~= 0 then
-                Debug:Info("ProcessAllFactions", v.id .. " name: " .. v.info.faction .. " change: " .. change)
+                Debug:Info("ProcessAllFactions", tostring(v.id) .. " name: " .. tostring(v.info.faction) .. " change: " .. change)
                 info.change = math.abs(change)
                 info.negative = change < 0
                 local session = private.getFactionSession(info)
@@ -740,9 +740,9 @@ function private.processFaction(faction, change)
                 private.printReputation(info)
                 Addon:UpdateBars()
                 if factions[info.faction] then
-                    Debug:Info("New Faction", info.faction .. ((factions[info.faction].id and " found") or " not found"))
+                    Debug:Info("New Faction", tostring(info.faction) .. ((factions[info.faction].id and " found") or " not found"))
                 else
-                    Debug:Info("New Faction", info.faction .. " not initialized")
+                    Debug:Info("New Faction", tostring(info.faction) .. " not initialized")
                 end
             end)
         elseif (info.faction == delveFaction.name) and factions[delveFaction.name].info then
@@ -755,7 +755,7 @@ function private.processFaction(faction, change)
                 if info["change"] == 0 then
                     local currentInfo = factions[info.faction] and factions[info.faction].info
                     if currentInfo == nil then
-                        Debug:Info("Faction Info Missing", "No reputation info found for " .. info.faction)
+                        Debug:Info("Faction Info Missing", "No reputation info found for " .. tostring(info.faction))
                         return
                     end
                     local currentOld = (currentInfo.current or 0) + (currentInfo.bottom or 0)
