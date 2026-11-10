@@ -3,6 +3,12 @@
 ## New
 - Faction icons on WoW: Forever: the `[icon]` tag and bars use the icons from [Rep Rewards](https://www.curseforge.com/wow/addons/rep-rewards) when it is installed ([Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) is not available there). Faction Addict icons still take priority
 
+## Fix
+- WoW: Forever: characters with the same first name (but a different surname) on one realm shared their profile choice. Updated Ace3 to r1424-alpha (AceDB-3.0 40), which keys Forever characters by first name and surname. Your profile choice on Forever may reset once; the `Default` profile and its settings are not affected
+
+## Misc
+- Updated Ace3 libraries to r1424-alpha
+
 # v1.5.3 (10.11.2026)
 
 ## Fix
