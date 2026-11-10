@@ -762,9 +762,8 @@ function private.processFaction(faction, change)
                     info = private.getRepInfo(currentInfo)
                     change = (info.current or 0) + (info.bottom or 0) - currentOld
                     info["change"] = math.abs(change)
-                    if change < 0 then
-                        info["negative"] = true
-                    end
+                    -- info is the stored faction table, so set the flag both ways (a stale true showed later gains as losses)
+                    info["negative"] = change < 0
                 end
                 info = private.getFactionInfo(info)
                 private.printReputation(info)
