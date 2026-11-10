@@ -11,9 +11,14 @@
 - No more "+0" messages when the game reports a reputation update without an actual change, and the `[more]` tag no longer shows "inf" for a change of 0
 - The text bar (`[bar]`, `[c_bar]`) showed the wrong progress with a bar character other than the default `||` (e.g. double with `=`, broken with `█`)
 - Lua error when toggling messages (`/pr toggle`, `/pr enable`, `/pr disable`) in the first seconds after login
+- Splash mode no longer expands and re-collapses all Reputation panel headers on every reputation change (only when a new faction shows up)
+- Bar labels now follow colour changes right away instead of after the next reputation change
 
 ## Misc
 - Zore's Scrolling Battle Text (ZSBT 2.4.0+) registers itself as a LibSink output, so it can be selected in Output. Mentioned in the FAQ and ReadMe (requested by evrithiki)
+- With Debug on, Splash mode reports how many factions it checked and how long it took
+- Hidden bars are no longer updated in the background
+- Code cleanups from a code review
 
 # v1.5.2 (6.11.2026)
 
