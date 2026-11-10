@@ -768,7 +768,10 @@ function private.processFaction(faction, change)
                     info["negative"] = change < 0
                 end
                 info = private.getFactionInfo(info)
-                private.printReputation(info)
+                -- no change (duplicate event, capped friendship, collected paragon reward): keep the data, skip the "+0" message
+                if info.change and info.change ~= 0 then
+                    private.printReputation(info)
+                end
                 Addon:UpdateBars()
             end)
         end

@@ -301,7 +301,7 @@ Addon.TAGS.Definition = {
     ["more"] = {
         desc = "How many of this gain/loss to reach next/prevois standing",
         value = function(info)
-            if info.change then
+            if info.change and info.change ~= 0 then
                 if info.negative then
                     return combine(info, math.ceil(info.current/info.change))
                 else
