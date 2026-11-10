@@ -1,0 +1,5 @@
+# Local notes and AI working files (TODO.md, CLAUDE.md, code reviews, ...)
+*.md
+!CHANGELOG.md
+!ReadMe.md
+.claude/
