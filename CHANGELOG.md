@@ -10,7 +10,7 @@
 - The TEST button added the test change to the session gains (and bars), and could raise a Lua error when the test faction was unknown on the character. The test bar is still shown (for the bar timeout, or 60 seconds), but the session gains stay untouched, and TEST is disabled until a known faction is selected
 - No more "+0" messages when the game reports a reputation update without an actual change, and the `[more]` tag no longer shows "inf" for a change of 0
 - The text bar (`[bar]`, `[c_bar]`) showed the wrong progress with a bar character other than the default `||` (e.g. double with `=`, broken with `█`)
-- Lua error when toggling messages (`/pr toggle`, minimap button or options) in the first seconds after login
+- Lua error when toggling messages (`/pr toggle`, `/pr enable`, `/pr disable`) in the first seconds after login
 
 ## Misc
 - Zore's Scrolling Battle Text (ZSBT 2.4.0+) registers itself as a LibSink output, so it can be selected in Output. Mentioned in the FAQ and ReadMe (requested by evrithiki)
