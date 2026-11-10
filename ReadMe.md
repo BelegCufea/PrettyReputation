@@ -36,7 +36,7 @@ Locate the 'Pretty Reputation' section within the 'Options -> Addon' section, or
     - Choose an optimal character, and determine how many of these will form the bar.
     - Or use texture for the bar. Define its width and height.
 - Define colors for each reputation standing. Choose from several predefined color schemes.
-- Set your preferred output method (Chat, Floating text, etc.)
+- Set your preferred output method (Chat, Floating text, MikScrollingBattleText, Zore's Scrolling Battle Text, etc.)
 
 ---
 > Compose a message
