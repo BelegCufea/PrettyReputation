@@ -55,9 +55,9 @@ local function get_bar(info, colorFull, colorEmpty)
     if info.maximum == 0 then return "" end
     local barChar = Addon.db.profile.Reputation.barChar
     local barLen = Addon.db.profile.Reputation.barLength
-    local bar = string.rep(barChar, barLen)
-    local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barLen))
-    local percentBarText =  colorFull .. string.sub(bar, 0, percentBar * 2) .. "|r" .. colorEmpty .. string.sub(bar, percentBar * 2 + 1) .. "|r"
+    -- repeat whole characters (any length, including the escaped "||" and multibyte ones), clamped to the bar
+    local filled = math.max(0, math.min(barLen, math.floor(info.current / info.maximum * barLen)))
+    local percentBarText =  colorFull .. string.rep(barChar, filled) .. "|r" .. colorEmpty .. string.rep(barChar, barLen - filled) .. "|r"
     return "|W" .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "[|r" .. percentBarText .. Addon.CONST.MESSAGE_COLORS.BAR_EDGE .. "]|r|w"
 end
 
@@ -71,8 +71,9 @@ local function get_texture(info, colorFull, colorEmpty)
     local barHeight = Addon.db.profile.Reputation.barSolidHeight
     local barWidth = Addon.db.profile.Reputation.barSolidWidth
     local barOffset = Addon.db.profile.Reputation.barSolidOffset
-    local percentBar = math.floor((info.current / info.maximum * 100) / (100 / barWidth))
-    local textureSplit = math.floor((info.current / info.maximum) * textureWidth)
+    local progress = math.max(0, math.min(1, info.current / info.maximum)) -- no negative widths when current is outside 0..maximum
+    local percentBar = math.floor(progress * barWidth)
+    local textureSplit = math.floor(progress * textureWidth)
     local barTexture = LSM:Fetch("statusbar", Addon.db.profile.Reputation.barSolidTexture)
     local texture = "|T%s:%d:%d:0:%d:" .. textureWidth .. ":" .. textureHeight .. ":%d:%d:0:" .. textureHeight .. ":%d:%d:%d|t"
     local rF, gF, bF = tonumber("0x" .. string.sub(colorFull, 1, 2)), tonumber("0x" .. string.sub(colorFull, 3, 4)), tonumber("0x" .. string.sub(colorFull, 5, 6))
