@@ -153,11 +153,13 @@ function private.restoreRepHeaders(collapsed)
     end
 	for i = GetNumFactions(), 1, -1 do
         local factionData = GetFactionDataByIndex(i)
-		if (factionData.factionID == nil) then factionData.factionID = factionData.name	end
+        if factionData then -- the list can change under us (panel or another addon collapsing headers)
+            if (factionData.factionID == nil) then factionData.factionID = factionData.name end
 
-		if factionData.isHeader and collapsed[factionData.factionID] then
-            CollapseFactionHeader(i)
-		end
+            if factionData.isHeader and collapsed[factionData.factionID] then
+                CollapseFactionHeader(i)
+            end
+        end
 	end
 end
 
