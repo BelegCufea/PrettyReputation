@@ -558,19 +558,24 @@ function private.getRepInfo(info)
             processed = true
         end
 
-        info["color"], info["colorNext"] = Addon:GetFactionColors(info)
-        if info.color then
-            info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
-        else
-            info["standingColor"] = ""
-        end
-        if info.colorNext then
-            info["standingColorNext"] = ("|cff%.2x%.2x%.2x"):format(info.colorNext.r*255, info.colorNext.g*255, info.colorNext.b*255)
-        else
-            info["standingColorNext"] = ""
-        end
+        Addon:SetInfoColors(info)
 	end
     return info
+end
+
+-- (Re)compute the standing colours stored in info, e.g. after colour settings changed
+function Addon:SetInfoColors(info)
+    info["color"], info["colorNext"] = Addon:GetFactionColors(info)
+    if info.color then
+        info["standingColor"] = ("|cff%.2x%.2x%.2x"):format(info.color.r*255, info.color.g*255, info.color.b*255)
+    else
+        info["standingColor"] = ""
+    end
+    if info.colorNext then
+        info["standingColorNext"] = ("|cff%.2x%.2x%.2x"):format(info.colorNext.r*255, info.colorNext.g*255, info.colorNext.b*255)
+    else
+        info["standingColorNext"] = ""
+    end
 end
 
 function private.getFactionSession(info)

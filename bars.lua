@@ -132,7 +132,7 @@ local function Expired(info)
         expired = info and ((now - (info.lastUpdated or 0)) >= Options.Bars.removeAfter)
     end
 
-    if Options.FavoriteFactions[info.name] then
+    if info and Options.FavoriteFactions[info.name] then
         expired = false
     end
 
@@ -193,10 +193,13 @@ end
 
 function Bars:Update()
     if (not Options.Bars.enabled) or (not Options.Enabled) then
-            if Bars:IsEnabled() then Bars:Disable() end
+        if Bars:IsEnabled() then Bars:Disable() end
+        return -- hidden: don't build bars (the expiry timer is off); OnEnable updates them again
     end
+    if not BarsGroup then return end
     for k,v in pairs(factions) do
         if v.info and v.info.name and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
+            Addon:SetInfoColors(v.info) -- colour settings may have changed since this info was built
             local bar = v.bar
             if not bar then
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionID, nil, 0, 100)
@@ -298,6 +301,7 @@ function Bars:OnEnable()
 	if not expiredTimer then
 	    expiredTimer = Addon:ScheduleRepeatingTimer(Bars.RemoveExpired, 1)
     end
+    Bars:Update() -- catch up on changes made while the bars were off
 end
 
 function Bars:OnDisable()
