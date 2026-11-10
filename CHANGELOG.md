@@ -6,6 +6,7 @@
 - After losing reputation with a faction, later gains with it were shown as losses and subtracted from the session total until `/reload`
 - `/pr config` used a removed function to open the options; it now opens them like the minimap button does
 - Changing a renown, friendship or paragon colour also changed the matching standing colour (and the other way round), because they shared one colour table
+- The colour preset now switches to "Custom" as soon as a colour is changed (shown after the colour picker closes), not only after reopening the tab
 - The TEST button added the test change to the session gains (and bars), and could raise a Lua error when the test faction was unknown on the character. It now only prints the sample message, and is disabled until a known faction is selected
 
 ## Misc
