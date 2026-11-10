@@ -1,4 +1,4 @@
-# v1.6.0 (Unreleased)
+# v1.6.0 (10.11.2026)
 
 ## New
 - Faction icons on WoW: Forever: the `[icon]` tag and bars use the icons from [Rep Rewards](https://www.curseforge.com/wow/addons/rep-rewards) when it is installed ([Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) is not available there). Faction Addict icons still take priority
