@@ -13,9 +13,9 @@ Or
 - Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
 - Handles standard, renown, paragon and friendship reputations, and the Delver's Journey.
 - Also print the message in chosen chat frames (optionally with its own pattern) when the main output is something else.
-- Minimap icon/databroker:
-    - The broker text shows the watched faction, built from tags like the message (with Auto track on, that is the last changed one).
-    - The tooltip lists your reputations grouped by the Reputation panel headers (expansions on retail), with a Favorites group, tag-based columns (`[col]`/`[colr]` starts a new right-aligned column, `[colc]` a centered one, `[coll]` a left-aligned one) and collapsible groups. Click a faction to watch it, right-click to toggle favorite.
+- Minimap icon/databroker (set up on the `Broker` tab):
+    - The broker text shows your watched faction (with Auto track on, that is the last changed one).
+    - The tooltip lists all your reputations, grouped by expansion on retail (by the Reputation panel headers on WoW: Forever), with a Favorites group on top and groups you can open and close. Click a faction to watch it, right-click to toggle it as a favorite.
     - Session reputation gains or losses at the top or bottom of the tooltip.
 - Show on-screen bars with session reputation changes.
 - Pick <code>Favorite</code> factions to be always shown as on-screen bar (on the `Favorites` tab, or left-click a bar).
@@ -34,6 +34,7 @@ Chat commands: `/pr config` opens the options, `/pr toggle`, `/pr enable` and `/
 - Define your ideal bar to represent your reputation progress.
     - Choose an optimal character, and determine how many of these will form the bar.
     - Or use texture for the bar. Define its width and height.
+- On the `Broker` tab, build the broker text and the tooltip rows from tags, like the message. In tooltip rows, `[col]` or `[colr]` starts a new right-aligned column, `[colc]` a centered one and `[coll]` a left-aligned one. Choose which factions the tooltip lists (hide inactive, unlisted or maxed ones), and where and how the session gains show.
 - Define colors for each reputation standing, and color ranges for renown and friendship factions plus a paragon color. Choose from several predefined color schemes.
 - Faction icons (`[icon]` tag, bars) work for renown factions; install [Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) (retail) or [Rep Rewards](https://www.curseforge.com/wow/addons/rep-rewards) (WoW: Forever) to get icons for other factions.
 - Set your preferred output method (Chat, Floating text, MikScrollingBattleText, Zore's Scrolling Battle Text, etc.)
