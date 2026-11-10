@@ -630,7 +630,7 @@ function private.printReputation(info)
         end
     end
 
-    if Options.Track and not Options.Splash then
+    if Options.Track and not Options.Splash and not info.test then
         private.trackFaction(info)
     end
 
@@ -892,18 +892,26 @@ function private.Initialize(event, isInitialLogin, isReloadingUi)
     end
 end
 
+-- Print a sample message for the test faction. Uses its own info table, so the stored
+-- faction data, session gains, bars and the watched faction are left untouched.
 function Addon:Test()
     if not Options.Enabled then return end
-    local faction, change = Options.Test.faction, Options.Test.change
-    local session = factions[faction].session
-    local splash = Options.Splash
-    Options.Splash = false
-    private.processFaction(faction, change)
-    Options.Splash = splash
-    factions[faction].session = session
-    if factions[faction].info and factions[faction].info.session then
-        factions[faction].info.session = session
+    local faction, change = Options.Test.faction, tonumber(Options.Test.change) or 0
+    local stored = faction and factions[faction]
+    if not stored or not stored.id then
+        Addon:Print("Test faction " .. tostring(faction) .. " is not known on this character.")
+        return
     end
+    local info = {
+        faction = faction,
+        factionID = stored.id,
+        change = math.abs(change),
+        negative = change < 0,
+        session = (stored.session or 0) + change,
+        lastUpdated = time(),
+        test = true,
+    }
+    private.printReputation(private.getRepInfo(info))
 end
 
 function private.chatCmdShowConfig(input)

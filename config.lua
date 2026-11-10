@@ -183,11 +183,7 @@ end
 local function getFactions(type)
     local list = {}
 
-    local found
-
     for k,v in pairs(factions) do
-        if not found then found = k end
-        if k == Addon.db.profile.Test.faction then found = k end
         if type == "all" or searchQuery == "" or string.find(string.lower(k), string.lower(searchQuery)) then
             if v and v.blizzFix then
                 if type == "all" or type == "blizzFix" then
@@ -199,11 +195,6 @@ local function getFactions(type)
         end
     end
 
-    if type == "all" and not list["Darkmoon Faire"] then
-        list["Darkmoon Faire"] = "Darkmoon Faire"
-    end
-    Addon.db.profile.Test.faction = found
-    table.sort(list)
     return list
 end
 
@@ -1211,7 +1202,10 @@ local options = {
                     order = 940,
                     name = 'TEST',
                     width = "half",
-                    disabled = function() return not Addon.db.profile.Enabled end,
+                    disabled = function()
+                        local faction = Addon.db.profile.Test.faction
+                        return not Addon.db.profile.Enabled or not (faction and factions[faction])
+                    end,
                     func = function() Addon:Test() end,
                 },
             },
