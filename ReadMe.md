@@ -15,8 +15,8 @@ Or
 - Also print the message in chosen chat frames (optionally with its own pattern) when the main output is something else.
 - Minimap icon/databroker (set up on the `Broker` tab):
     - The broker text shows your watched faction (with Auto track on, that is the last changed one).
-    - The tooltip lists all your reputations, grouped by expansion on retail (by the Reputation panel headers on WoW: Forever), with a Favorites group on top and groups you can open and close. Click a faction to watch it, right-click to toggle it as a favorite.
-    - Session reputation gains or losses at the top or bottom of the tooltip.
+    - The tooltip shows your session reputation gains and losses, with their current standing and progress (at the top or bottom, sorted as you like).
+    - Optionally (on by default, can be turned off), it also lists all your reputations, grouped by expansion on retail (by the Reputation panel headers on WoW: Forever), with a Favorites group on top and groups you can open and close. Click a faction to watch it, right-click to toggle it as a favorite.
 - Show on-screen bars with session reputation changes.
 - Pick <code>Favorite</code> factions to be always shown as on-screen bar (on the `Favorites` tab, or left-click a bar).
 - Set the faction with the latest reputation change as watched (optionally gains only, with or without your guild).

@@ -202,7 +202,11 @@
         "EXPANSION_NAME7",
         "EXPANSION_NAME8",
         "EXPANSION_NAME9",
-        "EXPANSION_NAME10"
+        "EXPANSION_NAME10",
+        "BACKDROP_SLIDER_8_8",
+        "TooltipBackdropTemplateMixin",
+        "NineSlicePanelMixin",
+        "ChatFrameUtil"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
