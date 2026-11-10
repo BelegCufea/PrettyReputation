@@ -163,11 +163,19 @@ function private.restoreRepHeaders(collapsed)
 	end
 end
 
-function private.setupIcons() -- FactionAddict
-    if not FactionAddictGT or not FactionAddictGT.FactionData then return end
-    for factionID, data in pairs(FactionAddictGT.FactionData) do
-        icons[factionID] = data.icon
+-- faction icons from optional addons, first source wins: FactionAddict (retail), Rep Rewards (Forever)
+function private.addIcons(factionData)
+    if type(factionData) ~= "table" then return end
+    for factionID, data in pairs(factionData) do
+        if type(data) == "table" and data.icon and not icons[factionID] then
+            icons[factionID] = data.icon
+        end
     end
+end
+
+function private.setupIcons()
+    private.addIcons(FactionAddictGT and FactionAddictGT.FactionData)
+    private.addIcons(RepRewards_Data and RepRewards_Data.factions)
 end
 
 function private.setupFaction(factionData)
@@ -200,7 +208,7 @@ function private.setupFactions()
     if IsInGuild() then
         guildname = GetGuildInfo("player")
     end
-    -- load FactionAddict Icons
+    -- load icons from FactionAddict / Rep Rewards
     if next(icons) == nil then private.setupIcons() end
     do -- itterate major factions reputations
         for _, factionId in ipairs(GetMajorFactionIDs()) do

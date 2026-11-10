@@ -32,7 +32,7 @@ Chat commands: `/pr config` opens the options, `/pr toggle`, `/pr enable` and `/
     - Choose an optimal character, and determine how many of these will form the bar.
     - Or use texture for the bar. Define its width and height.
 - Define colors for each reputation standing, and color ranges for renown and friendship factions plus a paragon color. Choose from several predefined color schemes.
-- Faction icons (`[icon]` tag, bars) work for renown factions; install [Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) to get icons for all factions.
+- Faction icons (`[icon]` tag, bars) work for renown factions; install [Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) (retail) or [Rep Rewards](https://www.curseforge.com/wow/addons/rep-rewards) (WoW: Forever) to get icons for other factions.
 - Set your preferred output method (Chat, Floating text, MikScrollingBattleText, Zore's Scrolling Battle Text, etc.)
 
 ---
