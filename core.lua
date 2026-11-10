@@ -38,6 +38,7 @@ local Bars = Addon.Bars
 local Options
 
 local factionPanelFix = true
+local lastNumFactions -- Reputation panel rows after the last setupFactions (headers restored)
 local guildname
 local private = {}
 local icons = {}
@@ -210,6 +211,7 @@ function private.setupFactions()
             private.setupFaction(GetFactionDataByIndex(i))
         end
         private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
+        lastNumFactions = GetNumFactions()
     end
     do -- delves
         local info = GetCurrencyInfo(delveFaction.currencyID)
@@ -681,10 +683,12 @@ end
 
 function private.processAllFactions(factionInfo)
     -- OK, need to run even if Options.Enabled is false to avoid wrong session gains
-    --debugprofilestart()
+    local startTime = Options.Debug and debugprofilestop() -- ms timestamp; doesn't reset the shared profiler like debugprofilestart
+    local checked = 0
     local trackFaction
     for k, v in pairs(factions) do
         if v.id ~= delveFaction.factionID then
+            checked = checked + 1
             local currentOld = (v.info.current or 0) + (v.info.bottom or 0)
             local info = private.getRepInfo(v.info)
             local change = (info.current or 0) + (info.bottom or 0) - currentOld
@@ -711,8 +715,9 @@ function private.processAllFactions(factionInfo)
     end
     if trackFaction then private.trackFaction(trackFaction) end
     Debug:Table("Factions", factions)
-    --local elapsedTime = debugprofilestop()
-    --Debug:Info("EllapsedTime", elapsedTime .. " ms")
+    if startTime then
+        Debug:Info("ProcessAllFactions", ("%d factions checked in %.1f ms"):format(checked, debugprofilestop() - startTime))
+    end
 end
 
 function private.processFaction(faction, change)
@@ -777,7 +782,9 @@ function private.processFaction(faction, change)
         end
     else
         C_Timer.After(0.3, function()
-            private.setupFactions()
+            -- the full scan expands and re-collapses the reputation headers, so run it only for a new faction
+            -- or when the Reputation panel gained rows (a faction discovered through a splash)
+            if info.new or GetNumFactions() ~= lastNumFactions then private.setupFactions() end
             private.processAllFactions(info)
             Addon:UpdateBars()
         end)
