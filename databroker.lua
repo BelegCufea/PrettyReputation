@@ -48,7 +48,10 @@ function private.SetLabelText()
     else
         ldbLabelText = Addon.CONST.MESSAGE_COLORS.NEGATIVE .. "Disabled" .. "|r"
     end
-    Addon.BrokerModule.text = ldbLabelText
+    -- the broker is created a few seconds after login; InitializeDataBroker sets the text then
+    if Addon.BrokerModule then
+        Addon.BrokerModule.text = ldbLabelText
+    end
 end
 
 function private.AddSessionGains(tooltip)
