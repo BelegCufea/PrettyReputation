@@ -7,7 +7,7 @@
 - `/pr config` used a removed function to open the options; it now opens them like the minimap button does
 - Changing a renown, friendship or paragon colour also changed the matching standing colour (and the other way round), because they shared one colour table
 - The colour preset now switches to "Custom" as soon as a colour is changed (shown after the colour picker closes), not only after reopening the tab
-- The TEST button added the test change to the session gains (and bars), and could raise a Lua error when the test faction was unknown on the character. It now only prints the sample message, and is disabled until a known faction is selected
+- The TEST button added the test change to the session gains (and bars), and could raise a Lua error when the test faction was unknown on the character. The test bar is still shown (for the bar timeout, or 60 seconds), but the session gains stay untouched, and TEST is disabled until a known faction is selected
 
 ## Misc
 - Zore's Scrolling Battle Text (ZSBT 2.4.0+) registers itself as a LibSink output, so it can be selected in Output. Mentioned in the FAQ and ReadMe (requested by evrithiki)

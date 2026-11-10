@@ -581,6 +581,7 @@ function private.getFactionInfo(info)
         factions[info.faction].session = session
         info["lastUpdated"] = time()
         info["session"] = session
+        info.test, info.testOf = nil, nil -- a real change replaces a running test
         Debug:Table("Info_BeforeUpdate_"..info.faction, info)
         if Options.Enabled then
             factions[info.faction].info = private.getRepInfo(info)
@@ -698,6 +699,7 @@ function private.processAllFactions(factionInfo)
                 factions[info.faction].session = session
                 info.session = session
                 info.lastUpdated = time()
+                info.test, info.testOf = nil, nil -- a real change replaces a running test
                 private.printReputation(info)
                 if not trackFaction then
                     trackFaction = info
@@ -892,8 +894,9 @@ function private.Initialize(event, isInitialLogin, isReloadingUi)
     end
 end
 
--- Print a sample message for the test faction. Uses its own info table, so the stored
--- faction data, session gains, bars and the watched faction are left untouched.
+-- Print a sample message for the test faction and show it on the bars. The test info temporarily
+-- replaces the faction's info (keeping the real one in testOf); Bars:RemoveExpired puts the real
+-- one back when the test bar expires. The session counter and the watched faction are not touched.
 function Addon:Test()
     if not Options.Enabled then return end
     local faction, change = Options.Test.faction, tonumber(Options.Test.change) or 0
@@ -911,7 +914,15 @@ function Addon:Test()
         lastUpdated = time(),
         test = true,
     }
-    private.printReputation(private.getRepInfo(info))
+    info = private.getRepInfo(info)
+    private.printReputation(info)
+    -- only when a test bar can show; Bars:RemoveExpired restores the real info from that bar
+    if info.name and change ~= 0 and Options.Bars.enabled then
+        local real = stored.info
+        info.testOf = real and (real.test and real.testOf or real) -- repeated tests keep the real info
+        stored.info = info
+        Addon:UpdateBars()
+    end
 end
 
 function private.chatCmdShowConfig(input)

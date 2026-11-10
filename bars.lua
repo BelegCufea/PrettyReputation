@@ -153,12 +153,26 @@ local function OnClick(bar, button)
     end
 end
 
+-- TEST bars stay for removeAfter seconds, or 60 when that is 0 (favorites included)
+local function TestExpired(info)
+    local limit = (Options.Bars.removeAfter > 0) and Options.Bars.removeAfter or 60
+    return (time() - (info.lastUpdated or 0)) >= limit
+end
+
 function Bars:RemoveExpired()
     local needsUpdate = false
     for i = #bars, 1, -1 do
         local name = bars[i]
         local faction = factions[name]
         local info =  faction and faction.info
+        if info and info.test and TestExpired(info) then
+            -- put the real info back (see Addon:Test)
+            faction.info = info.testOf or info
+            info.test, info.testOf = nil, nil
+            if faction.info == info then info.session = faction.session end
+            info = faction.info
+            needsUpdate = true
+        end
         local remove = Expired(info)
         if remove then
             if faction.bar then
