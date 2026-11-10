@@ -13,6 +13,7 @@ local GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local IsMajorFaction = C_Reputation.IsMajorFaction
 local IsFactionParagon = C_Reputation.IsFactionParagon
 local IsFactionParagonForCurrentPlayer = C_Reputation.IsFactionParagonForCurrentPlayer
+local IsFactionActive = C_Reputation.IsFactionActive
 local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
 local GetFriendshipReputationRanks = C_GossipInfo.GetFriendshipReputationRanks
 local GetMajorFactionIDs = C_MajorFactions.GetMajorFactionIDs
@@ -95,6 +96,26 @@ local AddonDB_Defaults = {
             paragonColorOverride = true,
             patternLeft = "[nc_name][{ |}renownLevelNoParagon{|}][{ x}paragonLevel] ([current] / [next])",
             patternRight = "[c_session]",
+        },
+        Broker = {
+            textMode = "faction", -- "faction" (watched or last changed) or "status" (Enabled/Disabled)
+            textPattern = "[c_name] [c_standing] [current]/[next] ([currentPercent])",
+            showList = true,
+            grouping = "headers", -- "headers" (Reputation panel, expansions on retail) or "none"
+            favoritesGroup = true,
+            changedFirst = true,
+            hideInactive = true,
+            hideHidden = true, -- factions that are not in the Reputation panel
+            hideMaxed = false,
+            rowPattern = "[icon] [c_name][col][c_standing][col][current] / [next][col][c_barTexture]",
+            collapsed = {}, -- group name -> true/false, nil = default (first group open)
+            sessionShow = true,
+            sessionPosition = "top",
+            sessionSort = "session",
+            sessionWindow = 0, -- seconds since the last change, 0 = whole session
+            sessionFavorites = false,
+            sessionPattern = "[icon] [nc_name][col][c_session]",
+            maxHeight = 600,
         },
         Test = {
             faction = "Darkmoon Faire",
@@ -217,8 +238,20 @@ function private.setupFactions()
     end
     do -- itterate Reputation panel reputations
         local collapsedHeaders = private.saveRepHeaders() -- pretty please make all factions visible
+        local topHeader -- top-level panel header (on retail these are the expansions), used by the broker tooltip
         for i=1, GetNumFactions() do
-            private.setupFaction(GetFactionDataByIndex(i))
+            local factionData = GetFactionDataByIndex(i)
+            if factionData and factionData.isHeader and not factionData.isChild then
+                topHeader = factionData.name
+            end
+            private.setupFaction(factionData)
+            local faction = factionData and factionData.name and factions[factionData.name]
+            if faction then
+                faction.order = i
+                faction.header = topHeader
+                faction.isHeader = factionData.isHeader and not factionData.isHeaderWithRep -- pure header, no reputation
+                faction.inactive = IsFactionActive and not IsFactionActive(i) or false
+            end
         end
         private.restoreRepHeaders(collapsedHeaders) -- restore collapsed faction headers
         lastNumFactions = GetNumFactions()
@@ -230,6 +263,9 @@ function private.setupFactions()
             delveFaction.factionID = factionId
             delveFaction.name = info.name
             private.setupFaction(delveFaction)
+            if factions[delveFaction.name] then
+                factions[delveFaction.name].special = true -- not in the Reputation panel, but a real one
+            end
         end
     end
     do -- "WTF why is Blizz not listing all factions in Reputation panel" temporary onetime FIX
@@ -571,6 +607,32 @@ function private.getRepInfo(info)
     return info
 end
 
+-- Fresh reputation info for display (broker), without touching the stored info: splash mode finds changes
+-- by comparing against the stored values, so they must only change when a change is processed
+-- factionID is used when the faction isn't scanned yet (e.g. the watched faction right after discovering it)
+function Addon:GetFreshInfo(name, factionID)
+    local faction = factions[name] or {}
+    factionID = faction.id or factionID
+    if not factionID then return nil end
+    local stored = faction.info or {}
+    local info = {
+        faction = name,
+        factionID = factionID,
+        change = stored.change or 0,
+        negative = stored.negative,
+        session = faction.session or 0,
+        lastUpdated = faction.lastChange,
+        expansionID = stored.expansionID,
+    }
+    info = private.getRepInfo(info)
+    if not info.name or not info.standingColor then return nil end
+    return info
+end
+
+function Addon:GetDelveFactionID()
+    return delveFaction.factionID
+end
+
 -- (Re)compute the standing colours stored in info, e.g. after colour settings changed
 function Addon:SetInfoColors(info)
     info["color"], info["colorNext"] = Addon:GetFactionColors(info)
@@ -596,6 +658,7 @@ function private.getFactionInfo(info)
         info["factionID"] = factionID
         local session = private.getFactionSession(info)
         factions[info.faction].session = session
+        factions[info.faction].lastChange = time() -- unlike info.lastUpdated, the bars never reset this
         info["lastUpdated"] = time()
         info["session"] = session
         info.test, info.testOf = nil, nil -- a real change replaces a running test
@@ -694,6 +757,7 @@ function Addon:UpdateBars()
     end
 
     Bars:Update()
+    Addon:UpdateDataBrokerText()
 end
 
 function private.processAllFactions(factionInfo)
@@ -716,6 +780,7 @@ function private.processAllFactions(factionInfo)
                 info.negative = change < 0
                 local session = private.getFactionSession(info)
                 factions[info.faction].session = session
+                factions[info.faction].lastChange = time()
                 info.session = session
                 info.lastUpdated = time()
                 info.test, info.testOf = nil, nil -- a real change replaces a running test
@@ -872,6 +937,7 @@ end
 
 -- more Delver's Journey processing
 function private.UpdateFaction()
+    Addon:UpdateDataBrokerText() -- the watched faction may have changed
     local uiMapID = GetBestMapForUnit("player")
     if not IsDelveInProgress() and not IsDelveComplete() and not delveFaction.maps[uiMapID] then return end
     C_Timer.After(0.5, function()

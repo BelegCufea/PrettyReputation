@@ -313,7 +313,7 @@ Addon.TAGS.Definition = {
         end
     },
     ["icon"] = {
-        desc = "Show faction icon if available (all, if Faction Addict is installed - see About)",
+        desc = "Show faction icon if available (more factions with Faction Addict or Rep Rewards installed - see About)",
         value = function(info)
             if info.icon then
                 if Addon.db.profile.Reputation.iconStyle == 'clean' then
@@ -370,6 +370,22 @@ Addon.TAGS.Definition = {
                 return combine(info, first_letters(info.standingTextNext, Addon.db.profile.Reputation.shortCharCount))
             end
         end
+    },
+    ["col"] = {
+        desc = "Starts a new right-aligned column in the broker tooltip rows (a space elsewhere)",
+        value = function(info) return " " end
+    },
+    ["colr"] = {
+        desc = "Starts a new right-aligned column in the broker tooltip rows (a space elsewhere)",
+        value = function(info) return " " end
+    },
+    ["colc"] = {
+        desc = "Starts a new centered column in the broker tooltip rows (a space elsewhere)",
+        value = function(info) return " " end
+    },
+    ["coll"] = {
+        desc = "Starts a new left-aligned column in the broker tooltip rows (a space elsewhere)",
+        value = function(info) return " " end
     },
     ["level"] = {
         desc = "Shows current level of friendship reputation",

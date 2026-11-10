@@ -2,6 +2,9 @@
 
 ## New
 - Faction icons on WoW: Forever: the `[icon]` tag and bars use the icons from [Rep Rewards](https://www.curseforge.com/wow/addons/rep-rewards) when it is installed ([Faction Addict](https://www.curseforge.com/wow/addons/faction-addict) is not available there). Faction Addict icons still take priority
+- Broker text: shows the watched faction from a tag pattern, instead of Enabled/Disabled (still shown while no faction is watched, and available as an option on the `Broker` tab)
+- Broker tooltip (now [LibQTip-1.0](https://www.curseforge.com/wow/addons/libqtip-1-0)): your reputations grouped by the Reputation panel headers (expansions on retail) or in one list, with a Favorites group, collapsible groups and tag-driven columns (new `[col]`/`[colr]`, `[colc]` and `[coll]` tags for right, centered and left-aligned columns). Click a faction to watch it, right-click to toggle favorite. Options to put changed factions on top and hide inactive, unlisted or maxed factions
+- Session gains/losses in the tooltip got their own options: show/hide, top/bottom, sort, time window, include favorites and a row pattern. They replace "Sort minimap/databroker tooltip by" on the General tab
 
 ## Fix
 - WoW: Forever: characters with the same first name (but a different surname) on one realm shared their profile choice. Updated Ace3 to r1424-alpha (AceDB-3.0 40), which keys Forever characters by first name and surname. Your profile choice on Forever may reset once; the `Default` profile and its settings are not affected

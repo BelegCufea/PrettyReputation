@@ -13,7 +13,10 @@ Or
 - Print a configurable message about the reputation change in your preferred output. There are many options for setting up your message.
 - Handles standard, renown, paragon and friendship reputations, and the Delver's Journey.
 - Also print the message in chosen chat frames (optionally with its own pattern) when the main output is something else.
-- Track session reputation gains or losses on the minimap icon/databroker.
+- Minimap icon/databroker:
+    - The broker text shows the watched faction, built from tags like the message (with Auto track on, that is the last changed one).
+    - The tooltip lists your reputations grouped by the Reputation panel headers (expansions on retail), with a Favorites group, tag-based columns (`[col]`/`[colr]` starts a new right-aligned column, `[colc]` a centered one, `[coll]` a left-aligned one) and collapsible groups. Click a faction to watch it, right-click to toggle favorite.
+    - Session reputation gains or losses at the top or bottom of the tooltip.
 - Show on-screen bars with session reputation changes.
 - Pick <code>Favorite</code> factions to be always shown as on-screen bar (on the `Favorites` tab, or left-click a bar).
 - Set the faction with the latest reputation change as watched (optionally gains only, with or without your guild).

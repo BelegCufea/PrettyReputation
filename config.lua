@@ -224,6 +224,20 @@ local function SetBarsOptions()
     Addon:UpdateBars()
 end
 
+local function BrokerGet(key)
+    return function() return Addon.db.profile.Broker[key] end
+end
+
+local function BrokerSet(key)
+    return function(_, value)
+        Addon.db.profile.Broker[key] = value
+        Addon:UpdateDataBrokerText()
+    end
+end
+
+local function BrokerListDisabled() return not Addon.db.profile.Broker.showList end
+local function BrokerSessionDisabled() return not Addon.db.profile.Broker.sessionShow end
+
 local options = {
 	name = AddonTitle,
 	type = "group",
@@ -335,20 +349,6 @@ local options = {
                                     disabled = function() return not (Addon.db.profile.Track) end
                                 }
                             }
-                        },
-                        Tooltip = {
-                            type = "select",
-                            order = 5,
-                            name = "Sort minimap/databroker tooltip by",
-                            values = {
-                                ["value"] = "Session gain/loss",
-                                ["faction"] = "Faction name",
-                            },
-                            style = "dropdown",
-                            get = function(info) return Addon.db.profile.TooltipSort end,
-                            set = function(info, value)
-                                Addon.db.profile.TooltipSort = value
-                            end,
                         },
                         Seperator1 = { type = "description", order = 6, fontSize = "small",name = "",width = "full", },
                         Debug = {
@@ -946,6 +946,223 @@ local options = {
                                 Addon.db.profile.Bars.paragonColorOverride = value
                                 SetBarsOptions()
                             end
+                        },
+                    },
+                },
+                Broker = {
+                    type = "group",
+                    order = 45,
+                    name = "Broker",
+                    args = {
+                        Text = {
+                            type = "group",
+                            order = 10,
+                            name = "Broker text",
+                            inline = true,
+                            args = {
+                                Mode = {
+                                    type = "select",
+                                    order = 10,
+                                    name = "Show",
+                                    desc = "Faction: the faction watched in the game (with Auto track on the General tab, that is the last changed one). Shows Enabled / Disabled while no faction is watched.",
+                                    values = {
+                                        ["faction"] = "Faction",
+                                        ["status"] = "Enabled / Disabled",
+                                    },
+                                    style = "dropdown",
+                                    get = BrokerGet("textMode"),
+                                    set = BrokerSet("textMode"),
+                                },
+                                Pattern = {
+                                    type = "input",
+                                    order = 20,
+                                    name = "pattern",
+                                    desc = "Tags as in the message pattern",
+                                    width = "full",
+                                    disabled = function() return Addon.db.profile.Broker.textMode ~= "faction" end,
+                                    get = BrokerGet("textPattern"),
+                                    set = BrokerSet("textPattern"),
+                                },
+                            },
+                        },
+                        List = {
+                            type = "group",
+                            order = 20,
+                            name = "Tooltip: reputations",
+                            inline = true,
+                            args = {
+                                Show = {
+                                    type = "toggle",
+                                    order = 10,
+                                    name = "Show",
+                                    get = BrokerGet("showList"),
+                                    set = BrokerSet("showList"),
+                                },
+                                Grouping = {
+                                    type = "select",
+                                    order = 20,
+                                    name = "Group by",
+                                    desc = "Reputation panel headers are the expansions on retail. Click a group in the tooltip to open or close it.",
+                                    values = {
+                                        ["headers"] = "Reputation panel headers",
+                                        ["none"] = "No groups",
+                                    },
+                                    style = "dropdown",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("grouping"),
+                                    set = BrokerSet("grouping"),
+                                },
+                                ResetGroups = {
+                                    type = "execute",
+                                    order = 25,
+                                    name = "Reset open groups",
+                                    desc = "Favorites and the first group open, the rest closed",
+                                    disabled = BrokerListDisabled,
+                                    func = function() wipe(Addon.db.profile.Broker.collapsed) end,
+                                },
+                                Favorites = {
+                                    type = "toggle",
+                                    order = 30,
+                                    name = "Favorites group on top",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("favoritesGroup"),
+                                    set = BrokerSet("favoritesGroup"),
+                                },
+                                ChangedFirst = {
+                                    type = "toggle",
+                                    order = 40,
+                                    name = "Changes on top",
+                                    desc = "Factions that changed this session come first in their group",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("changedFirst"),
+                                    set = BrokerSet("changedFirst"),
+                                },
+                                HideInactive = {
+                                    type = "toggle",
+                                    order = 50,
+                                    name = "Hide inactive",
+                                    desc = "Hide factions moved to Inactive in the Reputation panel",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("hideInactive"),
+                                    set = BrokerSet("hideInactive"),
+                                },
+                                HideHidden = {
+                                    type = "toggle",
+                                    order = 60,
+                                    name = "Hide unlisted",
+                                    desc = "Hide factions the game doesn't list in the Reputation panel",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("hideHidden"),
+                                    set = BrokerSet("hideHidden"),
+                                },
+                                HideMaxed = {
+                                    type = "toggle",
+                                    order = 70,
+                                    name = "Hide maxed",
+                                    desc = "Hide factions at the highest standing without paragon (favorites and session changes are always shown)",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("hideMaxed"),
+                                    set = BrokerSet("hideMaxed"),
+                                },
+                                Pattern = {
+                                    type = "input",
+                                    order = 80,
+                                    name = "row pattern",
+                                    desc = "Tags as in the message pattern; [col] or [colr] starts a new right-aligned column, [colc] a centered one, [coll] a left-aligned one",
+                                    width = "full",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("rowPattern"),
+                                    set = BrokerSet("rowPattern"),
+                                },
+                            },
+                        },
+                        Session = {
+                            type = "group",
+                            order = 30,
+                            name = "Tooltip: session gains/losses",
+                            inline = true,
+                            args = {
+                                Show = {
+                                    type = "toggle",
+                                    order = 10,
+                                    name = "Show",
+                                    get = BrokerGet("sessionShow"),
+                                    set = BrokerSet("sessionShow"),
+                                },
+                                Position = {
+                                    type = "select",
+                                    order = 20,
+                                    name = "Position",
+                                    values = {
+                                        ["top"] = "Top",
+                                        ["bottom"] = "Bottom",
+                                    },
+                                    style = "dropdown",
+                                    disabled = BrokerSessionDisabled,
+                                    get = BrokerGet("sessionPosition"),
+                                    set = BrokerSet("sessionPosition"),
+                                },
+                                Sort = {
+                                    type = "select",
+                                    order = 30,
+                                    name = "Sort by",
+                                    values = {
+                                        ["faction"] = "Faction name",
+                                        ["session"] = "Session gain/loss",
+                                        ["overall"] = "Overall reputation value",
+                                        ["recent"] = "Time of last change",
+                                    },
+                                    style = "dropdown",
+                                    disabled = BrokerSessionDisabled,
+                                    get = BrokerGet("sessionSort"),
+                                    set = BrokerSet("sessionSort"),
+                                },
+                                Window = {
+                                    type = "range",
+                                    order = 40,
+                                    name = "Time (s)",
+                                    desc = "Show factions that changed within this many seconds. 0 = the whole session.",
+                                    min = 0,
+                                    max = 7200,
+                                    softMax = 3600,
+                                    step = 1,
+                                    bigStep = 60,
+                                    disabled = BrokerSessionDisabled,
+                                    get = BrokerGet("sessionWindow"),
+                                    set = BrokerSet("sessionWindow"),
+                                },
+                                Favorites = {
+                                    type = "toggle",
+                                    order = 50,
+                                    name = "Include favorites",
+                                    desc = "Also list favorite factions without a change",
+                                    disabled = BrokerSessionDisabled,
+                                    get = BrokerGet("sessionFavorites"),
+                                    set = BrokerSet("sessionFavorites"),
+                                },
+                                Pattern = {
+                                    type = "input",
+                                    order = 60,
+                                    name = "row pattern",
+                                    desc = "Tags as in the message pattern; [col] or [colr] starts a new right-aligned column, [colc] a centered one, [coll] a left-aligned one",
+                                    width = "full",
+                                    disabled = BrokerSessionDisabled,
+                                    get = BrokerGet("sessionPattern"),
+                                    set = BrokerSet("sessionPattern"),
+                                },
+                            },
+                        },
+                        MaxHeight = {
+                            type = "range",
+                            order = 40,
+                            name = "Tooltip height",
+                            desc = "Maximum height of the tooltip; longer lists scroll",
+                            min = 200,
+                            max = 1400,
+                            step = 10,
+                            bigStep = 50,
+                            get = BrokerGet("maxHeight"),
+                            set = BrokerSet("maxHeight"),
                         },
                     },
                 },
