@@ -1006,6 +1006,14 @@ function Addon:OnToggle()
 end
 
 function Addon:OnInitialize()
+    Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
+    Options = Addon.db.profile
+    private.setInterpolateColors()
+
+    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+
     Addon:RegisterChatCommand("pr", private.chatCmdShowConfig)
 end
 
@@ -1015,25 +1023,14 @@ function Addon:RefreshConfig()
 end
 
 function Addon:OnEnable()
-    Addon.db = LibStub("AceDB-3.0"):New(ADDON_NAME .. "DB", AddonDB_Defaults, true)
-    Options = Addon.db.profile
-    private.setInterpolateColors()
-
     Addon:RegisterEvent("PLAYER_ENTERING_WORLD", private.Initialize)
     --Addon:RegisterEvent("COMBAT_TEXT_UPDATE", private.CombatTextUpdated)
     Addon:RegisterEvent("FACTION_STANDING_CHANGED", private.StandingUpdated)
     Addon:RegisterEvent("SHOW_LOOT_TOAST", private.LootToast)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
     Addon:RegisterEvent("UPDATE_FACTION", private.UpdateFaction)
-
-    self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-    self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-    self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 function Addon:OnDisable()
-    Addon:UnregisterEvent("QUEST_TURNED_IN")
-    --Addon:UnregisterEvent("COMBAT_TEXT_UPDATE")
-    Addon:UnregisterEvent("FACTION_STANDING_CHANGED")
-    Addon:UnregisterEvent("UPDATE_FACTION")
+    Addon:UnregisterAllEvents()
 end
