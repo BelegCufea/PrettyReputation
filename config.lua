@@ -120,6 +120,27 @@ local function standingColorsSet(value)
     Addon.db.profile.ColorParagon    = Addon:CopyStandingColor(colorIndexParagon)
 end
 
+-- Mark the colours as "Custom" and redraw the options so the preset dropdown shows it.
+-- AceConfigDialog only redraws on the picker's OnValueConfirmed, which the 10.2.5+ picker often
+-- doesn't send. Redraw after the picker closes: redrawing while it is open would release the colour
+-- widget the picker still calls back into.
+local presetRefreshPending = false
+local function setCustomPreset()
+    if Addon.db.profile.ColorsPreset == "custom" then return end
+    Addon.db.profile.ColorsPreset = "custom"
+    if presetRefreshPending then return end
+    presetRefreshPending = true
+    local function refresh()
+        if ColorPickerFrame and ColorPickerFrame:IsShown() then
+            C_Timer.After(0.2, refresh)
+            return
+        end
+        presetRefreshPending = false
+        ConfigRegistry:NotifyChange(Addon.CONST.METADATA.NAME)
+    end
+    refresh()
+end
+
 local function contains_item(t, item)
     if next(t) == nil then return false end
     for _, value in pairs(t) do
@@ -950,7 +971,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[1]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -965,7 +986,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[2]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -980,7 +1001,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[3]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -995,7 +1016,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[4]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1010,7 +1031,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[5]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1025,7 +1046,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[6]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1040,7 +1061,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[7]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1055,7 +1076,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.Colors[8]
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1078,7 +1099,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.ColorRenownLow
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1093,7 +1114,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.ColorRenownHigh
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1108,7 +1129,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.ColorParagon
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1131,7 +1152,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.ColorFriendLow
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
@@ -1146,7 +1167,7 @@ local options = {
                                     set = function(info, r, g, b, a)
                                         local color = Addon.db.profile.ColorFriendHigh
                                         color.r, color.g, color.b = r, g, b
-                                        Addon.db.profile.ColorsPreset = "custom"
+                                        setCustomPreset()
                                         SetBarsOptions()
                                     end
                                 },
