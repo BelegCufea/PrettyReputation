@@ -99,7 +99,7 @@ local AddonDB_Defaults = {
         },
         Broker = {
             textMode = "faction", -- "faction" (watched or last changed) or "status" (Enabled/Disabled)
-            textPattern = "[c_name] [c_standing] [current]/[next] ([currentPercent])",
+            textPattern = "[c_name] - [c_standing] [c_bar]",
             showList = true,
             grouping = "headers", -- "headers" (Reputation panel, expansions on retail) or "none"
             favoritesGroup = true,
@@ -107,7 +107,7 @@ local AddonDB_Defaults = {
             hideInactive = true,
             hideHidden = true, -- factions that are not in the Reputation panel
             hideMaxed = false,
-            rowPattern = "[icon] [c_name][col][c_standing][col][current] / [next][col][c_barTexture]",
+            rowPattern = "[icon] [c_name][coll][c_standing][col][current] / [next][col][c_barTexture]",
             collapsed = {}, -- group name -> true/false, nil = default (first group open)
             sessionShow = true,
             sessionPosition = "top",
