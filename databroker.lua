@@ -33,7 +33,7 @@ local settings = {
             Addon:OnToggle()
         end
         if button == "RightButton" then
-            Settings.OpenToCategory(Addon.Config.categoryID)
+            Addon:OpenOptions()
         end
     end,
 };

@@ -919,9 +919,7 @@ function private.chatCmdShowConfig(input)
         print(format(arg2Str, "help", "?", "Print this again."))
         print(format(argStr, "ver", "Print Addon Version"))
     elseif cmd == "config" then
-        -- happens twice because there is a bug in the blizz implementation and the first call doesn't work. subsequent calls do.
-        InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
-        InterfaceOptionsFrame_OpenToCategory(Const.METADATA.NAME)
+        Addon:OpenOptions()
     elseif cmd == "ver" then
         Addon:Print(("You are running version |cff1784d1%s|r."):format(Const.METADATA.VERSION))
     elseif cmd == "toggle" then
@@ -945,6 +943,12 @@ function private.setInterpolateColors()
     Options.ColorFriendLow  = Options.ColorFriendLow  and next( Options.ColorFriendLow)  and Options.ColorFriendLow  or Options.Colors[colorIndexLow]     or Const.REP_COLORS.wowproColors[colorIndexLow]
     Options.ColorFriendHigh = Options.ColorFriendHigh and next( Options.ColorFriendHigh) and Options.ColorFriendHigh or Options.Colors[colorIndexHigh]    or Const.REP_COLORS.wowproColors[colorIndexHigh]
     Options.ColorParagon    = Options.ColorParagon    and next( Options.ColorParagon)    and Options.ColorParagon    or Options.Colors[colorIndexParagon] or Const.REP_COLORS.wowproColors[colorIndexParagon]
+end
+
+function Addon:OpenOptions()
+    if Addon.Config and Addon.Config.categoryID then
+        Settings.OpenToCategory(Addon.Config.categoryID)
+    end
 end
 
 function Addon:OnToggle()
