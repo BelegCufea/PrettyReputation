@@ -1022,7 +1022,8 @@ function private.chatCmdShowConfig(input)
         local argStr  = "   |cff00ff00/pr %s|r - %s"
         local arg2Str = "   |cff00ff00/pr %s|r or |cff00ff00%s|r - %s"
         Addon:Print("Available Chat Command Arguments")
-        print(format(argStr, "config", "Opens configuration window."))
+        print(format(argStr, "config", "Opens the options in a movable window."))
+        print(format(argStr, "settings", "Opens the options in the game's settings."))
         print(format(argStr, "toggle", "Toggles showing reputation message in chat."))
         print(format(argStr, "enable", "Enables showing reputation message in chat."))
         print(format(argStr, "disable", "Disables showing reputation message in chat."))
@@ -1030,6 +1031,8 @@ function private.chatCmdShowConfig(input)
         print(format(argStr, "ver", "Print Addon Version"))
     elseif cmd == "config" then
         Addon:OpenOptions()
+    elseif cmd == "settings" then
+        Addon:OpenGameOptions()
     elseif cmd == "ver" then
         Addon:Print(("You are running version |cff1784d1%s|r."):format(Const.METADATA.VERSION))
     elseif cmd == "toggle" then
@@ -1063,7 +1066,20 @@ function private.setInterpolateColors()
     if not isSet(Options.ColorParagon)    then Options.ColorParagon    = Addon:CopyStandingColor(colorIndexParagon) end
 end
 
+-- The options in AceConfig's own window, which can be moved and resized away from the game's settings;
+-- closes it when it is already open.
 function Addon:OpenOptions()
+    local ConfigDialog = LibStub("AceConfigDialog-3.0")
+    local name = Const.METADATA.NAME
+    if ConfigDialog.OpenFrames[name] then
+        ConfigDialog:Close(name)
+    else
+        ConfigDialog:Open(name)
+    end
+end
+
+-- The options in the game's settings (Options -> AddOns)
+function Addon:OpenGameOptions()
     if Addon.Config and Addon.Config.categoryID then
         Settings.OpenToCategory(Addon.Config.categoryID)
     end

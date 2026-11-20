@@ -326,7 +326,7 @@ function private.FillTooltip(tooltip)
     end
 
     private.AddFullLine(tooltip, COLOR_HINT .. "Click|r a faction to watch it, " .. COLOR_HINT .. "Right-Click|r to toggle favorite", numColumns)
-    private.AddFullLine(tooltip, COLOR_HINT .. "Click|r the icon to toggle messages, " .. COLOR_HINT .. "Right-Click|r for options", numColumns)
+    private.AddFullLine(tooltip, COLOR_HINT .. "Click|r the icon to toggle messages, " .. COLOR_HINT .. "Right-Click|r for options, " .. COLOR_HINT .. "Shift-Right-Click|r for the game's settings", numColumns)
 end
 
 function private.RefreshTooltip()
@@ -367,7 +367,11 @@ local settings = {
             private.RefreshTooltip()
         end
         if button == "RightButton" then
-            Addon:OpenOptions()
+            if IsShiftKeyDown() then
+                Addon:OpenGameOptions()
+            else
+                Addon:OpenOptions()
+            end
         end
     end,
 };

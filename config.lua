@@ -1593,6 +1593,7 @@ function Config:OnEnable()
     options.args.FAQ = faq()
     Addon:SetSinkStorage(Addon.db.profile)
 	ConfigRegistry:RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
+    ConfigDialog:SetDefaultSize(Addon.CONST.METADATA.NAME, 900, 650) -- the movable options window
     _, Config.categoryID = ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Favorites", Addon.CONST.METADATA.NAME, "Favorites")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")
