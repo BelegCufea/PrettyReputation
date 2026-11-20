@@ -103,7 +103,7 @@ local function ShowFactionTooltip(bar)
             GameTooltip:AddDoubleLine("Last change:", string.format("%d:%02d", math.floor(timeElapsed / 60), timeElapsed % 60))
             GameTooltip:AddLine(" ")
             GameTooltip:AddLine("|cFFFFFFCCLeft-Click|r to toggle favorite")
-            GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide")
+            GameTooltip:AddLine("|cFFFFFFCCRight-Click|r to hide, |cFFFFFFCCShift-Right-Click|r to ignore")
             GameTooltip:Show()
         end
     end
@@ -144,6 +144,9 @@ end
 
 local function OnClick(bar, button)
     if button == "RightButton" then
+        if IsShiftKeyDown() then
+            Options.IgnoredFactions[bar.faction] = true -- Expired() then removes the bar
+        end
         RemoveBar(bar)
     end
     if button == "LeftButton" then

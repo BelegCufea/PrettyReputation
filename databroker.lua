@@ -20,7 +20,8 @@ local INACTIVE = FACTION_INACTIVE or "Inactive"
 local ALL = REPUTATION or "Reputation"
 local ICON_EXPAND = "|TInterface\\Buttons\\UI-PlusButton-Up:14:14|t "
 local ICON_COLLAPSE = "|TInterface\\Buttons\\UI-MinusButton-Up:14:14|t "
-local COLOR_GROUP = "|cffffd200"
+local ICON_IGNORED = "|TInterface\\Buttons\\UI-GroupLoot-Pass-Up:14:14|t "
+local COLOR_GROUP ="|cffffd200"
 local COLOR_HINT = "|cFFFFFFCC"
 local COLOR_DIM = "|cff808080"
 
@@ -106,9 +107,12 @@ end
 
 function private.AddRow(tooltip, columns, info, numColumns)
     local line = tooltip:AddLine()
+    local ignored = Options().IgnoredFactions[info.faction]
     for i, column in ipairs(columns) do
         local colSpan = (i == #columns) and (numColumns - i + 1) or 1
-        tooltip:SetCell(line, i, Addon:ConstructMessage(info, column.pattern), nil, column.justification, colSpan)
+        local text = Addon:ConstructMessage(info, column.pattern)
+        if ignored and i == 1 then text = ICON_IGNORED .. text end -- marks an ignored faction
+        tooltip:SetCell(line, i, text, nil, column.justification, colSpan)
     end
     return line
 end
