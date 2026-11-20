@@ -27,6 +27,7 @@
         "FACTION_INACTIVE",
         "GUILD",
         "OTHER",
+        "IGNORED",
         "nop",
         "FACTION_BAR_COLORS",
         "CloseDropDownMenus",

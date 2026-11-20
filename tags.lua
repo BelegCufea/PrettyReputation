@@ -325,6 +325,15 @@ Addon.TAGS.Definition = {
             return ""
         end
     },
+    ["ignored"] = {
+        desc = "Shows 'Ignored' for a faction on the Ignored tab, nothing for others (use it with a prefix/suffix, e.g. [{ (}ignored{)}])",
+        value = function(info)
+            if Addon.db.profile.IgnoredFactions[info.faction] then
+                return IGNORED or "Ignored"
+            end
+            return ""
+        end
+    },
     ["standingColorStart"] = {
         desc = "Color the text between it and [standingColorEnd] with a standing color. |cnWARNING_FONT_COLOR:Must be used with [standingColorEnd] TAG!|r",
         value = function(info)

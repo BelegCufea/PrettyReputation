@@ -1046,6 +1046,21 @@ local options = {
                                     get = BrokerGet("hideInactive"),
                                     set = BrokerSet("hideInactive"),
                                 },
+                                IgnoredDisplay = {
+                                    type = "select",
+                                    order = 55,
+                                    name = "Ignored factions",
+                                    desc = "How factions from the Ignored tab show in the list. The [ignored] tag marks them in the rows.",
+                                    values = {
+                                        ["normal"] = "Show normally",
+                                        ["dim"] = "Dim",
+                                        ["hide"] = "Hide",
+                                    },
+                                    style = "dropdown",
+                                    disabled = BrokerListDisabled,
+                                    get = BrokerGet("ignored"),
+                                    set = BrokerSet("ignored"),
+                                },
                                 HideHidden = {
                                     type = "toggle",
                                     order = 60,

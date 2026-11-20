@@ -105,6 +105,7 @@ local AddonDB_Defaults = {
             favoritesGroup = true,
             changedFirst = true,
             hideInactive = true,
+            ignored = "dim", -- ignored factions in the list: "normal", "dim" or "hide"
             hideHidden = true, -- factions that are not in the Reputation panel
             hideMaxed = false,
             rowPattern = "[icon] [c_name][coll][c_standing][col][current] / [next][col][c_barTexture]",

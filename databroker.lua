@@ -107,7 +107,8 @@ end
 
 function private.AddRow(tooltip, columns, info, numColumns)
     local line = tooltip:AddLine()
-    local ignored = Options().IgnoredFactions[info.faction]
+    local options = Options()
+    local ignored = options.Broker.ignored == "dim" and options.IgnoredFactions[info.faction]
     for i, column in ipairs(columns) do
         local colSpan = (i == #columns) and (numColumns - i + 1) or 1
         local text = Addon:ConstructMessage(info, column.pattern)
@@ -136,6 +137,7 @@ end
 function private.IsVisible(name, faction)
     local options = Options()
     if not faction.id or faction.isHeader then return false end
+    if options.Broker.ignored == "hide" and options.IgnoredFactions[name] then return false end
     if options.FavoriteFactions[name] then return true end
     if options.Broker.hideInactive and faction.inactive then return false end
     if (faction.session or 0) ~= 0 then return true end
