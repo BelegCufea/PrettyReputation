@@ -1,11 +1,9 @@
 # v1.6.1 (Unreleased)
 
 ## New
-- Broker tooltip: with "Hide inactive" turned off, factions moved to Inactive are listed in their own Inactive group (last, collapsible) instead of staying in their expansion group. With it on they are hidden, also when they have session gains (favorites stay)
-
-- Options in a movable, resizable window: right-click the minimap icon, broker or addon compartment button, or `/pr config` (click again to close). Shift-right-click or the new `/pr settings` open the game's settings as before
-
 - Ignored factions: choose factions on the new `Ignored` tab (or Shift-right-click them in the Broker tooltip) to get no reputation messages, bars or splash for them. Their gains still count in the session totals; they stay in the Broker list but not in its session gains. A new Broker option shows them normally, dimmed (default) or hides them, and the new `[ignored]` tag marks them in message, bar and row patterns. Shift-right-click a bar to ignore its faction
+- Broker tooltip: with "Hide inactive" turned off, factions moved to Inactive are listed in their own Inactive group (last, collapsible) instead of staying in their expansion group. With it on they are hidden, also when they have session gains (favorites stay)
+- Options in a movable, resizable window: right-click the minimap icon, broker or addon compartment button, or `/pr config` (click again to close). Shift-right-click or the new `/pr settings` open the game's settings as before
 
 ## Fix
 - Broker tooltip: moving a faction to or from Inactive in the Reputation panel now applies right away, no `/reload` needed
