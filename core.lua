@@ -1091,6 +1091,17 @@ function Addon:OnInitialize()
     Addon:RegisterChatCommand("pr", private.chatCmdShowConfig)
 end
 
+local activeScanPending = false
+function private.OnActiveChanged()
+    -- the panel reorders its rows after the toggle, so a row index can't be trusted: rescan (debounced)
+    if activeScanPending then return end
+    activeScanPending = true
+    C_Timer.After(0.5, function()
+        activeScanPending = false
+        private.setupFactions()
+    end)
+end
+
 function Addon:RefreshConfig()
     Options = self.db.profile
     private.setInterpolateColors()
@@ -1103,6 +1114,10 @@ function Addon:OnEnable()
     Addon:RegisterEvent("SHOW_LOOT_TOAST", private.LootToast)
     Addon:RegisterEvent("QUEST_TURNED_IN", private.UpdateReward)
     Addon:RegisterEvent("UPDATE_FACTION", private.UpdateFaction)
+    -- the Inactive checkbox in the Reputation panel: rescan, so the broker list follows without a /reload
+    for _, name in ipairs({ "SetFactionActive", "SetFactionInactive" }) do
+        if C_Reputation[name] then hooksecurefunc(C_Reputation, name, private.OnActiveChanged) end
+    end
 end
 
 function Addon:OnDisable()

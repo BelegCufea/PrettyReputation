@@ -1,3 +1,11 @@
+# v1.6.1 (Unreleased)
+
+## New
+- Broker tooltip: with "Hide inactive" turned off, factions moved to Inactive are listed in their own Inactive group (last, collapsible) instead of staying in their expansion group. With it on they are hidden, also when they have session gains (favorites stay)
+
+## Fix
+- Broker tooltip: moving a faction to or from Inactive in the Reputation panel now applies right away, no `/reload` needed
+
 # v1.6.0 (10.11.2026)
 
 ## New

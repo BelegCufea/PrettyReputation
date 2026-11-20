@@ -16,6 +16,7 @@ local COL_SEPARATOR_ANY = "%[col[lcr]?%]"
 local COL_JUSTIFICATION = { l = "LEFT", c = "CENTER", r = "RIGHT" }
 local FAVORITES = "Favorites"
 local OTHER = OTHER or "Other"
+local INACTIVE = FACTION_INACTIVE or "Inactive"
 local ALL = REPUTATION or "Reputation"
 local ICON_EXPAND = "|TInterface\\Buttons\\UI-PlusButton-Up:14:14|t "
 local ICON_COLLAPSE = "|TInterface\\Buttons\\UI-MinusButton-Up:14:14|t "
@@ -130,9 +131,9 @@ function private.IsVisible(name, faction)
     local options = Options()
     if not faction.id or faction.isHeader then return false end
     if options.FavoriteFactions[name] then return true end
+    if options.Broker.hideInactive and faction.inactive then return false end
     if (faction.session or 0) ~= 0 then return true end
     if options.Broker.hideHidden and not faction.order and not faction.special then return false end
-    if options.Broker.hideInactive and faction.inactive then return false end
     if options.Broker.hideMaxed and private.IsMaxed(faction.info) then return false end
     return true
 end
@@ -159,6 +160,8 @@ function private.CollectGroups()
             local groupName, order
             if options.Broker.favoritesGroup and options.FavoriteFactions[name] then
                 groupName, order = FAVORITES, -1
+            elseif options.Broker.grouping == "headers" and faction.inactive then
+                groupName, order = INACTIVE, math.huge
             elseif options.Broker.grouping == "headers" then
                 groupName, order = faction.header or OTHER, faction.order or math.huge
             else
@@ -170,6 +173,7 @@ function private.CollectGroups()
 
     table.sort(groups, function(a, b)
         if a.order ~= b.order then return a.order < b.order end
+        if (a.name == INACTIVE) ~= (b.name == INACTIVE) then return b.name == INACTIVE end -- Inactive always last
         return a.name < b.name
     end)
 
