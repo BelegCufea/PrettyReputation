@@ -20,6 +20,7 @@ local INACTIVE = FACTION_INACTIVE or "Inactive"
 local ALL = REPUTATION or "Reputation"
 local ICON_EXPAND = "|TInterface\\Buttons\\UI-PlusButton-Up:14:14|t "
 local ICON_COLLAPSE = "|TInterface\\Buttons\\UI-MinusButton-Up:14:14|t "
+local ALPHA_IGNORED = 0.4
 local COLOR_GROUP ="|cffffd200"
 local COLOR_HINT = "|cFFFFFFCC"
 local COLOR_DIM = "|cff808080"
@@ -110,11 +111,10 @@ function private.AddRow(tooltip, columns, info, numColumns)
     for i, column in ipairs(columns) do
         local colSpan = (i == #columns) and (numColumns - i + 1) or 1
         local text = Addon:ConstructMessage(info, column.pattern)
-        if ignored then -- grey out the whole row: drop the tag colours, they would override the grey
-            text = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|cn[%w_]+:", ""):gsub("|r", "")
-            text = COLOR_DIM .. text .. "|r"
-        end
         tooltip:SetCell(line, i, text, nil, column.justification, colSpan)
+        -- fade an ignored faction's whole row (text, colours and icons); reset it for recycled cells
+        local cell = tooltip.lines[line] and tooltip.lines[line].cells[i]
+        if cell and cell.SetAlpha then cell:SetAlpha(ignored and ALPHA_IGNORED or 1) end
     end
     return line
 end
