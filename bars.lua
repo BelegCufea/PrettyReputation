@@ -135,6 +135,9 @@ local function Expired(info)
     if info and Options.FavoriteFactions[info.name] then
         expired = false
     end
+    if info and Options.IgnoredFactions[info.name] then
+        expired = true -- an ignored faction has no bar, a running one goes with the next expiry check
+    end
 
     return expired
 end
@@ -198,7 +201,7 @@ function Bars:Update()
     end
     if not BarsGroup then return end
     for k,v in pairs(factions) do
-        if v.info and v.info.name and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
+        if v.info and v.info.name and not Options.IgnoredFactions[v.info.name] and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
             Addon:SetInfoColors(v.info) -- colour settings may have changed since this info was built
             local bar = v.bar
             if not bar then

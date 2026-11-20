@@ -1496,6 +1496,54 @@ local options = {
                 },
             },
         },
+        Ignored = {
+            type = "group",
+            order = 75,
+            name = "Ignored",
+            args = {
+                description = {
+                    type = "description",
+                    name = "Choose factions to ignore: no reputation messages, bars or splash for them. Their gains still count in the session totals, and they stay in the Broker list.",
+                    order = 10,
+                },
+                search = {
+                    type = "input",
+                    name = "Search",
+                    desc = "Type to filter the factions list.",
+                    get = function() return searchQuery end,
+                    set = function(_, value)
+                        searchQuery = value
+                    end,
+                    order = 20,
+                },
+                list1 = {
+                    type = "multiselect",
+                    name = "Visible Factions",
+                    values = function() return getFactions("standard") end,
+                    get = function(info, key)
+                        return Addon.db.profile.IgnoredFactions[key] or false
+                    end,
+                    set = function(info, key, value)
+                        Addon.db.profile.IgnoredFactions[key] = value or nil
+                        SetBarsOptions()
+                    end,
+                    order = 30,
+                },
+                list2 = {
+                    type = "multiselect",
+                    name = "Hiden Factions",
+                    values = function() return getFactions("blizzFix") end,
+                    get = function(info, key)
+                        return Addon.db.profile.IgnoredFactions[key] or false
+                    end,
+                    set = function(info, key, value)
+                        Addon.db.profile.IgnoredFactions[key] = value or nil
+                        SetBarsOptions()
+                    end,
+                    order = 40,
+                },
+            },
+        },
         About = {
             type = "group",
             order = 90,
@@ -1596,6 +1644,7 @@ function Config:OnEnable()
     ConfigDialog:SetDefaultSize(Addon.CONST.METADATA.NAME, 900, 650) -- the movable options window
     _, Config.categoryID = ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Favorites", Addon.CONST.METADATA.NAME, "Favorites")
+    ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Ignored", Addon.CONST.METADATA.NAME, "Ignored")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "About", Addon.CONST.METADATA.NAME, "About")
     if options.args.FAQ then

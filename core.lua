@@ -140,6 +140,7 @@ local AddonDB_Defaults = {
         Splash = false,
         Debug = false,
         FavoriteFactions = {},
+        IgnoredFactions = {}, -- no messages, bars or splash for these (their session gains are still counted)
     }
 }
 
@@ -697,6 +698,7 @@ end
 
 function private.printReputation(info)
     if not Options.Enabled then return end
+    if Options.IgnoredFactions[info.faction] and not info.test then return end
     local message = Addon:ConstructMessage(info, Options.Reputation.pattern
 )
     if message and message ~= "" then
@@ -785,7 +787,9 @@ function private.processAllFactions(factionInfo)
                 info.lastUpdated = time()
                 info.test, info.testOf = nil, nil -- a real change replaces a running test
                 private.printReputation(info)
-                if not trackFaction then
+                if Options.IgnoredFactions[info.faction] then
+                    -- ignored: counted in the session, but not tracked
+                elseif not trackFaction then
                     trackFaction = info
                 elseif trackFaction.change < info.change then
                     trackFaction = info

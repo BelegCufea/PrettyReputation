@@ -211,7 +211,7 @@ function private.SessionEntries()
     for name, faction in pairs(factions) do
         local changed = (faction.session or 0) ~= 0 and (window == 0 or (now - (faction.lastChange or 0)) <= window)
         local favorite = options.Broker.sessionFavorites and options.FavoriteFactions[name]
-        if faction.id and (changed or favorite) then
+        if faction.id and (changed or favorite) and not options.IgnoredFactions[name] then
             local info = Addon:GetFreshInfo(name)
             if info then entries[#entries + 1] = { name = name, faction = faction, info = info } end
         end
@@ -241,8 +241,13 @@ function private.OnFactionClick(_, entry, button)
             SetWatchedFactionByID(entry.faction.id)
         end
     elseif button == "RightButton" then
-        local favorites = Options().FavoriteFactions
-        favorites[entry.name] = not favorites[entry.name]
+        if IsShiftKeyDown() then
+            local ignored = Options().IgnoredFactions
+            ignored[entry.name] = (not ignored[entry.name]) or nil
+        else
+            local favorites = Options().FavoriteFactions
+            favorites[entry.name] = not favorites[entry.name]
+        end
         Addon:UpdateBars()
     end
     -- watching a faction updates the game data a moment later
@@ -325,7 +330,7 @@ function private.FillTooltip(tooltip)
         private.AddSession(tooltip, sessionColumns, numColumns)
     end
 
-    private.AddFullLine(tooltip, COLOR_HINT .. "Click|r a faction to watch it, " .. COLOR_HINT .. "Right-Click|r to toggle favorite", numColumns)
+    private.AddFullLine(tooltip, COLOR_HINT .. "Click|r a faction to watch it, " .. COLOR_HINT .. "Right-Click|r to toggle favorite, " .. COLOR_HINT .. "Shift-Right-Click|r to toggle ignore", numColumns)
     private.AddFullLine(tooltip, COLOR_HINT .. "Click|r the icon to toggle messages, " .. COLOR_HINT .. "Right-Click|r for options, " .. COLOR_HINT .. "Shift-Right-Click|r for the game's settings", numColumns)
 end
 

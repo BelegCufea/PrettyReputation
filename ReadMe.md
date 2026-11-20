@@ -28,6 +28,8 @@ Or
 
 Right-click the minimap icon or the addon compartment button to open the options in a window you can move and resize. Shift-right-click opens them in the game's settings instead (the 'Pretty Reputation' section within 'Options -> AddOns'). Left-click turns the messages on or off.
 
+Factions you don't want to hear about can be ignored on the `Ignored` tab (or with Shift-right-click on a faction in the Broker tooltip): no messages, bars or splash for them.
+
 Chat commands: `/pr config` opens the options window, `/pr settings` the game's settings, `/pr toggle`, `/pr enable` and `/pr disable` turn the messages on or off, `/pr ver` prints the version, and `/pr` alone lists them.
 
 - In the `pattern` field, compose your desired message format. You can choose from several predefined tags.
