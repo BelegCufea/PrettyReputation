@@ -1,4 +1,4 @@
-# v1.6.1 (Unreleased)
+# v1.6.1 (20.11.2026)
 
 ## New
 - Ignored factions: choose factions on the new `Ignored` tab (or Shift-right-click them in the Broker tooltip) to get no reputation messages, bars or splash for them. Their gains still count in the session totals; they stay in the Broker list but not in its session gains. A new Broker option shows them normally, dimmed (default) or hides them, and the new `[ignored]` tag marks them in message, bar and row patterns. Shift-right-click a bar to ignore its faction
