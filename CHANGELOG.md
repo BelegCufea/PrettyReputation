@@ -1,3 +1,8 @@
+# v1.6.1a (Unreleased)
+
+## Fix
+- Reputation panel headers without a reputation row of their own (like Alliance, the groups in the Broker list) are now ignored: no messages, bars or splash, and not in the Broker session gains. A new option `Ignore header factions` on the `Ignored` tab (default on) turns this off
+
 # v1.6.1 (20.11.2026)
 
 ## New

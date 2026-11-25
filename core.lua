@@ -141,7 +141,8 @@ local AddonDB_Defaults = {
         Splash = false,
         Debug = false,
         FavoriteFactions = {},
-        IgnoredFactions = {}, -- no messages, bars or splash for these (their session gains are still counted)
+        IgnoreHeaderFactions = true, -- also ignore pure Reputation panel headers (groups without a reputation of their own)
+        IgnoredFactions = {},-- no messages, bars or splash for these (their session gains are still counted)
     }
 }
 
@@ -697,9 +698,16 @@ function Addon:ConstructMessage(info, pattern)
     return message
 end
 
+-- ignored on the Ignored tab, or a pure Reputation panel header (Alliance, ...) while "Ignore header factions" is on
+function Addon.IsIgnored(name)
+    if Options.IgnoredFactions[name] then return true end
+    local faction = factions[name]
+    return Options.IgnoreHeaderFactions and faction and faction.isHeader or false
+end
+
 function private.printReputation(info)
     if not Options.Enabled then return end
-    if Options.IgnoredFactions[info.faction] and not info.test then return end
+    if Addon.IsIgnored(info.faction) and not info.test then return end
     local message = Addon:ConstructMessage(info, Options.Reputation.pattern
 )
     if message and message ~= "" then
@@ -788,7 +796,7 @@ function private.processAllFactions(factionInfo)
                 info.lastUpdated = time()
                 info.test, info.testOf = nil, nil -- a real change replaces a running test
                 private.printReputation(info)
-                if Options.IgnoredFactions[info.faction] then
+                if Addon.IsIgnored(info.faction) then
                     -- ignored: counted in the session, but not tracked
                 elseif not trackFaction then
                     trackFaction = info

@@ -1521,6 +1521,18 @@ local options = {
                     name = "Choose factions to ignore: no reputation messages, bars or splash for them. Their gains still count in the session totals, and they stay in the Broker list.",
                     order = 10,
                 },
+                IgnoreHeaderFactions = {
+                    type = "toggle",
+                    name = "Ignore header factions",
+                    desc = "Also ignore the Reputation panel headers that have no reputation row of their own (like Alliance), the collapsible groups in the Broker list. Turn off to get messages for them.",
+                    width = "full",
+                    get = function() return Addon.db.profile.IgnoreHeaderFactions end,
+                    set = function(_, value)
+                        Addon.db.profile.IgnoreHeaderFactions = value
+                        SetBarsOptions()
+                    end,
+                    order = 15,
+                },
                 search = {
                     type = "input",
                     name = "Search",
