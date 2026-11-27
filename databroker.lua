@@ -375,7 +375,7 @@ local settings = {
     OnLeave = function(self)
         -- the tooltip hides itself (auto-hide), so the mouse can move into it
     end,
-    OnClick = function(self, button, down)
+    OnClick = function(self, button)
         if button == "LeftButton" then
             Addon.db.profile.Enabled = not Addon.db.profile.Enabled
             Addon:OnToggle()

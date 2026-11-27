@@ -239,7 +239,7 @@ local function BrokerListDisabled() return not Addon.db.profile.Broker.showList 
 local function BrokerSessionDisabled() return not Addon.db.profile.Broker.sessionShow end
 
 local options = {
-	name = AddonTitle,
+	name = Addon.CONST.METADATA.NAME,
 	type = "group",
 	args = {
         Settings = {
@@ -1211,7 +1211,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[1]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[1]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1226,7 +1226,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[2]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[2]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1241,7 +1241,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[3]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[3]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1256,7 +1256,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[4]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[4]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1271,7 +1271,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[5]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[5]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1286,7 +1286,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[6]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[6]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1301,7 +1301,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[7]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[7]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1316,7 +1316,7 @@ local options = {
                                         local color = Addon.db.profile.Colors[8]
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.Colors[8]
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1339,7 +1339,7 @@ local options = {
                                         local color = Addon.db.profile.ColorRenownLow
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.ColorRenownLow
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1354,7 +1354,7 @@ local options = {
                                         local color = Addon.db.profile.ColorRenownHigh
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.ColorRenownHigh
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1369,7 +1369,7 @@ local options = {
                                         local color = Addon.db.profile.ColorParagon
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.ColorParagon
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1392,7 +1392,7 @@ local options = {
                                         local color = Addon.db.profile.ColorFriendLow
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.ColorFriendLow
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1407,7 +1407,7 @@ local options = {
                                         local color = Addon.db.profile.ColorFriendHigh
                                         return color.r, color.g, color.b
                                     end,
-                                    set = function(info, r, g, b, a)
+                                    set = function(info, r, g, b)
                                         local color = Addon.db.profile.ColorFriendHigh
                                         color.r, color.g, color.b = r, g, b
                                         setCustomPreset()
@@ -1680,7 +1680,7 @@ function Config:OnEnable()
     Addon:SetSinkStorage(Addon.db.profile)
 	ConfigRegistry:RegisterOptionsTable(Addon.CONST.METADATA.NAME, options)
     ConfigDialog:SetDefaultSize(Addon.CONST.METADATA.NAME, 900, 650) -- the movable options window
-    _, Config.categoryID = ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings")
+    Config.categoryID = select(2, ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, nil, nil, "Settings"))
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Favorites", Addon.CONST.METADATA.NAME, "Favorites")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Ignored", Addon.CONST.METADATA.NAME, "Ignored")
     ConfigDialog:AddToBlizOptions(Addon.CONST.METADATA.NAME, "Profiles", Addon.CONST.METADATA.NAME, "Profiles")

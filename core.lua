@@ -316,9 +316,9 @@ function private.rgbToHsv(colRGB)
     -- missing components (empty or broken colour setting) count as 0
     local r, g, b = colRGB and colRGB.r or 0, colRGB and colRGB.g or 0, colRGB and colRGB.b or 0
     local max, min = math.max(r, g, b), math.min(r, g, b)
-    local h, s, v = 0, 0, max
+    local h, v = 0, max
     local d = max - min
-    s = max == 0 and 0 or d / max
+    local s = max == 0 and 0 or d / max
 
     if max ~= min then
         if max == r then
@@ -603,7 +603,6 @@ function private.getRepInfo(info)
             info["standingText"] = private.getFactionLabel(factionData.reaction)
             info["standingTextNext"] = (info.negative and factionData.reaction > 1 and _G["FACTION_STANDING_LABEL".. factionData.reaction - 1]) or (not info.negative and factionData.reaction < 8 and _G["FACTION_STANDING_LABEL".. factionData.reaction + 1]) or ""
             info["standingIdNext"] = (info.negative and factionData.reaction > 1 and (factionData.reaction - 1)) or (not info.negative and factionData.reaction < 8 and (factionData.reaction + 1))
-            processed = true
         end
 
         Addon:SetInfoColors(info)
@@ -777,7 +776,7 @@ function private.processAllFactions(factionInfo)
     local startTime = Options.Debug and debugprofilestop() -- ms timestamp; doesn't reset the shared profiler like debugprofilestart
     local checked = 0
     local trackFaction
-    for k, v in pairs(factions) do
+    for _, v in pairs(factions) do
         if v.id ~= delveFaction.factionID then
             checked = checked + 1
             local currentOld = (v.info.current or 0) + (v.info.bottom or 0)
@@ -797,11 +796,8 @@ function private.processAllFactions(factionInfo)
                 info.lastUpdated = time()
                 info.test, info.testOf = nil, nil -- a real change replaces a running test
                 private.printReputation(info)
-                if Addon.IsIgnored(info.faction) then
-                    -- ignored: counted in the session, but not tracked
-                elseif not trackFaction then
-                    trackFaction = info
-                elseif trackFaction.change < info.change then
+                -- ignored: counted in the session, but not tracked
+                if not Addon.IsIgnored(info.faction) and (not trackFaction or trackFaction.change < info.change) then
                     trackFaction = info
                 end
             end
@@ -935,7 +931,7 @@ function private.StandingUpdated(_, factionID, updatedStanding)
 end
 
 -- process Delve's Journey currency looted
-function private.LootToast(_, typeIdentifier, itemLink, quantity, specID, sex, personalLootToast, toastMethod, lessAwesome, upgraded, corrupted)
+function private.LootToast(_, typeIdentifier, itemLink, quantity)
     if typeIdentifier == "currency" then
         local currencyInfo = GetCurrencyInfoFromLink(itemLink)
         Debug:Info("Currency", itemLink, quantity)
@@ -962,7 +958,7 @@ end
 
 function private.HideReward()
     local updateBars = false
-    for k, v in pairs(factions) do
+    for _, v in pairs(factions) do
         if v.info and v.info.reward and v.info.reward ~= "" then
             local paragonLevel = 0
             if v.info.paragon then
@@ -986,7 +982,7 @@ function private.UpdateReward()
      end
 end
 
-function private.Initialize(event, isInitialLogin, isReloadingUi)
+function private.Initialize(_event, isInitialLogin, isReloadingUi)
     if isInitialLogin or isReloadingUi then
         local delay = isInitialLogin and 3 or 1
         C_Timer.After(

@@ -5,8 +5,6 @@ local Bars = Addon:NewModule("Bars", "LibBars-1.0")
 Addon.Bars = Bars
 
 local factions = Addon.Factions
-local Debug = Addon.DEBUG
-local Const = Addon.CONST
 local Options
 local BarsGroup
 
@@ -40,15 +38,6 @@ local function BarSort(info)
      else
         return 0
      end
-end
-
-local function PrepareFactionName(name)
-    local cutBeginningWith = " - "
-    if name:find(cutBeginningWith, 1, true) then
-        name = name:match("^(.-) %-%s.*$")
-    end
-
-    return name
 end
 
 local function ConstructTooltipAnchor(tooltipAnchor)
@@ -109,7 +98,7 @@ local function ShowFactionTooltip(bar)
     end
 end
 
-local function HideFactionTooltip(bar)
+local function HideFactionTooltip()
     GameTooltip:Hide()
 end
 
@@ -125,7 +114,7 @@ end
 
 local function Expired(info)
     local now = time()
-    local expired = false
+    local expired
     if Options.Bars.removeAfter == 0 then
         expired = info and ((((info.session or 0) == 0) and ((now - (info.lastUpdated or 0)) >= 60)) or not info.lastUpdated or info.lastUpdated == 0)
     else
@@ -203,7 +192,7 @@ function Bars:Update()
         return -- hidden: don't build bars (the expiry timer is off); OnEnable updates them again
     end
     if not BarsGroup then return end
-    for k,v in pairs(factions) do
+    for _, v in pairs(factions) do
         if v.info and v.info.name and not Addon.IsIgnored(v.info.name) and ((v.info.session and v.info.session ~= 0 and not Expired(v.info)) or (Options.FavoriteFactions[v.info.name])) then
             Addon:SetInfoColors(v.info) -- colour settings may have changed since this info was built
             local bar = v.bar
@@ -211,9 +200,9 @@ function Bars:Update()
                 bar = BarsGroup:NewCounterBar("PABars" .. v.info.factionID, nil, 0, 100)
                 UIFrameFadeIn(bar, 0.5, 0, Options.Bars.alpha)
                 bar.faction = v.info.faction
-                bar:SetScript("OnEnter", function(self) ShowFactionTooltip(self) end)
-                bar:SetScript("OnLeave", function(self) HideFactionTooltip(self) end)
-                bar:SetScript("OnMouseUp", function(self, button) OnClick(self, button) end)
+                bar:SetScript("OnEnter", ShowFactionTooltip)
+                bar:SetScript("OnLeave", HideFactionTooltip)
+                bar:SetScript("OnMouseUp", OnClick)
                 table.insert(bars, v.info.faction)
                 v.bar = bar
             end
@@ -256,7 +245,7 @@ local function SavePosition()
 	Options.Bars.posy = y
 end
 
-function Bars:AnchorMoved(cbk, group, x, y)
+function Bars:AnchorMoved()
 	SavePosition()
 end
 
