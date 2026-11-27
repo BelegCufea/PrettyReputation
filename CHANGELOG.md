@@ -1,4 +1,4 @@
-# v1.6.2 (Unreleased)
+# v1.6.2 (27.11.2026)
 
 ## New
 - Broker: in an [EllesmereUI](https://www.curseforge.com/wow/addons/ellesmereui) Data Bars Broker Plugin block, a thin progress bar in the faction's standing colour shows under the text. Option `Show bar on EllesmereUI Data Bars` on the `Broker` tab (default on), shown only when EllesmereUI Data Bars is loaded
