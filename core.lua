@@ -100,6 +100,7 @@ local AddonDB_Defaults = {
         Broker = {
             textMode = "faction", -- "faction" (watched or last changed) or "status" (Enabled/Disabled)
             textPattern = "[c_name] - [c_standing] [c_bar]",
+            euiBar = true, -- bar under the text in EllesmereUI's data bars
             showList = true,
             grouping = "headers", -- "headers" (Reputation panel, expansions on retail) or "none"
             favoritesGroup = true,

@@ -54,10 +54,10 @@ end
 
 function private.SetLabelText()
     local options = Options()
-    local text
+    local text, info
     if options.Broker.textMode == "faction" then
         local name, factionID = private.GetTextFaction()
-        local info = name and Addon:GetFreshInfo(name, factionID)
+        info = name and Addon:GetFreshInfo(name, factionID)
         if info then
             text = Addon:ConstructMessage(info, options.Broker.textPattern):gsub(COL_SEPARATOR_ANY, " ")
             if not options.Enabled then
@@ -69,6 +69,8 @@ function private.SetLabelText()
     -- the broker is created a few seconds after login; InitializeDataBroker sets the text then
     if Addon.BrokerModule then
         Addon.BrokerModule.text = ldbLabelText
+        -- setting the text makes EUI repaint its block synchronously; the bar follows it
+        Addon:UpdateEUIBrokerBar(ldbLabelText, info or nil)
     end
 end
 

@@ -15,6 +15,7 @@ Or
 - Also print the message in chosen chat frames (optionally with its own pattern) when the main output is something else.
 - Minimap icon/databroker (set up on the `Broker` tab):
     - The broker text shows your watched faction (with Auto track on, that is the last changed one).
+    - In an EllesmereUI Data Bars Broker Plugin block, a thin progress bar in the faction's standing colour shows under the text (option on the `Broker` tab, shown when EllesmereUI Data Bars is loaded).
     - The tooltip shows your session reputation gains and losses, with their current standing and progress (at the top or bottom, sorted as you like).
     - Optionally (on by default, can be turned off), it also lists all your reputations, grouped by expansion on retail (by the Reputation panel headers on WoW: Forever), with a Favorites group on top and groups you can open and close. Click a faction to watch it, right-click to toggle it as a favorite.
 - Show on-screen bars with session reputation changes.

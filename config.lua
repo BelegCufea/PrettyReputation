@@ -983,6 +983,17 @@ local options = {
                                     get = BrokerGet("textPattern"),
                                     set = BrokerSet("textPattern"),
                                 },
+                                EUIBar = {
+                                    type = "toggle",
+                                    order = 30,
+                                    name = "Show bar on EllesmereUI Data Bars",
+                                    desc = "Draws a thin progress bar under the Broker text in an EllesmereUI Data Bars Broker Plugin block, in the faction's standing colour (like [c_bar]).",
+                                    width = "full",
+                                    hidden = function() return not Addon:IsEUIDataBarsLoaded() end,
+                                    disabled = function() return Addon.db.profile.Broker.textMode ~= "faction" end,
+                                    get = BrokerGet("euiBar"),
+                                    set = BrokerSet("euiBar"),
+                                },
                             },
                         },
                         List = {

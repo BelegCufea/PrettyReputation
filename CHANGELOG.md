@@ -1,4 +1,7 @@
-# v1.6.1a (Unreleased)
+# v1.6.2 (Unreleased)
+
+## New
+- Broker: in an [EllesmereUI](https://www.curseforge.com/wow/addons/ellesmereui) Data Bars Broker Plugin block, a thin progress bar in the faction's standing colour shows under the text. Option `Show bar on EllesmereUI Data Bars` on the `Broker` tab (default on), shown only when EllesmereUI Data Bars is loaded
 
 ## Fix
 - Reputation panel headers without a reputation row of their own (like Alliance, the groups in the Broker list) are now ignored: no messages, bars or splash, and not in the Broker session gains. A new option `Ignore header factions` on the `Ignored` tab (default on) turns this off

@@ -30,6 +30,7 @@ debug.lua
 tags.lua
 core.lua
 databroker.lua
+eui.lua
 bars.lua
 faq.lua
 config.lua
